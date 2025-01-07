@@ -26,6 +26,8 @@ class Grid_3D:
             self.grid[node.x][node.y][z] = node
         else:
             raise IndexError("Coördinaten buiten het grid.")
+    
+    def plaats_wire(self, wire):
 
 
     def haal_waarde(self, x, y, z):
@@ -45,5 +47,4 @@ class Grid_3D:
 # Voorbeeld van gebruik:
 grid = Grid_3D(4, 5)  # Maak een 4x5x8 grid
 
-grid.zet_waarde(1, 1, 2, 5)
 print(grid.haal_waarde(1, 1, 2))

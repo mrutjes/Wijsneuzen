@@ -14,7 +14,7 @@ class BaseLayerNode:
     # Functie om nodes te importeren vanuit een CSV-bestand
     def importeer_nodes(csv_path):
         data = pd.read_csv(csv_path)
-        nodes = set()
+        nodes = {}
 
         for row in data.iterrows():
             node = BaseLayerNode(row['x'], row['y'])
