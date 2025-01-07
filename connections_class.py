@@ -1,4 +1,5 @@
 import numpy as np
+from nodes_class import Node
 
 class WirePoint:
     """Deze class zijn 3 coordinaten die de wire class gebruikt om een draad te vormen"""
@@ -26,8 +27,8 @@ class Wire:
     def __init__(self, wirepoints: list[WirePoint]) -> None:
         self.wirepoints = wirepoints
 
-    def check_connection(self) -> bool:
-        """Checkt of een draad goed verbonden is"""
+    def check_wire(self) -> bool:
+        """Checkt of een draad goed verbonden (aaneengesloten)"""
         for i in range(len(self.wirepoints) - 1):
             current = self.wirepoints[i]
             next_point = self.wirepoints[i + 1]
@@ -44,3 +45,12 @@ class Wire:
                 return False
         
         return True
+    
+    def check_connection(self, node1: Node, node2: Node) -> bool:
+        """Checkt of de wire met de juiste begin en eind node is verbonden"""
+
+        return (
+            (self.wirepoints[0] == node1 and self.wirepoints[-1] == node2) or
+            (self.wirepoints[0] == node2 and self.wirepoints[-1] == node1)
+        )
+
