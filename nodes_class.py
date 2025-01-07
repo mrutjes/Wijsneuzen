@@ -1,6 +1,6 @@
 import pandas as pd
 
-class BaseLayerNode:
+class Node:
     def __init__(self, x, y):
         """
         Initialiseer een node op de base layer van het grid.
@@ -17,7 +17,7 @@ class BaseLayerNode:
         nodes = {}
 
         for row in data.iterrows():
-            node = BaseLayerNode(row['x'], row['y'])
+            node = Node(row['x'], row['y'])
             nodes.add(node)
 
         return nodes

@@ -1,5 +1,6 @@
 import pytest
 from connections_class import WirePoint, Wire
+from nodes_class import Node
 
 # Test WirePoint class
 def test_wirepoint_initialization():
@@ -38,7 +39,7 @@ def test_wire_check_connection_valid():
         WirePoint(1, 1, 1)
     ]
     wire = Wire(points)
-    assert wire.check_connection() is True
+    assert wire.check_wire() is True
 
 def test_wire_check_connection_invalid():
     points = [
@@ -47,12 +48,12 @@ def test_wire_check_connection_invalid():
         WirePoint(1, 1, 0)
     ]
     wire = Wire(points)
-    assert wire.check_connection() is False
+    assert wire.check_wire() is False
 
 def test_wire_check_connection_edge_case_single_point():
     points = [WirePoint(0, 0, 0)]
     wire = Wire(points)
-    assert wire.check_connection() is True  # Single point is trivially connected
+    assert wire.check_wire() is True  # Single point is trivially connected
 
 def test_wire_check_connection_disjoint_points():
     points = [
@@ -61,7 +62,7 @@ def test_wire_check_connection_disjoint_points():
         WirePoint(3, 0, 0)  # Disjoint from the previous points
     ]
     wire = Wire(points)
-    assert wire.check_connection() is False
+    assert wire.check_wire() is False
 
 def test_wire_check_connection_3d_connections():
     points = [
@@ -71,4 +72,16 @@ def test_wire_check_connection_3d_connections():
         WirePoint(1, 1, 1)
     ]
     wire = Wire(points)
-    assert wire.check_connection() is True
+    assert wire.check_wire() is True
+
+def test_wire_check_node_connection():
+    node1 = Node(0, 0)
+    node2 = Node(1, 0)
+    node3 = Node(2, 0)
+
+    wire = Wire([node1, node2])
+
+    assert wire.check_connection(node1, node2) is True  # Valid connection
+    assert wire.check_connection(node2, node1) is True  # Valid reversed connection
+    assert wire.check_connection(node1, node3) is False  # Invalid connection
+    assert wire.check_connection(node3, node2) is False  # Invalid connection
