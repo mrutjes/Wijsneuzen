@@ -28,7 +28,7 @@ class Grid_3D:
             raise IndexError("Coördinaten buiten het grid.")
     
     def plaats_wire(self, wire):
-
+        pass
 
     def haal_waarde(self, x, y, z):
         """
