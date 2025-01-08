@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 class Node:
     def __init__(self, x, y):
@@ -10,14 +11,17 @@ class Node:
         """
         self.x = x
         self.y = y
+        self.nodes = set()
 
-    # Functie om nodes te importeren vanuit een CSV-bestand
-    def importeer_nodes(csv_path):
-        data = pd.read_csv(csv_path)
-        nodes = set()
+def importeer_netlist(csv_path):
+    """Maakt een tuple set van alle nodes die in een netlist gegeven staan"""
+    data = pd.read_csv(csv_path)
+    return {
+        (int(row['chip_a']), int(row['chip_b']))
+        for _, row in data.iterrows()
+    }
 
-        for row in data.iterrows():
-            node = Node(row['x'], row['y'])
-            nodes.add(node)
+# Test run
+node_set = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
+print(node_set)
 
-        return nodes
