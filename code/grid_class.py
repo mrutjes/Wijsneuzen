@@ -25,7 +25,7 @@ class Grid_3D:
         if 0 <= node.x < self.n and 0 <= node.y < self.m and 0 <= z < self.hoogte:
             self.grid[node.x][node.y][z] = node
         else:
-            raise IndexError("Coördinaten buiten het grid.")
+            raise IndexError("Coördinaten buiten de grid.")
     
 
 # Voorbeeld van gebruik:

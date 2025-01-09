@@ -9,6 +9,9 @@ class Node:
 
     def __eq__(self, other):
         return (self.x, self.y) == (other.x, other.y)
+    
+    def __str__(self):
+        return f'({self.x}, {self.y})'
 
 def importeer_netlist(csv_path):
     """Maakt een tuple lijst van alle nodes die in een netlist gegeven staan"""
