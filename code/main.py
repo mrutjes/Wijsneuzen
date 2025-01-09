@@ -1,72 +1,98 @@
-from grid_class import Grid_3D
-from nodes_class import Node, importeer_nodes
-from connections_class import Wire, WirePoint, importeer_netlist
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-#initialize the grid
+# Importeer je eigen klassen/functies
+from grid_class import Grid_3D
+from nodes_class import importeer_nodes, Node
+from connections_class import importeer_netlist
+from wire_class import Wire, WirePoint
 
+# 1) Grid aanmaken
 x = 8
 y = 7
-
 grid = Grid_3D(x, y)
 
-#initialize the nodes
+# 2) Nodes importeren en plaatsen
 nodes_list = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
+for node in nodes_list:
+    grid.plaats_node(node)
 
-#put the nodes in the grid
-for i in range(len(nodes_list)):
-    grid.plaats_node(nodes_list[i])
-
-#initialize the netlist
+# 3) Netlist importeren
 netlist_list = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
+# netlist_list is dan een lijst met (integer, integer), waar je
+# iets mee kunt doen om Node's onderling te verbinden.
 
-#make wires from the netlist
+# 4) Voorbeeld Wires aanmaken
+wire1 = Wire([
+    WirePoint(1, 5, 0),
+    WirePoint(1, 5, 1),
+    WirePoint(2, 5, 1),
+    WirePoint(3, 5, 1),
+    WirePoint(4, 5, 1),
+    WirePoint(5, 5, 1),
+    WirePoint(6, 5, 1),
+    WirePoint(6, 5, 0)
+])
+wire2 = Wire([
+    WirePoint(1, 5, 0),
+    WirePoint(1, 4, 0),
+    WirePoint(2, 4, 0),
+    WirePoint(3, 4, 0),
+    WirePoint(4, 4, 0)
+])
+wire3 = Wire([
+    WirePoint(4, 4, 0),
+    WirePoint(4, 3, 0),
+    WirePoint(3, 3, 0),
+    WirePoint(3, 2, 0),
+    WirePoint(3, 1, 0)
+])
+wire4 = Wire([
+    WirePoint(6, 2, 0),
+    WirePoint(6, 3, 0),
+    WirePoint(6, 4, 0),
+    WirePoint(6, 5, 0)
+])
+wire5 = Wire([
+    WirePoint(6, 2, 0),
+    WirePoint(6, 1, 0),
+    WirePoint(5, 1, 0),
+    WirePoint(4, 1, 0),
+    WirePoint(3, 1, 0)
+])
 
-#Zet de wirepoints in the dict
+# 5) Wires registreren in het grid (zodat punt_dict en aantal_lijnen worden geüpdatet)
+grid.wire_toevoegen_dict(wire1)
+grid.wire_toevoegen_dict(wire2)
+grid.wire_toevoegen_dict(wire3)
+grid.wire_toevoegen_dict(wire4)
+grid.wire_toevoegen_dict(wire5)
 
-wire1 = Wire([WirePoint(1, 5, 0), WirePoint(1, 5, 1), WirePoint(2, 5, 1), WirePoint(3, 5, 1), WirePoint(4, 5, 1), WirePoint(5, 5, 1), WirePoint(6, 5, 1), WirePoint(6, 5, 0)])
-wire2 = Wire([WirePoint(1, 5, 0), WirePoint(1, 4, 0), WirePoint(2, 4, 0), WirePoint(3, 4, 0), WirePoint(4, 4, 0)])
-wire3 = Wire([WirePoint(4, 4, 0), WirePoint(4, 3, 0), WirePoint(3, 3, 0), WirePoint(3, 2, 0),WirePoint(3, 1, 0)])
-wire4 = Wire([WirePoint(6, 2, 0), WirePoint(6, 3, 0), WirePoint(6, 4, 0), WirePoint(6, 5, 0)])
-wire5 = Wire([WirePoint(6, 2, 0), WirePoint(6, 1, 0), WirePoint(5, 1, 0), WirePoint(4, 1, 0), WirePoint(3, 1, 0)])
+# 6) Eventueel check_wire() aanroepen
+print("wire1 correct aangesloten?", wire1.check_wire())
+print("wire2 correct aangesloten?", wire2.check_wire())
+print("wire3 correct aangesloten?", wire3.check_wire())
+print("wire4 correct aangesloten?", wire4.check_wire())
+print("wire5 correct aangesloten?", wire5.check_wire())
 
-#Check if the wires are wired
-wire1.check_wire()
-wire2.check_wire()
-wire3.check_wire()
-wire4.check_wire()
-wire5.check_wire()
-
-#Check if the wires are succesfully connected to the corrospoding notes
-"""
-wire1.check_connection()
-wire2.check_connection()
-wire3.check_connection()
-wire4.check_connection()
-wire5.check_connection()
-"""
-#visialize the grid using matplotlib
-# Function to plot wires in 3D
+# 7) Voorbeeld: wires plotten in 3D
 def plot_wires_3d(wires):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     
     for wire in wires:
-        x = [point.x for point in wire.wirepoints]
-        y = [point.y for point in wire.wirepoints]
-        z = [point.z for point in wire.wirepoints]
-        ax.plot(x, y, z, marker='o')
+        xs = [p.x for p in wire.wirepoints]
+        ys = [p.y for p in wire.wirepoints]
+        zs = [p.z for p in wire.wirepoints]
+        ax.plot(xs, ys, zs, marker='o')
     
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     plt.show()
 
-# List of wires
 wires = [wire1, wire2, wire3, wire4, wire5]
-
-# Visualize the grid using matplotlib
 plot_wires_3d(wires)
 
-#calculate cost
+# 8) Totale kosten berekenen
+print(f"The total cost for this grid is: {grid.kosten()}")
