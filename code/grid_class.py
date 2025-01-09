@@ -10,6 +10,7 @@ class Grid_3D:
         self.n = n
         self.m = m
         self.hoogte = 8
+        self.wires = []
         self.nodes = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
         # aantal_lijnen houdt bij hoeveel stukjes wire in totaal geplaatst zijn
         self.aantal_lijnen = 0
@@ -69,6 +70,8 @@ class Grid_3D:
                 raise IndexError("Coördinaten buiten de grid.")
         # elke 'wire' met N wirepoints telt (N-1) lijnstukjes
         self.aantal_lijnen += len(wire.wirepoints) - 1
+
+        self.wires.append(wire)
 
     def nodes_uit_dictcount(self, nodes):
         """zet de waarden van de nodes coordinaten op nul in de dict."""
