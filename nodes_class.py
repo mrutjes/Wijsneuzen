@@ -5,7 +5,7 @@ class Node:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.nodes = set()
+        self.nodes = []
 
     def __eq__(self, other):
         return (self.x, self.y) == (other.x, other.y)
@@ -26,8 +26,6 @@ def importeer_nodes(csv_path):
         for _, row in data.iterrows()
     ]
 
-def connect_nodes_to_netlist():
-    pass
 
 # Test run
 node_set = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
@@ -38,5 +36,3 @@ print(node_grids)
 
 #TODO
 """De netlist bestaat nu alleen nog uit integers, ervoor zorgen dat die ints een node vertegenwoordigen, zodat hij denkt dat Node 1 samen met Node 2 is verbonden."""
-
->>>>>>> 509c0d94757b4337c29bca97305f4fed68b30ddc
