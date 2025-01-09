@@ -28,21 +28,6 @@ class Grid_3D:
             raise IndexError("Coördinaten buiten de grid.")
     
     def plaats_wire(self, wire):
-        pass
-
-    def haal_waarde(self, x, y, z):
-        """
-        Haalt de waarde op van een specifieke locatie in de grid.
-
-        :param x: X-coördinaat.
-        :param y: Y-coördinaat.
-        :param z: Z-coördinaat (hoogte).
-        :return: De waarde op de gegeven locatie.
-        """
-        if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.hoogte:
-            return self.grid[x][y][z]
-        else:
-            raise IndexError("Coördinaten buiten het grid.")
 
 # Voorbeeld van gebruik:
 grid = Grid_3D(4, 5)  # Maak een 4x5x8 grid
