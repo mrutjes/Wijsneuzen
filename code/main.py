@@ -17,8 +17,7 @@ for node in nodes_list:
 
 # 3) Netlist importeren
 netlist_list = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
-# netlist_list is dan een lijst met (integer, integer), waar je
-# iets mee kunt doen om Node's onderling te verbinden.
+
 
 # 4) Voorbeeld Wires aanmaken
 wire1 = Wire([
@@ -66,24 +65,16 @@ grid.wire_toevoegen_dict(wire3)
 grid.wire_toevoegen_dict(wire4)
 grid.wire_toevoegen_dict(wire5)
 
-
 #haal de incorrecte kruisingen uit de dict.
 for node in nodes_list:
     grid.nodes_uit_dictcount(node)
 
-# 6) Eventueel check_wire() aanroepen
-print("wire1 correct aangesloten?", wire1.check_wire())
-print("wire2 correct aangesloten?", wire2.check_wire())
-print("wire3 correct aangesloten?", wire3.check_wire())
-print("wire4 correct aangesloten?", wire4.check_wire())
-print("wire5 correct aangesloten?", wire5.check_wire())
+#)6 Voer een serie aan checks uit of de wires voldoen aan de door ons gestelde eisen.
 
-# Check of de wires niet door nodes heenlopen
-print("wire1 check_not_through_node() ->", wire1.check_not_through_node())
-print("wire2 check_not_through_node() ->", wire2.check_not_through_node())
-print("wire3 check_not_through_node() ->", wire3.check_not_through_node())
-print("wire4 check_not_through_node() ->", wire4.check_not_through_node())
-print("wire5 check_not_through_node() ->", wire5.check_not_through_node())
+for wire in grid.wires:
+    if not wire.check_wire() and wire.check_not_through_node():
+        print(f"Wire {wire} is incorrect")
+
 
 # 7) Voorbeeld: wires plotten in 3D
 def plot_wires_3d(wires):
