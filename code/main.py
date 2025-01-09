@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-
-# Importeer je eigen klassen/functies
 from grid_class import Grid_3D
 from nodes_class import importeer_nodes, Node
 from connections_class import importeer_netlist
