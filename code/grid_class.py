@@ -52,21 +52,3 @@ class Grid_3D:
         kruisingen = self.totaal_kruisingen()
         return kruisingen * 300 + self.aantal_lijnen
 
-
-# Voorbeeld van gebruik:
-grid = Grid_3D(4, 5)  # Maak een 4x5x8 grid
-
-# Voorbeeld van een wire die door meerdere punten gaat
-wire1 = [(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 1, 1)]
-wire2 = [(2, 0, 0), (1, 0, 0), (0, 1, 0), (0, 2, 0)]
-grid.plaats_wire(wire1)
-grid.plaats_wire(wire2)
-
-# Toon het aantal lijnen door elk punt
-print("Aantal lijnen per punt:", grid.tel_lijnen_punt())
-
-# Bereken totaal aantal kruisingen
-print("Totaal kruisingen:", grid.totaal_kruisingen())
-
-# Bereken kosten
-print("Kosten:", grid.kosten())
