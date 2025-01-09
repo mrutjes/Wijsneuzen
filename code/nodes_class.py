@@ -33,10 +33,10 @@ def connect_nodes_to_netlist():
     pass
 
 # Test run
-node_set = importeer_netlist('./gates&netlists/chip_0/netlist_1.csv')
+node_set = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
 print(node_set)
 
-node_grids = importeer_nodes('./gates&netlists/chip_0/print_0.csv')
+node_grids = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
 print(node_grids)
 
 #TODO
