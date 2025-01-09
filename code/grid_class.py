@@ -27,9 +27,3 @@ class Grid_3D:
         else:
             raise IndexError("Coördinaten buiten de grid.")
     
-    def plaats_wire(self, wire):
-
-# Voorbeeld van gebruik:
-grid = Grid_3D(4, 5)  # Maak een 4x5x8 grid
-
-print(grid.haal_waarde(1, 1, 2))
