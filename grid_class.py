@@ -25,14 +25,14 @@ class Grid_3D:
         if 0 <= node.x < self.n and 0 <= node.y < self.m and 0 <= z < self.hoogte:
             self.grid[node.x][node.y][z] = node
         else:
-            raise IndexError("Coördinaten buiten het grid.")
+            raise IndexError("Coördinaten buiten de grid.")
     
     def plaats_wire(self, wire):
         pass
 
     def haal_waarde(self, x, y, z):
         """
-        Haalt de waarde op van een specifieke locatie in het grid.
+        Haalt de waarde op van een specifieke locatie in de grid.
 
         :param x: X-coördinaat.
         :param y: Y-coördinaat.
