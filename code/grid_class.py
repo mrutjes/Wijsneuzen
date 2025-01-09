@@ -1,6 +1,5 @@
 import pandas as pd
-from nodes_class import Node
-from connections_class import importeer_netlist
+from nodes_class import Node, importeer_nodes
 
 class Grid_3D:
     def __init__(self, n, m):
@@ -11,7 +10,7 @@ class Grid_3D:
         self.n = n
         self.m = m
         self.hoogte = 8
-
+        self.nodes = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
         # aantal_lijnen houdt bij hoeveel stukjes wire in totaal geplaatst zijn
         self.aantal_lijnen = 0
 
@@ -72,9 +71,6 @@ class Grid_3D:
         self.aantal_lijnen += len(wire.wirepoints) - 1
 
     def nodes_uit_dictcount(self, nodes):
-        netlist_1 = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
-        for chip_a, chip_b in netlist_1:
-            if chip_a in self.punt_dict:
-                self.punt_dict[chip_a] -= 1
-            if chip_b in self.punt_dict:
-                self.punt_dict[chip_b] -= 1
+        """zet de waarden van de nodes coordinaten op nul in de dict."""
+        for node in self.nodes:
+            self.punt_dict[(node.x, node.y, 0)] = 0

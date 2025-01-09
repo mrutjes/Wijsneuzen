@@ -75,6 +75,9 @@ class Wire:
         Checkt of een wire niet door een node heen gaat. 
         """
         for x in range(len(self.wirepoints)):
+            if self.wirepoints[x].z != 0:
+                return True
+            
             if x == 0 or x == len(self.wirepoints) - 1:
                 continue
             else:
