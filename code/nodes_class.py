@@ -12,22 +12,15 @@ class Node:
     
     def __str__(self):
         return f'({self.x}, {self.y})'
+    
+    def importeer_nodes(self, csv_path):
+        """Importeerd de nodes als Node in een lijst."""
+        data = pd.read_csv(csv_path)
+        return [
+            (Node(int(row['x']), int(row['y'])))
+            for _, row in data.iterrows()
+        ]
 
-def importeer_netlist(csv_path):
-    """Maakt een tuple lijst van alle nodes die in een netlist gegeven staan"""
-    data = pd.read_csv(csv_path)
-    return [
-        (int(row['chip_a']), int(row['chip_b']))
-        for _, row in data.iterrows()
-    ]
-
-def importeer_nodes(csv_path):
-    """Importeerd de nodes als Node in een lijst."""
-    data = pd.read_csv(csv_path)
-    return [
-        (Node(int(row['x']), int(row['y'])))
-        for _, row in data.iterrows()
-    ]
 
 
 # Test run
