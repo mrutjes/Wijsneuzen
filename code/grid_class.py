@@ -1,5 +1,6 @@
 import pandas as pd
 from nodes_class import Node
+from connections_class import importeer_netlist
 
 class Grid_3D:
     def __init__(self, n, m):
@@ -69,3 +70,11 @@ class Grid_3D:
                 raise IndexError("Coördinaten buiten de grid.")
         # elke 'wire' met N wirepoints telt (N-1) lijnstukjes
         self.aantal_lijnen += len(wire.wirepoints) - 1
+
+    def nodes_uit_dictcount(self, nodes):
+        netlist_1 = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
+        for chip_a, chip_b in netlist_1:
+            if chip_a in self.punt_dict:
+                self.punt_dict[chip_a] -= 1
+            if chip_b in self.punt_dict:
+                self.punt_dict[chip_b] -= 1
