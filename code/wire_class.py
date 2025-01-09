@@ -1,5 +1,6 @@
 import numpy as np
 from nodes_class import Node
+from nodes_class import importeer_nodes
 
 class WirePoint:
     """
@@ -29,6 +30,7 @@ class Wire:
     
     def __init__(self, wirepoints: list[WirePoint]) -> None:
         self.wirepoints = wirepoints
+        self.nodes = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
 
     def check_wire(self) -> bool:
         """Checkt of deze wire in 3D netjes aaneengesloten is (1 stap per keer in x/y/z)."""
@@ -67,3 +69,16 @@ class Wire:
             ((first_wp.x, first_wp.y) == (node2.x, node2.y) and
              (last_wp.x, last_wp.y) == (node1.x, node1.y))
         )
+    
+    def check_not_through_node(self) -> bool:
+        """
+        Checkt of een wire niet door een node heen gaat. 
+        """
+        for x in range(len(self.wirepoints)):
+            if x == 0 or x == len(self.wirepoints) - 1:
+                continue
+            else:
+                for n in self.nodes:
+                    if (self.wirepoints[x].x, self.wirepoints[x].y) == (n.x, n.y):
+                        return False
+        return True
