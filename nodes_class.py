@@ -41,5 +41,3 @@ print(node_grids)
 
 #TODO
 """De netlist bestaat nu alleen nog uit integers, ervoor zorgen dat die ints een node vertegenwoordigen, zodat hij denkt dat Node 1 samen met Node 2 is verbonden."""
-
->>>>>>> 509c0d94757b4337c29bca97305f4fed68b30ddc
