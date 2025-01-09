@@ -3,12 +3,6 @@ import os
 
 class Node:
     def __init__(self, x, y):
-        """
-        Initialiseer een node op de base layer van het grid.
-
-        :param x: De x-coördinaat van de node.
-        :param y: De y-coördinaat van de node.
-        """
         self.x = x
         self.y = y
         self.nodes = set()
@@ -48,3 +42,4 @@ print(node_grids)
 #TODO
 """De netlist bestaat nu alleen nog uit integers, ervoor zorgen dat die ints een node vertegenwoordigen, zodat hij denkt dat Node 1 samen met Node 2 is verbonden."""
 
+>>>>>>> 509c0d94757b4337c29bca97305f4fed68b30ddc
