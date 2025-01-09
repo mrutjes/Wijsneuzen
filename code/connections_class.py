@@ -1,5 +1,6 @@
 import numpy as np
 from nodes_class import Node
+import pandas as pd
 
 class WirePoint:
     """Deze class zijn 3 coordinaten die de wire class gebruikt om een draad te vormen"""
