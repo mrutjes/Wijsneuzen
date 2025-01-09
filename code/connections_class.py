@@ -45,7 +45,7 @@ class Wire:
                 return False
         
         return True
-    
+
     def check_connection(self, node1: Node, node2: Node) -> bool:
         """Checkt of de wire met de juiste begin en eind node is verbonden"""
 
@@ -54,3 +54,13 @@ class Wire:
             (self.wirepoints[0] == node2 and self.wirepoints[-1] == node1)
         )
 
+def importeer_netlist(csv_path):
+    """
+    Maakt een tuple lijst van alle nodes die in een netlist gegeven staan
+    """
+
+    data = pd.read_csv(csv_path)
+    return [
+        (int(row['chip_a']), int(row['chip_b']))
+        for _, row in data.iterrows()
+    ]
