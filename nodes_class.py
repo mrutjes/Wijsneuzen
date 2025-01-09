@@ -15,6 +15,9 @@ class Node:
 
     def __eq__(self, other):
         return (self.x, self.y) == (other.x, other.y)
+    
+    def __str__(self):
+        return f'({self.x}, {self.y})'
 
 def importeer_netlist(csv_path):
     """Maakt een tuple lijst van alle nodes die in een netlist gegeven staan"""
@@ -36,10 +39,10 @@ def connect_nodes_to_netlist():
     pass
 
 # Test run
-node_set = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
+node_set = importeer_netlist('./gates&netlists/chip_0/netlist_1.csv')
 print(node_set)
 
-node_grids = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
+node_grids = importeer_nodes('./gates&netlists/chip_0/print_0.csv')
 print(node_grids)
 
 #TODO
