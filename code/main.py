@@ -4,7 +4,6 @@ from grid_class import Grid_3D
 from nodes_class import importeer_nodes, Node
 from connections_class import importeer_netlist
 from wire_class import Wire, WirePoint
-from algoritmen.py import *
 
 # 1) Grid aanmaken
 x = 8
@@ -19,9 +18,14 @@ for node in nodes_list:
 # 3) Netlist importeren
 netlist_list = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
 
-
 # 4) Voorbeeld Wires aanmaken
-wire1 = Wire([
+wirelist = [Wire(nodes_list[netlist_list[0][0]-1], nodes_list[netlist_list[0][1]-1]), 
+            Wire(nodes_list[netlist_list[1][0]-1], nodes_list[netlist_list[1][1]-1]), 
+            Wire(nodes_list[netlist_list[2][0]-1], nodes_list[netlist_list[2][1]-1]), 
+            Wire(nodes_list[netlist_list[3][0]-1], nodes_list[netlist_list[3][1]-1]), 
+            Wire(nodes_list[netlist_list[4][0]-1], nodes_list[netlist_list[4][1]-1])]
+
+wirepointslists = [[
     WirePoint(1, 5, 0),
     WirePoint(1, 5, 1),
     WirePoint(2, 5, 1),
@@ -30,51 +34,48 @@ wire1 = Wire([
     WirePoint(5, 5, 1),
     WirePoint(6, 5, 1),
     WirePoint(6, 5, 0)
-])
-wire2 = Wire([
+], [
     WirePoint(1, 5, 0),
     WirePoint(1, 4, 0),
     WirePoint(2, 4, 0),
     WirePoint(3, 4, 0),
     WirePoint(4, 4, 0)
-])
-wire3 = Wire([
+], [
     WirePoint(4, 4, 0),
     WirePoint(4, 3, 0),
     WirePoint(3, 3, 0),
     WirePoint(3, 2, 0),
     WirePoint(3, 1, 0)
-])
-wire4 = Wire([
+], [
     WirePoint(6, 2, 0),
     WirePoint(6, 3, 0),
     WirePoint(6, 4, 0),
     WirePoint(6, 5, 0)
-])
-wire5 = Wire([
+], [
     WirePoint(6, 2, 0),
     WirePoint(6, 1, 0),
     WirePoint(5, 1, 0),
     WirePoint(4, 1, 0),
     WirePoint(3, 1, 0)
-])
+]]
+
+for wire in wirelist:
+    for wirepointlist in wirepointslists:
+        for wirepoint in wirepointlist:
+            if grid.check_valid_addition(wire, wirepoint):
+                print('test')
+                wire.add_wire_point(wirepoint)
 
 # 5) Wires registreren in het grid (zodat punt_dict en aantal_lijnen worden geüpdatet)
-grid.wire_toevoegen_dict(wire1)
-grid.wire_toevoegen_dict(wire2)
-grid.wire_toevoegen_dict(wire3)
-grid.wire_toevoegen_dict(wire4)
-grid.wire_toevoegen_dict(wire5)
+    grid.wire_toevoegen_dict(wire)
+
+print(wirelist[0].wirepoints)
 
 #haal de incorrecte kruisingen uit de dict.
 for node in nodes_list:
     grid.nodes_uit_dictcount(node)
 
 #)6 Voer een serie aan checks uit of de wires voldoen aan de door ons gestelde eisen.
-
-for wire in grid.wires:
-    if not wire.check_wire() and wire.check_not_through_node():
-        print(f"Wire {wire} is incorrect")
 
 
 # 7) Voorbeeld: wires plotten in 3D
@@ -93,8 +94,7 @@ def plot_wires_3d(wires):
     ax.set_zlabel('Z')
     plt.show()
 
-wires = [wire1, wire2, wire3, wire4, wire5]
-plot_wires_3d(wires)
+plot_wires_3d(wirelist)
 
 # 8) Totale kosten berekenen
 print(f"The total cost for this grid is: {grid.kosten()}")

@@ -5,7 +5,6 @@ class Node:
         self.x = x
         self.y = y
         self.z = 0
-        self.nodes = []
 
     def __eq__(self, other):
         if not isinstance(other, Node):
@@ -16,7 +15,6 @@ class Node:
         return f'({self.x}, {self.y})'
     
 def importeer_nodes(csv_path):
-    """Importeert de nodes als Node-objecten in een lijst."""
     data = pd.read_csv(csv_path)
     return [
         Node(int(row['x']), int(row['y']))
