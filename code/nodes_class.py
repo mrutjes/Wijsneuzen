@@ -4,6 +4,7 @@ class Node:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.z = 0
         self.nodes = []
 
     def __eq__(self, other):
