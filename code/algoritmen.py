@@ -1,123 +1,44 @@
+import pandas as pd
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import heapq
-
-from grid_class import Grid_3D
-from nodes_class import Node
-from connections_class import importeer_netlist
+from nodes_class import Node, importeer_nodes
 from wire_class import Wire, WirePoint
-import csv
+from grid_class import Grid_3D
+from connections_class import importeer_netlist
+import numpy as np
 
 
-def importeer_nodes(filepath):
+# Functie om een wire aan te maken op basis van Manhattan-afstand
+def maak_manhattan_wire(node1: Node, node2: Node):
+    """Creëert een Wire op basis van Manhattan afstand tussen node1 en node2."""
+    wirepoints = []
+    x1, y1 = node1.x, node1.y
+    x2, y2 = node2.x, node2.y
+
+    # Beweeg horizontaal naar de eind-x
+    if x1 != x2:
+        for x in range(min(x1, x2), max(x1, x2) + 1):
+            point = WirePoint(x, y1, 0)
+            if point not in wirepoints and point != WirePoint(x2, y2, 0):  # Vermijd duplicaten en eindnode
+                wirepoints.append(point)
+
+    # Beweeg verticaal naar de eind-y
+    if y1 != y2:
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            point = WirePoint(x2, y, 0)
+            if point not in wirepoints and point != WirePoint(x1, y1, 0):  # Vermijd duplicaten en startnode
+                wirepoints.append(point)
+
+    # Voeg de eindnode alleen toe als deze uniek is en niet direct verbonden is
+    if WirePoint(x2, y2, 0) not in wirepoints:
+        wirepoints.append(WirePoint(x2, y2, 0))
+
+    # Maak de wire aan met de lijst van wirepoints en de start- en eindnodes
+    return Wire(start_node=node1, end_node=node2, wirepoints=wirepoints)
+
+
+def plot_wires_3d(wires, breedte, lengte):
     """
-    Importeer nodes vanuit een CSV en retourneer een dictionary met node-ID als sleutel
-    en (x, y, z) als waarde.
-    """
-    nodes_dict = {}
-    with open(filepath, mode='r') as file:
-        reader = csv.reader(file)
-        next(reader)  # Sla de header over
-        for row in reader:
-            node_id = int(row[0])
-            x = int(row[1])
-            y = int(row[2])
-            z = 0  # Aangenomen dat nodes op z = 0 liggen
-            nodes_dict[node_id] = (x, y, z)
-    return nodes_dict
-
-
-class PathFinder:
-    """
-    Pathfinding class using A* algorithm
-    """
-
-    def __init__(self, grid):
-        self.grid = grid
-
-    def find_path(self, start, end):
-        """
-        Find a path from start to end using A* algorithm
-        """
-        start_wp = WirePoint(*start)
-        end_wp = WirePoint(*end)
-
-        open_set = []
-        heapq.heappush(open_set, (0, start_wp))
-        came_from = {}
-        cost_so_far = {start_wp: 0}
-
-        while open_set:
-            _, current = heapq.heappop(open_set)
-
-            if current == end_wp:
-                return self.reconstruct_path(came_from, start_wp, end_wp)
-
-            neighbors = self.grid.get_neighbors(current)
-            for neighbor in neighbors:
-                new_cost = cost_so_far[current] + 1  # Assume uniform cost
-                if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
-                    cost_so_far[neighbor] = new_cost
-                    priority = new_cost + self.heuristic(neighbor, end_wp)
-                    heapq.heappush(open_set, (priority, neighbor))
-                    came_from[neighbor] = current
-
-        return None
-
-    def reconstruct_path(self, came_from, start, end):
-        """
-        Reconstruct the path from start to end
-        """
-        path = [end]
-        while path[-1] != start:
-            path.append(came_from[path[-1]])
-        path.reverse()
-        return path
-
-    def heuristic(self, a, b):
-        """
-        Heuristic function (Manhattan distance)
-        """
-        return abs(a.x - b.x) + abs(a.y - b.y) + abs(a.z - b.z)
-
-
-# 1) Grid aanmaken
-x = 8
-y = 7
-grid = Grid_3D(x, y)
-
-# 2) Nodes importeren en plaatsen
-for node_id, (x, y, z) in nodes_dict.items():
-    node = Node(x, y, z)  # Maak een Node-object met x, y, en z
-    grid.plaats_node(node)
-
-
-# 3) Netlist importeren
-netlist_list = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
-
-# 4) PathFinder gebruiken
-pathfinder = PathFinder(grid)
-for connection in netlist_list:
-    node_a_id, node_b_id = connection
-    node_a_coords = nodes_dict.get(node_a_id)
-    node_b_coords = nodes_dict.get(node_b_id)
-
-    if node_a_coords is None or node_b_coords is None:
-        print(f"Error: One of the nodes in connection {connection} does not exist.")
-        continue
-
-    # Vind een pad tussen de nodes
-    path = pathfinder.find_path(node_a_coords, node_b_coords)
-    if path:
-        wire = Wire(path)
-        grid.wire_toevoegen_dict(wire)
-    else:
-        print(f"No valid path found for connection between {node_a_id} and {node_b_id}")
-
-# 5) Wires plotten in 3D
-def plot_wires_3d(wires):
-    """
-    Plot the wires in a 3D graph
+    Plot alle wires in een 3D-figuur, waarbij de lijnsegmenten langs de wirepoints lopen (manhattan-afstand).
     """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -126,16 +47,54 @@ def plot_wires_3d(wires):
         xs = [p.x for p in wire.wirepoints]
         ys = [p.y for p in wire.wirepoints]
         zs = [p.z for p in wire.wirepoints]
+        
+        # Teken de lijnen langs de wirepoints
         ax.plot(xs, ys, zs, marker='o')
+
+    ax.set_xlim(0, breedte)
+    ax.set_ylim(0, lengte)
+    ax.set_zlim(0, 7)
 
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     plt.show()
 
+# Hoofdcode om alles te gebruiken
+if __name__ == '__main__':
+    # Initieer het grid
+    breedte = 10
+    lengte = 10
+    grid = Grid_3D(breedte, lengte)  # Grid van 10x10
 
-# Plot de wires
-plot_wires_3d(grid.wires)
+    # Nodes importeren en toevoegen vanuit het opgegeven CSV-bestand
+    nodes_list = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
+    for node in nodes_list:
+        grid.plaats_node(node)
 
-# 6) Totale kosten berekenen
-print(f"The total cost for this grid is: {grid.kosten()}")
+    # Netlist importeren
+    netlist = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
+    print(netlist)
+
+    # Maak een wire tussen de nodes in de netlist
+    if len(netlist) >= 1:
+        # Maak meerdere wires tussen verschillende nodes
+        wires = []
+        for i in range(0, len(netlist)):
+            node1 = netlist[i][0]
+            node2 = netlist[i][1]
+
+            node1 = nodes_list[node1 - 1]
+            node2 = nodes_list[node2 - 1]
+            wire = maak_manhattan_wire(node1, node2)
+
+            # Voeg de wire toe aan het grid
+            wires.append(wire)
+
+        # Plot de wires in 3D
+        plot_wires_3d(wires, breedte, lengte)
+
+        # Bereken de kosten
+        print(f"The total cost for this grid is: {grid.kosten()}")
+    else:
+        print("Er zijn niet genoeg nodes in de lijst om een wire te maken.")
