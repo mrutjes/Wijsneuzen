@@ -28,9 +28,17 @@ class WirePoint:
 class Wire:
     """Connecteert WirePoints aaneen tot een draad in 3D."""
     
-    def __init__(self, wirepoints: list[WirePoint]) -> None:
-        self.wirepoints = wirepoints
+    def __init__(self, start_node: Node, end_node: Node) -> None:
+        self.start_node = start_node
+        self.end_node = end_node
+        self.wirepoints = [WirePoint(self.start_node.x, self.start_node.y, 0), WirePoint(self.end_node.x, self.end_node.y, 0)]
         self.nodes = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
+
+    def add_wire_point(self, wire_point: WirePoint) -> None:
+        """Voegt een WirePoint toe aan de wire."""
+        self.wirepoints.remove(self.wirepoints[-1])
+        self.wirepoints.append(wire_point)
+        self.wirepoints.append(WirePoint(self.end_node.x, self.end_node.y, 0))
 
     def check_wire(self) -> bool:
         """Checkt of deze wire in 3D netjes aaneengesloten is (1 stap per keer in x/y/z)."""
@@ -55,7 +63,7 @@ class Wire:
                 return False
         return True
 
-    def check_connection(self, node1: Node, node2: Node) -> bool:
+    def check_connection(self) -> bool:
         """
         Checkt of de wire inderdaad begint bij (node1.x, node1.y)
         en eindigt bij (node2.x, node2.y), of andersom.
@@ -63,11 +71,11 @@ class Wire:
         first_wp = self.wirepoints[0]
         last_wp = self.wirepoints[-1]
         return (
-            ((first_wp.x, first_wp.y) == (node1.x, node1.y) and
-             (last_wp.x, last_wp.y) == (node2.x, node2.y))
+            ((first_wp.x, first_wp.y) == (self.start_node.x, self.start_node.y) and
+             (last_wp.x, last_wp.y) == (self.end_node.x, self.end_node.y))
             or
-            ((first_wp.x, first_wp.y) == (node2.x, node2.y) and
-             (last_wp.x, last_wp.y) == (node1.x, node1.y))
+            ((first_wp.x, first_wp.y) == (self.end_node.x, self.end_node.y) and
+             (last_wp.x, last_wp.y) == (self.start_node.x, self.start_node.y))
         )
     
     def check_not_through_node(self) -> bool:
@@ -85,3 +93,9 @@ class Wire:
                     if (self.wirepoints[x].x, self.wirepoints[x].y) == (n.x, n.y):
                         return False
         return True
+    
+    def pop_wire_point(self) -> None:
+        """
+        Verwijdert een WirePoint uit de wire.
+        """
+        self.wirepoints.pop(-2)
