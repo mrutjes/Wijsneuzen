@@ -77,3 +77,7 @@ class Grid_3D:
         """zet de waarden van de nodes coordinaten op nul in de dict."""
         for node in self.nodes:
             self.punt_dict[(node.x, node.y, 0)] = 0
+
+    def afstand_tussen_nodes(self, node1: Node, node2: Node):
+        """Berekent de Manhattan-afstand tussen twee nodes."""
+        return abs(node1.x - node2.x) + abs(node1.y - node2.y)

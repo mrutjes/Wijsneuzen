@@ -4,6 +4,7 @@ from grid_class import Grid_3D
 from nodes_class import importeer_nodes, Node
 from connections_class import importeer_netlist
 from wire_class import Wire, WirePoint
+from algoritmen.py import *
 
 # 1) Grid aanmaken
 x = 8
