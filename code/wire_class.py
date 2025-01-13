@@ -1,4 +1,5 @@
 from nodes_class import Node, importeer_nodes
+import matplotlib.pyplot as plt
 
 class WirePoint:
     def __init__(self, x, y, z) -> None:

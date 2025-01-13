@@ -11,7 +11,7 @@ class Grid_3D:
         self.m = m
         self.hoogte = 8
         self.wires = []
-        self.nodes = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
+        self.nodes = []
         self.aantal_lijnen = 0
         self.punt_dict = {
             (x, y, z): 0
