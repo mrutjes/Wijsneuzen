@@ -1,9 +1,20 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from grid_class import Grid_3D
-from nodes_class import importeer_nodes, Node
-from code.import_netlist import importeer_netlist
+from nodes_class import import_nodes, Node
 from wire_class import Wire, WirePoint
+import pandas as pd
+
+def import_netlist(csv_path):
+    """
+    Maakt een lijst van tuples (int, int) die de indices van te verbinden gates voorstelt.
+    """
+    data = pd.read_csv(csv_path)
+    return [
+        (int(row['chip_a']), int(row['chip_b']))
+        for _, row in data.iterrows()
+    ]
+
 
 # 1) Grid aanmaken
 x = 8
@@ -11,12 +22,12 @@ y = 7
 grid = Grid_3D(x, y)
 
 # 2) Nodes importeren en plaatsen
-nodes_list = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
+nodes_list = import_nodes('../gates&netlists/chip_0/print_0.csv')
 for node in nodes_list:
-    grid.plaats_node(node)
+    grid.place_node(node)
 
 # 3) Netlist importeren
-netlist_list = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
+netlist_list = import_netlist('../gates&netlists/chip_0/netlist_1.csv')
 
 # 4) Voorbeeld Wires aanmaken
 wirelist = [Wire(nodes_list[netlist_list[0][0]-1], nodes_list[netlist_list[0][1]-1]), 
@@ -67,11 +78,11 @@ for wire in wirelist:
                 wire.pop_wire_point()
 
 # 5) Wires registreren in het grid (zodat punt_dict en aantal_lijnen worden geüpdatet)
-    grid.wire_toevoegen_dict(wire)
+    grid.add_wire_dict(wire)
 
 #haal de incorrecte kruisingen uit de dict.
 for node in nodes_list:
-    grid.nodes_uit_dictcount()
+    grid.remove_nodes_pointdict()
 
 #)6 Voer een serie aan checks uit of de wires voldoen aan de door ons gestelde eisen.
 

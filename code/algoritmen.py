@@ -1,10 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from nodes_class import Node, importeer_nodes
-from wire_class import Wire, WirePoint, plot_wires_3d
-from grid_class import Grid_3D
-from code.import_netlist import importeer_netlist
+from nodes_class import Node, import_nodes
+from wire_class import Wire, WirePoint
+from grid_class import Grid_3D, plot_wires_3d
 import numpy as np
+
+def import_netlist(csv_path):
+    """
+    Maakt een lijst van tuples (int, int) die de indices van te verbinden gates voorstelt.
+    """
+    data = pd.read_csv(csv_path)
+    return [
+        (int(row['chip_a']), int(row['chip_b']))
+        for _, row in data.iterrows()
+    ]
 
 def maak_manhattan_wire(node1: Node, node2: Node, grid: Grid_3D):
     """
@@ -58,7 +67,7 @@ def maak_manhattan_wire(node1: Node, node2: Node, grid: Grid_3D):
             continue  # Probeer opnieuw met een lagere z
 
     # Voeg de wire toe aan de grid
-    grid.wire_toevoegen_dict(wire)
+    grid.add_wire_dict(wire)
     return wire
 
 # Hoofdcode om alles te gebruiken
@@ -69,12 +78,12 @@ if __name__ == '__main__':
     grid = Grid_3D(breedte, lengte)  # Grid van 10x10
 
     # Nodes importeren en toevoegen vanuit het opgegeven CSV-bestand
-    nodes_list = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
+    nodes_list = import_nodes('../gates&netlists/chip_0/print_0.csv')
     for node in nodes_list:
-        grid.plaats_node(node)
+        grid.place_node(node)
 
     # Netlist importeren
-    netlist = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
+    netlist = import_netlist('../gates&netlists/chip_0/netlist_1.csv')
 
     # Maak een wire tussen de nodes in de netlist
     if len(netlist) >= 1:
@@ -96,6 +105,6 @@ if __name__ == '__main__':
         plot_wires_3d(wires, breedte, lengte)
 
         # Bereken de kosten
-        print(f"The total cost for this grid is: {grid.kosten()}")
+        print(f"The total cost for this grid is: {grid.cost()}")
     else:
         print("Er zijn niet genoeg nodes in de lijst om een wire te maken.")
