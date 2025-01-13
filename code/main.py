@@ -62,9 +62,9 @@ wirepointslists = [[
 for wire in wirelist:
     for wirepointlist in wirepointslists:
         for wirepoint in wirepointlist:
-            if grid.check_valid_addition(wire, wirepoint):
-                print('test')
-                wire.add_wire_point(wirepoint)
+            wire.add_wire_point(wirepoint)
+            if not (grid.check_valid_addition(wire)):
+                wire.pop_wire_point()
 
 # 5) Wires registreren in het grid (zodat punt_dict en aantal_lijnen worden geüpdatet)
     grid.wire_toevoegen_dict(wire)
@@ -73,7 +73,7 @@ print(wirelist[0].wirepoints)
 
 #haal de incorrecte kruisingen uit de dict.
 for node in nodes_list:
-    grid.nodes_uit_dictcount(node)
+    grid.nodes_uit_dictcount()
 
 #)6 Voer een serie aan checks uit of de wires voldoen aan de door ons gestelde eisen.
 
