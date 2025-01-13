@@ -1,8 +1,8 @@
 import pandas as pd
 
-def importeer_netlist(csv_path):
+def import_netlist(csv_path) -> list[tuple[int, int]]:
     """
-    Maakt een lijst van tuples (int, int) die de indices van te verbinden gates voorstelt.
+    Generates a list of tuples from the netlist csv file.
     """
     data = pd.read_csv(csv_path)
     return [

@@ -1,53 +1,89 @@
-from nodes_class import Node, importeer_nodes
+from nodes_class import Node, import_nodes
 import matplotlib.pyplot as plt
 
 class WirePoint:
+    """
+    A wire exists of Wirepoints, these have the attributes of x y and z coordinates
+    """
     def __init__(self, x, y, z) -> None:
         self.x = x
         self.y = y
         self.z = z
 
+
     def __eq__(self, other):
         if not isinstance(other, WirePoint):
             return False
         return (self.x, self.y, self.z) == (other.x, other.y, other.z)
     
+
     def __hash__(self):
         return hash((self.x, self.y, self.z))
         
-    def give_place(self):
+
+    def give_place(self) -> (int,int,int): # type: ignore
+        """
+        Returns the coordinates of a wirepoint as integers.
+        """
         return (self.x, self.y, self.z)
     
+
     def give_x(self) -> int:
+        """
+        Returns the x coordinate of a wirepoint.
+        """
         return self.x
     
+
     def give_y(self) -> int:
+        """
+        Returns the y coordinate of a wirepoint.
+        """
         return self.y
     
+    
     def give_z(self) -> int:
+        """
+        Returns the z coordinate of a wirepoint.
+        """
         return self.z
         
+
 class Wire:
+    """
+    A class to combine wirepoints in order to form a wire.
+    """
+
     def __init__(self, start_node: Node, end_node: Node) -> None:
         self.start_node = start_node
         self.end_node = end_node
         self.wirepoints = [WirePoint(self.start_node.x, self.start_node.y, 0), WirePoint(self.end_node.x, self.end_node.y, 0)]
-        self.nodes = importeer_nodes('../gates&netlists/chip_0/print_0.csv')
+        self.nodes = import_nodes('../gates&netlists/chip_0/print_0.csv')
     
+
     def __eq__(self, other):
         if not isinstance(other, WirePoint):
             return False
         return (self.x, self.y, self.z) == (other.x, other.y, other.z)
 
+
     def __repr__(self):
         return f"WirePoint({self.x}, {self.y}, {self.z})"
 
+
     def add_wire_point(self, wire_point: WirePoint) -> None:
+        """
+        Adds a given wirepoint to the wire. The wirepoints list is always consistent of the start and end node.
+        """
         self.wirepoints.remove(self.wirepoints[-1])
         self.wirepoints.append(wire_point)
         self.wirepoints.append(WirePoint(self.end_node.x, self.end_node.y, 0))
 
+
     def check_wire(self) -> bool:
+        """
+        Checks if a wire is uninterrupted.
+        """
         for i in range(len(self.wirepoints) - 1):
             current = self.wirepoints[i]
             next_point = self.wirepoints[i + 1]
@@ -63,9 +99,14 @@ class Wire:
                  current.give_y() == next_point.give_y())
             ):
                 return False
+            
         return True
 
+
     def check_connection(self) -> bool:
+        """
+        Checks if a wire connects two nodes that are valid in the netlist.
+        """
         first_wp = self.wirepoints[0]
         last_wp = self.wirepoints[-1]
         return (
@@ -76,7 +117,11 @@ class Wire:
              (last_wp.x, last_wp.y) == (self.start_node.x, self.start_node.y))
         )
     
+
     def check_not_through_node(self) -> bool:
+        """
+        Checks if a wire does not run through a node.
+        """
         if self.wirepoints[-2].z != 0:
             return True
         
@@ -88,6 +133,7 @@ class Wire:
         
         return True
     
+
     def check_not_return(self) -> bool:
         """
         Check if the wire does not return on itself.
@@ -113,12 +159,15 @@ class Wire:
         return True
 
     def pop_wire_point(self) -> None:
+        """
+        Pops the last item in the wirepoints list (except the end node).
+        """
         self.wirepoints.pop(-2)
 
 
 def plot_wires_3d(wires, breedte, lengte):
     """
-    Plot alle wires in een 3D-figuur, waarbij de lijnsegmenten langs de wirepoints lopen (manhattan-afstand).
+    A function used to plot the wires of the grid in 3D.
     """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')

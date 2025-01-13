@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from grid_class import Grid_3D
 from nodes_class import importeer_nodes, Node
-from connections_class import importeer_netlist
+from code.import_netlist import importeer_netlist
 from wire_class import Wire, WirePoint
 
 # 1) Grid aanmaken

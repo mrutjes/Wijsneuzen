@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from nodes_class import Node, importeer_nodes
 from wire_class import Wire, WirePoint, plot_wires_3d
 from grid_class import Grid_3D
-from connections_class import importeer_netlist
+from code.import_netlist import importeer_netlist
 import numpy as np
 
 def maak_manhattan_wire(node1: Node, node2: Node, grid: Grid_3D):
