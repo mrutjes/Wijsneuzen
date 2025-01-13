@@ -77,8 +77,8 @@ class Wire:
         )
     
     def check_not_through_node(self) -> bool:
-        if self.wirepoints[-2].z == 0:
-            return False
+        if self.wirepoints[-2].z != 0:
+            return True
     
         if Node(self.wirepoints[-2].x,self.wirepoints[-2].y) in self.nodes:
             return False
