@@ -44,7 +44,7 @@ class Grid_3D:
     
     def check_if_wire_over_another_wire(self, current_wire) -> bool:
 
-        if len(self.wirepoints) == 0:
+        if len(self.wires) == 0:
             return True
 
         last_point = current_wire.wirepoints[-3]
@@ -63,8 +63,8 @@ class Grid_3D:
         from wire_class import WirePoint, Wire
 
         #Checks if the wirepoint is in the grid.
-        if current_wire.wirepoints[-2] not in self.punt_dict:
-           return False
+        #if current_wire.wirepoints[-2] not in self.punt_dict:
+        #   return False
 
         #Checks if the wirepoint does not run over another wire.
         if not self.check_if_wire_over_another_wire(current_wire):
