@@ -98,7 +98,7 @@ def test_wire_check_not_through_node():
     wire.add_wire_point(WirePoint(1, 0, 0))
     wire.nodes = [Node(1, 0)]
 
-    assert wire.check_not_through_node(wire.wirepoints[1]) is False
+    assert wire.check_not_through_node() is False
 
 def test_wire_check_not_return_valid():
     start_node = Node(0, 0)
@@ -106,9 +106,9 @@ def test_wire_check_not_return_valid():
     wire = Wire(start_node, end_node)
     wire.add_wire_point(WirePoint(1, 0, 0))
     wire.add_wire_point(WirePoint(2, 0, 0))
+    wire.add_wire_point(WirePoint(1, 0, 0))
 
-    # Valid path, no turning back on itself
-    assert wire.check_not_return(WirePoint(4, 0, 0)) is True
+    assert wire.check_not_return() is False
 
 def test_wire_check_not_return_invalid():
     start_node = Node(0, 0)
@@ -118,5 +118,16 @@ def test_wire_check_not_return_invalid():
     wire.add_wire_point(WirePoint(2, 0, 0))
 
     # Invalid path, turns back on itself
-    assert wire.check_not_return(WirePoint(1, 0, 0)) is False
+    assert wire.check_not_return() is True
 
+def test_not_return_but_kruising():
+    start_node = Node(0, 0)
+    end_node = Node(3, 0)
+    wire = Wire(start_node, end_node)
+    wire.add_wire_point(WirePoint(1, 0, 0))
+    wire.add_wire_point(WirePoint(2, 0, 0))
+    wire.add_wire_point(WirePoint(2, 1, 0))
+    wire.add_wire_point(WirePoint(2, 2, 0))
+    wire.add_wire_point(WirePoint(2, 0, 0))
+
+    assert wire.check_not_return() is True
