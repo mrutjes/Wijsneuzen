@@ -1,11 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from nodes_class import Node, importeer_nodes
-from wire_class import Wire, WirePoint
+from wire_class import Wire, WirePoint, plot_wires_3d
 from grid_class import Grid_3D
 from connections_class import importeer_netlist
 import numpy as np
-
 
 def maak_manhattan_wire(node1: Node, node2: Node):
     """
@@ -41,29 +40,6 @@ def maak_manhattan_wire(node1: Node, node2: Node):
     wire.wirepoints = wirepoints
     return wire
 
-def plot_wires_3d(wires, breedte, lengte):
-    """
-    Plot alle wires in een 3D-figuur, waarbij de lijnsegmenten langs de wirepoints lopen (manhattan-afstand).
-    """
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    for wire in wires:
-        xs = [p.x for p in wire.wirepoints]
-        ys = [p.y for p in wire.wirepoints]
-        zs = [p.z for p in wire.wirepoints]
-        
-        # Teken de lijnen langs de wirepoints
-        ax.plot(xs, ys, zs, marker='o')
-
-    ax.set_xlim(0, breedte)
-    ax.set_ylim(0, lengte)
-    ax.set_zlim(0, 7)
-
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    plt.show()
 
 # Hoofdcode om alles te gebruiken
 if __name__ == '__main__':

@@ -100,3 +100,29 @@ class Wire:
 
     def pop_wire_point(self) -> None:
         self.wirepoints.pop(-2)
+
+
+def plot_wires_3d(wires, breedte, lengte):
+    """
+    Plot alle wires in een 3D-figuur, waarbij de lijnsegmenten langs de wirepoints lopen (manhattan-afstand).
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    for wire in wires:
+        xs = [p.x for p in wire.wirepoints]
+        ys = [p.y for p in wire.wirepoints]
+        zs = [p.z for p in wire.wirepoints]
+        
+        # Teken de lijnen langs de wirepoints
+        ax.plot(xs, ys, zs, marker='o')
+
+    ax.set_xlim(0, breedte)
+    ax.set_ylim(0, lengte)
+    ax.set_zlim(0, 7)
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    plt.show()
+
