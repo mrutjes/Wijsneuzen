@@ -13,78 +13,52 @@ def maak_manhattan_wire(node1: Node, node2: Node, grid: Grid_3D):
     Nodes blijven altijd op de onderste laag (z=0).
     """
     wire = Wire(start_node=node1, end_node=node2)
-    wire.wirepoints = []
 
     x1, y1 = node1.x, node1.y
     x2, y2 = node2.x, node2.y
 
-    z = 0  # Startlaag
-    current_point = WirePoint(x1, y1, z)  # Beginpunt
-    wire.wirepoints.append(current_point)  # Voeg het startpunt toe
-
-    def buitenom_punt(toevoegen_point, huidige_point):
-        """
-        Voeg een punt buiten de grid toe wanneer geen geldige route mogelijk is.
-        """
-        if toevoegen_point.x != huidige_point.x:  # Buitenom in de x-richting
-            buiten_x = -1 if toevoegen_point.x < 0 else grid.n  # Links of rechts buiten de grid
-            return WirePoint(buiten_x, huidige_point.y, huidige_point.z)
-        elif toevoegen_point.y != huidige_point.y:  # Buitenom in de y-richting
-            buiten_y = -1 if toevoegen_point.y < 0 else grid.m  # Boven of onder buiten de grid
-            return WirePoint(huidige_point.x, buiten_y, huidige_point.z)
-        else:
-            return toevoegen_point  # Geen buitenom nodig
-
+    z = 0
     # Beweeg horizontaal naar de eind-x
     if x1 != x2:
         step = 1 if x1 < x2 else -1
-        for x in range(x1 + step, x2 + step, step):
-            next_point = WirePoint(x, y1, z)
+        for x in range(x1, x2 + step, step):
+            point = WirePoint(x, y1, z)
+            if point != WirePoint(x2, y2, 0):
+                wire.add_wire_point(point)
 
-            if not grid.check_valid_addition(next_point, wire):
-                z += 1  # Probeer omhoog te gaan
-                transition_point = WirePoint(current_point.x, current_point.y, z)
-                wire.wirepoints.append(transition_point)
-
-                if not grid.check_valid_addition(next_point, wire):
-                    buiten_punt = buitenom_punt(next_point, current_point)
-                    wire.wirepoints.append(buiten_punt)
-                    next_point = buiten_punt  # Werk verder vanaf het buitenom punt
-
-            current_point = next_point
-            wire.wirepoints.append(current_point)
+            if not grid.check_valid_addition(wire):
+                wire.pop_wire_point()
+                z += 1
+                transition_point = WirePoint(x, y1, z)
+                wire.add_wire_point(transition_point)
 
     # Beweeg verticaal naar de eind-y
     if y1 != y2:
         step = 1 if y1 < y2 else -1
-        for y in range(y1 + step, y2 + step, step):
-            next_point = WirePoint(x2, y, z)
+        for y in range(y1, y2 + step, step):
+            point = WirePoint(x2, y, z)
+            if point != WirePoint(x2, y2, 0):
+                wire.add_wire_point(point)
 
-            if not grid.check_valid_addition(next_point, wire):
-                z += 1  # Probeer omhoog te gaan
-                transition_point = WirePoint(current_point.x, current_point.y, z)
-                wire.wirepoints.append(transition_point)
+            if not grid.check_valid_addition(wire):
+                wire.pop_wire_point()
+                z += 1
+                transition_point = WirePoint(x2, y, z)
+                wire.add_wire_point(transition_point)
 
-                if not grid.check_valid_addition(next_point, wire):
-                    buiten_punt = buitenom_punt(next_point, current_point)
-                    wire.wirepoints.append(buiten_punt)
-                    next_point = buiten_punt  # Werk verder vanaf het buitenom punt
+    # Veilig afdalen naar z = 0
+    while z > 0:
+        z -= 1
+        next_point = WirePoint(x2, y2, z)
+        wire.add_wire_point(next_point)
 
-            current_point = next_point
-            wire.wirepoints.append(current_point)
+        # Check als afdaling niet mogelijk is
+        if not grid.check_valid_addition(wire):
+            wire.pop_wire_point()  # Blijf op huidige laag
+            continue  # Probeer opnieuw met een lagere z
 
-    # Voeg het eindpunt toe (op z=0)
-    if z > 0:
-        # Voeg overgangspunt terug naar z=0 toe
-        transition_point = WirePoint(current_point.x, current_point.y, z)
-        wire.wirepoints.append(transition_point)
-
-    final_point = WirePoint(x2, y2, 0)
-    wire.wirepoints.append(final_point)
-
-    # Update het grid en voeg de wire toe
+    # Voeg de wire toe aan de grid
     grid.wire_toevoegen_dict(wire)
-
     return wire
 
 # Hoofdcode om alles te gebruiken
@@ -101,7 +75,6 @@ if __name__ == '__main__':
 
     # Netlist importeren
     netlist = importeer_netlist('../gates&netlists/chip_0/netlist_1.csv')
-    print(netlist)
 
     # Maak een wire tussen de nodes in de netlist
     if len(netlist) >= 1:

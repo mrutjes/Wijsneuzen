@@ -81,23 +81,32 @@ class Wire:
             return True
         
         for node in self.nodes:
-            if ((self.wirepoints[-2].x,self.wirepoints[-2].y) == (node.x,node.y)):
+            if ((self.wirepoints[-2].x,self.wirepoints[-2].y) == (node.x,node.y) and 
+                ((self.wirepoints[-2].x,self.wirepoints[-2].y) != (self.end_node.x, self.end_node.y)) and
+                ((self.wirepoints[-2].x,self.wirepoints[-2].y) != (self.start_node.x, self.start_node.y))):
                 return False
         
         return True
     
     def check_not_return(self) -> bool:
-        """Check if the wire does not return on itself."""
+        """
+        Check if the wire does not return on itself.
+        """
 
+        # If there are fewer than 4 points, a return is impossible.
         if len(self.wirepoints) < 4:
             return True
-        
-        last_point = self.wirepoints[-3]
-        point_to_add = self.wirepoints[-2]
 
+        # The last two points form the most recently added segment.
+        last_point = self.wirepoints[-2]
+        point_to_add = self.wirepoints[-1]
+
+        # Check if the new segment reverses any previous segment.
         for i in range(len(self.wirepoints) - 2):
             seg_start = self.wirepoints[i]
             seg_end = self.wirepoints[i + 1]
+
+            # If the new segment (point_to_add -> last_point) is the reverse of an existing segment, return False.
             if seg_start == point_to_add and seg_end == last_point:
                 return False
 

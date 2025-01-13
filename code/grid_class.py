@@ -43,21 +43,20 @@ class Grid_3D:
         return abs(node1.x - node2.x) + abs(node1.y - node2.y)
     
     def check_if_wire_over_another_wire(self, current_wire) -> bool:
-
-        if len(self.wires) == 0:
-            return True
-
-        last_point = current_wire.wirepoints[-3]
-        point_to_add = current_wire.wirepoints[-2]
-
         for wire in self.wires:
             for i in range(len(wire.wirepoints) - 1):
-                if (wire.wirepoints[i] == point_to_add and
-                    wire.wirepoints[i + 1] == last_point) or (wire.wirepoints[i +1] == point_to_add and
-                    wire.wirepoints[i] == last_point):
+                seg_start = wire.wirepoints[i]
+                seg_end = wire.wirepoints[i + 1]
 
-                    return False
+                for j in range(len(current_wire.wirepoints) - 1):
+                    current_start = current_wire.wirepoints[j]
+                    current_end = current_wire.wirepoints[j + 1]
 
+                    # Check voor kruisingen of overlappende segmenten
+                    if (seg_start == current_end and seg_end == current_start) or \
+                    (seg_start == current_start and seg_end == current_end):
+                        return False
+        return True
 
     def check_valid_addition(self, current_wire):
         from wire_class import WirePoint, Wire
