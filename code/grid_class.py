@@ -35,34 +35,51 @@ class Grid_3D:
         self.aantal_lijnen += len(wire.wirepoints) - 1
         self.wires.append(wire)
 
-    def nodes_uit_dictcount(self, nodes):
+    def nodes_uit_dictcount(self):
         for node in self.nodes:
             self.punt_dict[(node.x, node.y, 0)] = 0
 
     def afstand_tussen_nodes(self, node1: Node, node2: Node):
         return abs(node1.x - node2.x) + abs(node1.y - node2.y)
+    
+    def check_if_wire_over_another_wire(self, current_wire) -> bool:
 
-    def check_valid_addition(self, point_to_add, current_wire):
-        from wire_class import WirePoint
+        if len(self.wirepoints) == 0:
+            return True
 
-        if (wire.wirepoints[i+1] == point_to_add and wire.wirepoints[i] == current_wire.wirepoints[-2]):
-            return False
-        
-        if not point_to_add in self.punt_dict:
-            return False
-        
+        last_point = current_wire.wirepoints[-3]
+        point_to_add = current_wire.wirepoints[-2]
+
         for wire in self.wires:
             for i in range(len(wire.wirepoints) - 1):
-                if (wire.wirepoints[i+1] == point_to_add and wire.wirepoints[i] == current_wire.wirepoints[-2]):
+                if (wire.wirepoints[i] == point_to_add and
+                    wire.wirepoints[i + 1] == last_point) or (wire.wirepoints[i +1] == point_to_add and
+                    wire.wirepoints[i] == last_point):
+
                     return False
+
+
+    def check_valid_addition(self, current_wire):
+        from wire_class import WirePoint, Wire
+
+        #Checks if the wirepoint is in the grid.
+        if current_wire.wirepoints[-2] not in self.punt_dict:
+           return False
+
+        #Checks if the wirepoint does not run over another wire.
+        if not self.check_if_wire_over_another_wire(current_wire):
+            return False
                 
-        if not current_wire.check_not_through_node(point_to_add):
+        #Checks if the wirepoint does not go through node.
+        if not current_wire.check_not_through_node():
             return False
         
-        if not current_wire.check_not_return(point_to_add):
+        #Checks if the wire does not return on itself
+        if not current_wire.check_not_return():
             return False
+
         return True
-    
+
     def tel_lijnen_punt(self):
         """Retourneert de dictionary met het aantal lijnen per (x,y,z)."""
         return self.punt_dict

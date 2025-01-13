@@ -14,7 +14,7 @@ class WirePoint:
     
     def __hash__(self):
         return hash((self.x, self.y, self.z))
-    
+        
     def give_place(self):
         return (self.x, self.y, self.z)
     

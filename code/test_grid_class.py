@@ -1,20 +1,24 @@
+# Filename: test_grid.py
+
 import pytest
-from wire_class import Wire, WirePoint
-from nodes_class import Node
 from grid_class import Grid_3D
+from nodes_class import Node
+from wire_class import Wire, WirePoint
+
 
 @pytest.fixture
 def grid():
-    """Maakt een Grid_3D object met afmeting 10x10."""
-    return Grid_3D(10, 10)
+    """
+    Creëert een Grid_3D object met afmeting 10x10.
+    """
+    return Grid_3D(n=10, m=10)
+
 
 def test_init_grid(grid):
     """
-    Controleren dat het Grid_3D object correct is geïnitieerd:
-    - Afmetingen kloppen
-    - Hoogte is 8
-    - Dictionary heeft de juiste grootte
-    - Alle waarden in de dictionary zijn 0
+    Test of het Grid_3D object correct is geïnitieerd:
+      - n=10, m=10, hoogte=8
+      - Alle (x,y,z)-posities in punt_dict zijn 0
     """
     assert grid.n == 10
     assert grid.m == 10
@@ -22,138 +26,229 @@ def test_init_grid(grid):
     assert len(grid.punt_dict) == 10 * 10 * 8
     assert all(value == 0 for value in grid.punt_dict.values())
 
-def test_plaats_node_ok(grid):
+
+def test_plaats_node_in_bounds(grid):
     """
-    Test of 'plaats_node' geen error gooit binnen geldige grid-afmetingen.
+    Test of 'plaats_node' geen error gooit als de node binnen de grid ligt.
     """
-    node = Node(x=3, y=3)
-    grid.plaats_node(node)  # Zou geen error moeten opleveren
+    node = Node(x=3, y=4)
+    # Moet geen error geven
+    grid.plaats_node(node, z=0)
+
 
 def test_plaats_node_out_of_bounds(grid):
     """
-    Controleren dat er een IndexError wordt gegooid 
-    als de Node buiten de grid-afmetingen valt.
+    Controleert dat er een IndexError wordt gegooid als de Node buiten de grid valt.
     """
-    node = Node(x=99, y=3)  # Buiten x-dimensie
+    node = Node(x=99, y=99)  # Ruim buiten de 10x10
     with pytest.raises(IndexError):
-        grid.plaats_node(node)
+        grid.plaats_node(node, z=0)
+
 
 def test_wire_toevoegen_dict(grid):
     """
-    Test of wire_toevoegen_dict correct omgaat met een wire die 
-    start_node=(0,0) en end_node=(0,2) heeft, met een tussenpunt (0,1).
-    Controleer ook of aantal_lijnen en punt_dict worden geüpdatet.
+    Test of wire_toevoegen_dict correct omgaat met een wire
+    die (0,0)->(0,2) loopt met tussenpunt (0,1).
     """
-    # Maak een wire van (0,0) -> (0,2), en voeg één tussenpunt (0,1) toe
     wire = Wire(
         start_node=Node(x=0, y=0),
         end_node=Node(x=0, y=2)
     )
-    wire.add_wire_point(WirePoint(0, 1, 0))  # Tussenpunt
-
-    # Nu heeft wire.wirepoints: [(0,0,0), (0,1,0), (0,2,0)]
+    # We gaan ervan uit dat Wire in z=0 start en eindigt,
+    # en dat add_wire_point de z-coordinaat verwerkt.
+    wire.add_wire_point(WirePoint(0, 1, 0))  # tussenpunt
+    # wire.wirepoints: [(0,0,0), (0,1,0), (0,2,0)]
+    
     grid.wire_toevoegen_dict(wire)
-
     # We hebben 3 punten, dus 2 lijnstukjes
     assert grid.aantal_lijnen == 2
+    # Iedere gebruikte (x,y,z) moet nu 1 in punt_dict zijn
+    for point in wire.wirepoints:
+        assert grid.punt_dict[(point.x, point.y, point.z)] == 1
 
-    # Iedere grid-positie hoort nu op 1 te staan
-    assert grid.punt_dict[(0, 0, 0)] == 1
-    assert grid.punt_dict[(0, 1, 0)] == 1
-    assert grid.punt_dict[(0, 2, 0)] == 1
 
-def test_wire_toevoegen_met_wirepoints(grid):
+def test_wire_toevoegen_met_meerdere_tussenpunten(grid):
     """
     Test of wire_toevoegen_dict correct omgaat met meerdere tussenpunten.
-    We starten bij (1,5) en eindigen bij (6,5), met diverse tussenpunten op z=1.
-    Controleer ook of aantal_lijnen en punt_dict worden geüpdatet.
     """
     wire = Wire(
         start_node=Node(x=1, y=5),
         end_node=Node(x=6, y=5)
     )
-    # Voeg tussenpunten toe op z=1:
+    # Voeg tussenpunten toe (in z=1, bijvoorbeeld):
     wire.add_wire_point(WirePoint(1, 5, 1))
     wire.add_wire_point(WirePoint(2, 5, 1))
     wire.add_wire_point(WirePoint(3, 5, 1))
     wire.add_wire_point(WirePoint(4, 5, 1))
     wire.add_wire_point(WirePoint(5, 5, 1))
     wire.add_wire_point(WirePoint(6, 5, 1))
+    # wire.wirepoints: (1,5,0)->(1,5,1)->(2,5,1)->...->(6,5,1)->(6,5,0)
 
-    # Nu heeft wire in totaal 8 wirepoints:
-    # (1,5,0) - (1,5,1) - (2,5,1) - (3,5,1) - (4,5,1) - (5,5,1) - (6,5,1) - (6,5,0)
     grid.wire_toevoegen_dict(wire)
-    
-    # 8 punten -> 7 lijnstukjes
+    # 8 punten -> 7 lijnsegmenten
     assert grid.aantal_lijnen == 7
-
-    # Elke betrokken coordinate zou nu 1 in punt_dict moeten hebben
     for point in wire.wirepoints:
-        assert (point.x, point.y, point.z) in grid.punt_dict
         assert grid.punt_dict[(point.x, point.y, point.z)] == 1
 
 
-def check_valid_addition(self, point_to_add, current_wire):
-    from wire_class import WirePoint
+def test_check_valid_addition_outside_grid(grid):
+    """
+    Test check_valid_addition:
+    - Verwacht False als het 'op één na laatste' punt buiten de grid valt.
+      In de code wordt gecheckt of current_wire.wirepoints[-2] in punt_dict zit.
+    """
+    # Maak een wire met 2 punten. Het op één na laatste punt is
+    # wire.wirepoints[-2], dus we hebben minstens 2 punten nodig.
+    wire = Wire(
+        start_node=Node(x=0, y=0),
+        end_node=Node(x=0, y=1)
+    )
+    # Forceer het op één na laatste punt buiten de grid (bijv. x=15)
+    wire.wirepoints = [
+        WirePoint(0, 0, 0),
+        WirePoint(15, 0, 0)  # buiten de 10x10 in x-richting
+    ]
+    assert grid.check_valid_addition(wire) is False
 
-    # Remove or comment out the problematic line:
-    # if (wire.wirepoints[i+1] == point_to_add and wire.wirepoints[i] == current_wire.wirepoints[-2]):
-    #     return False
 
-    if point_to_add not in self.punt_dict:
-        return False
+def test_check_valid_addition_collision(grid):
+    """
+    Test check_valid_addition:
+    - Verwacht False als het te vormen segment een bestaand segment 'kruist'.
+    """
+    # Voeg een bestaande wire toe in de grid
+    wire1 = Wire(
+        start_node=Node(x=0, y=0),
+        end_node=Node(x=0, y=1)
+    )
+    wire1.add_wire_point(WirePoint(0, 1, 0))
+    # wire1.wirepoints: [(0,0,0), (0,1,0), (0,1,0)???]
+    # Let op, meestal zou je end_node.x, end_node.y, etc. 
+    # tot (0,1,0) maken, maar pas het aan zoals je wire_class werkt.
+    grid.wires.append(wire1)
 
-    for wire in self.wires:
-        for i in range(len(wire.wirepoints) - 1):
-            if (wire.wirepoints[i+1] == point_to_add and wire.wirepoints[i] == current_wire.wirepoints[-2]):
-                return False
+    # current_wire dat hetzelfde segment probeert te gebruiken
+    # We zorgen dat wire2.wirepoints[-3] en [-2] precies
+    # het segment (0,0,0)->(0,1,0) zouden 'herhalen'.
+    wire2 = Wire(
+        start_node=Node(x=0, y=0),
+        end_node=Node(x=0, y=2)
+    )
+    wire2.wirepoints = [
+        WirePoint(0, 0, 0),
+        WirePoint(0, 1, 0),
+        WirePoint(0, 2, 0),
+    ]
+    # De code checkt segment collision met last_point = wire2.wirepoints[-3]
+    # en point_to_add = wire2.wirepoints[-2]. Dat is (0,0,0)->(0,1,0).
 
-    if not current_wire.check_not_through_node(point_to_add):
-        return False
-    if not current_wire.check_not_return(point_to_add):
-        return False
+    assert grid.check_valid_addition(wire2) is False
 
-    return True
+
+def test_check_valid_addition_through_node(grid):
+    """
+    Test check_valid_addition:
+    - Verwacht False als current_wire.check_not_through_node() False teruggeeft.
+    """
+    wire = Wire(
+        start_node=Node(x=0, y=0),
+        end_node=Node(x=0, y=1)
+    )
+    # Zet een minimal wirepoints-lijst zodat -2 en -3 bestaan
+    wire.wirepoints = [WirePoint(0,0,0), WirePoint(0,1,0), WirePoint(0,2,0)]
+
+    # Mock de methode check_not_through_node() op wire:
+    wire.check_not_through_node = lambda: False
+    # check_not_return() True, zodat die test niet blokkeert
+    wire.check_not_return = lambda: True
+
+    assert grid.check_valid_addition(wire) is False
+
+
+def test_check_valid_addition_return_on_itself(grid):
+    """
+    Test check_valid_addition:
+    - Verwacht False als current_wire.check_not_return() False geeft.
+    """
+    wire = Wire(
+        start_node=Node(x=0, y=0),
+        end_node=Node(x=0, y=1)
+    )
+    wire.wirepoints = [WirePoint(0,0,0), WirePoint(0,1,0), WirePoint(0,2,0)]
+
+    wire.check_not_through_node = lambda: True
+    wire.check_not_return = lambda: False
+
+    assert grid.check_valid_addition(wire) is False
+
+
+def test_check_valid_addition_valid(grid):
+    """
+    Test check_valid_addition:
+    - Verwacht True als alle checks slagen (in-grid, geen collision, 
+      niet through node, niet return on itself).
+    """
+    wire = Wire(
+        start_node=Node(x=1, y=1),
+        end_node=Node(x=4, y=4)
+    )
+    wirepoints = [
+        WirePoint(1,2,0),
+        WirePoint(1,3,0),
+        WirePoint(2,3,0),
+        WirePoint(3,3,0),
+        WirePoint(4,3,0),
+    ]
+    for wirepoint in wirepoints:
+        wire.add_wire_point(wirepoint)
+
+    assert grid.check_valid_addition(wire) is True
+
 
 def test_totaal_kruisingen(grid):
     """
-    Test de methode totaal_kruisingen:
-    - Als twee wires hetzelfde gridpunt delen, ontstaat er een kruising.
+    Test de methode totaal_kruisingen():
+    - Plaats twee wires die een punt delen => 1 kruising
     """
-    wire1 = Wire(
+    w1 = Wire(
         start_node=Node(x=0, y=0),
         end_node=Node(x=0, y=1)
     )
-    wire2 = Wire(
-        start_node=Node(x=0, y=1),  # deelt 'wirepoints' met wire1 eind
-        end_node=Node(x=1, y=1)
-    )
+    w1.wirepoints = [WirePoint(0,0,0), WirePoint(0,1,0)]
 
-    grid.wire_toevoegen_dict(wire1)
-    grid.wire_toevoegen_dict(wire2)
-
-    # wire1 en wire2 delen het punt (0,1,0) -> kruising = 1
-    assert grid.totaal_kruisingen() == 1
-
-def test_kosten(grid):
-    """
-    Test de methode kosten:
-    - kosten = (kruisingen * 300) + aantal_lijnen
-    """
-    # Twee wires met 1 gedeeld punt
-    wire1 = Wire(
-        start_node=Node(x=0, y=0),
-        end_node=Node(x=0, y=1)
-    )
-    wire2 = Wire(
+    w2 = Wire(
         start_node=Node(x=0, y=1),
         end_node=Node(x=1, y=1)
     )
+    w2.wirepoints = [WirePoint(0,1,0), WirePoint(1,1,0)]
 
-    grid.wire_toevoegen_dict(wire1)  # levert 1 lijnstuk op
-    grid.wire_toevoegen_dict(wire2)  # levert nog 1 lijnstuk op
+    grid.wire_toevoegen_dict(w1)
+    grid.wire_toevoegen_dict(w2)
+    # (0,1,0) wordt door beide wires gebruikt => 
+    # kruisingen = aantal_keer_te_veel = (2 - 1) = 1
+    assert grid.totaal_kruisingen() == 1
 
-    # Kruisingen: 1 (punt (0,1,0) gedeeld door 2 wires)
-    # Aantal lijnstukken: 2
-    # kosten = 1*300 + 2 = 302
+
+def test_kosten(grid):
+    """
+    Test de methode kosten():
+    - Kosten = (kruisingen * 300) + aantal_lijnen
+    """
+    w1 = Wire(
+        start_node=Node(x=0, y=0),
+        end_node=Node(x=0, y=1)
+    )
+    w1.wirepoints = [WirePoint(0,0,0), WirePoint(0,1,0)]
+
+    w2 = Wire(
+        start_node=Node(x=0, y=1),
+        end_node=Node(x=1, y=1)
+    )
+    w2.wirepoints = [WirePoint(0,1,0), WirePoint(1,1,0)]
+
+    grid.wire_toevoegen_dict(w1)  # 1 lijnsegment
+    grid.wire_toevoegen_dict(w2)  # 1 lijnsegment => totaal 2
+
+    # Er is 1 kruising (punt (0,1,0) gebruikt door beide wires)
+    # Kosten = 1*300 + 2 = 302
     assert grid.kosten() == 302
