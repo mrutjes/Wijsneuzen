@@ -1,49 +1,68 @@
 import pandas as pd
-from nodes_class import importeer_nodes, Node
+from nodes_class import import_nodes, Node
+
 
 class Grid_3D:
     def __init__(self, n, m):
         """
-        Maakt een grid van n x m x 8.
-        n = x-dimensie, m = y-dimensie, 'hoogte' = 8.
+        Generates a grid of n x m x 8. 
         """
         self.n = n
         self.m = m
-        self.hoogte = 8
+        self.height = 8
         self.wires = []
         self.nodes = []
-        self.aantal_lijnen = 0
-        self.punt_dict = {
+        self.lines_count = 0
+        self.point_dict = {
             (x, y, z): 0
             for x in range(self.n)
             for y in range(self.m)
-            for z in range(self.hoogte)
+            for z in range(self.height)
         }
 
-    def plaats_node(self, node: Node, z=0):
-        if not (0 <= node.x < self.n and 0 <= node.y < self.m and 0 <= z < self.hoogte):
+
+    def place_node(self, node: Node, z=0) -> None:
+        """
+        Places a node at the baselayer level at given coordinates.
+        """
+        if not (0 <= node.x < self.n and 0 <= node.y < self.m and 0 <= z < self.height):
             raise IndexError("Coördinaten buiten de grid.")
 
-    def wire_toevoegen_dict(self, wire):
+
+    def add_wire_dict(self, wire) -> None:
+        """
+        adds a wire to the wirepoint dictionary which is a property of the grid class.
+        """
         from wire_class import WirePoint
         for point in wire.wirepoints:
             x, y, z = point.x, point.y, point.z
-            if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.hoogte:
-                self.punt_dict[(x, y, z)] += 1
+            if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
+                self.point_dict[(x, y, z)] += 1
             else:
                 raise IndexError("Coördinaten buiten de grid.")
-        self.aantal_lijnen += len(wire.wirepoints) - 1
+        self.lines_count += len(wire.wirepoints) - 1
         self.wires.append(wire)
 
-    def nodes_uit_dictcount(self):
-        for node in self.nodes:
-            self.punt_dict[(node.x, node.y, 0)] = 0
 
-    def afstand_tussen_nodes(self, node1: Node, node2: Node):
+    def remove_nodes_pointdict(self):
+        """
+        Removes the nodes from the point dictionary, to make sure they don't count as intersections
+        """
+        for node in self.nodes:
+            self.point_dict[(node.x, node.y, 0)] = 0
+
+
+    def distance_nodes(self, node1: Node, node2: Node) -> int:
+        """
+        Returns the manhattan distance between two nodes.
+        """
         return abs(node1.x - node2.x) + abs(node1.y - node2.y)
     
-    def check_if_wire_over_another_wire(self, current_wire) -> bool:
-
+    
+    def check_wire_overlap(self, current_wire) -> bool:
+        """
+        Checks if the wire does not run over another wire.
+        """
         if len(self.wires) == 0:
             return True
 
@@ -59,16 +78,19 @@ class Grid_3D:
                     return False
 
 
-    def check_valid_addition(self, current_wire):
+    def check_valid_addition(self, current_wire) -> bool:
+        """
+        Checks if the last point in the current wire wirepoints list does not overwrite any rules.
+        """
         from wire_class import WirePoint, Wire
 
         #Checks if the wirepoint is in the grid.
         wire_point = current_wire.wirepoints[-2]
-        if (wire_point.x, wire_point.y, wire_point.z) not in self.punt_dict:
+        if (wire_point.x, wire_point.y, wire_point.z) not in self.point_dict:
             return False
 
         #Checks if the wirepoint does not run over another wire.
-        if not self.check_if_wire_over_another_wire(current_wire):
+        if not self.check_wire_overlap(current_wire):
             return False
                 
         #Checks if the wirepoint does not go through node.
@@ -81,26 +103,23 @@ class Grid_3D:
 
         return True
 
-    def tel_lijnen_punt(self):
-        """Retourneert de dictionary met het aantal lijnen per (x,y,z)."""
-        return self.punt_dict
 
-    def totaal_kruisingen(self):
+    def total_intersections(self) -> int:
         """
-        Berekent het totale aantal 'kruisingen':
-        elke plek in punt_dict met waarde > 1 is een kruising.
+        Calculates the total intersections based on if the value of the point dict is larger than 1.
         """
-        kruisingen = 0
-        for waarde in self.punt_dict.values():
-            if waarde > 1:
-                kruisingen += (waarde - 1)
-        return kruisingen
+        intersections = 0
+        for value in self.point_dict.values():
+            if value > 1:
+                intersections += (value - 1)
+        return intersections
 
-    def kosten(self):
+
+    def cost(self) -> int:
         """
-        Berekent de kosten:
-        - Kruisingen: elke kruising kost 300.
-        - Aantal lijnen: elke lijn kost 1.
+        Calculates the total cost:
+        - 300 per intersection
+        - 1 per line
         """
-        kruisingen = self.totaal_kruisingen()
-        return kruisingen * 300 + self.aantal_lijnen
+        intersections = self.total_intersections()
+        return intersections * 300 + self.lines_count
