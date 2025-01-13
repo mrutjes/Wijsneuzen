@@ -95,8 +95,9 @@ def test_wire_check_not_through_node():
     start_node = Node(0, 0)
     end_node = Node(2, 0)
     wire = Wire(start_node, end_node)
+    wire.nodes = [Node(1, 0), Node(2, 0)]
     wire.add_wire_point(WirePoint(1, 0, 0))
-    wire.nodes = [Node(1, 0)]
+    wire.add_wire_point(WirePoint(2, 0, 0))
 
     assert wire.check_not_through_node() is False
 

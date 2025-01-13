@@ -192,6 +192,8 @@ def test_check_valid_addition_valid(grid):
         start_node=Node(x=1, y=1),
         end_node=Node(x=4, y=4)
     )
+    grid.punt_dict = {(1,1,0): 0, (1,2,0): 0, (1,3,0): 0, (2,3,0): 0, (3,3,0): 0, (4,3,0):0, (4,4,0): 0}
+    wire.nodes = [Node(x=1, y=1), Node(x=4, y=4)]
     wirepoints = [
         WirePoint(1,2,0),
         WirePoint(1,3,0),

@@ -69,8 +69,6 @@ for wire in wirelist:
 # 5) Wires registreren in het grid (zodat punt_dict en aantal_lijnen worden geüpdatet)
     grid.wire_toevoegen_dict(wire)
 
-print(wirelist[0].wirepoints)
-
 #haal de incorrecte kruisingen uit de dict.
 for node in nodes_list:
     grid.nodes_uit_dictcount()
