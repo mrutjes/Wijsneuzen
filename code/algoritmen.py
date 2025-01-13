@@ -7,34 +7,39 @@ from connections_class import importeer_netlist
 import numpy as np
 
 
-# Functie om een wire aan te maken op basis van Manhattan-afstand
 def maak_manhattan_wire(node1: Node, node2: Node):
-    """Creëert een Wire op basis van Manhattan afstand tussen node1 en node2."""
+    """
+    Creëert een Wire op basis van Manhattan afstand tussen node1 en node2.
+    """
+    wire = Wire(start_node=node1, end_node=node2)
     wirepoints = []
+
     x1, y1 = node1.x, node1.y
     x2, y2 = node2.x, node2.y
 
     # Beweeg horizontaal naar de eind-x
     if x1 != x2:
-        for x in range(min(x1, x2), max(x1, x2) + 1):
+        step = 1 if x1 < x2 else -1
+        for x in range(x1, x2 + step, step):
             point = WirePoint(x, y1, 0)
-            if point not in wirepoints and point != WirePoint(x2, y2, 0):  # Vermijd duplicaten en eindnode
+            if point not in wirepoints and point != WirePoint(x2, y2, 0):
                 wirepoints.append(point)
 
     # Beweeg verticaal naar de eind-y
     if y1 != y2:
-        for y in range(min(y1, y2), max(y1, y2) + 1):
+        step = 1 if y1 < y2 else -1
+        for y in range(y1, y2 + step, step):
             point = WirePoint(x2, y, 0)
-            if point not in wirepoints and point != WirePoint(x1, y1, 0):  # Vermijd duplicaten en startnode
+            if point not in wirepoints and point != WirePoint(x2, y2, 0):
                 wirepoints.append(point)
 
-    # Voeg de eindnode alleen toe als deze uniek is en niet direct verbonden is
+    # Voeg de eindnode alleen toe als deze uniek is
     if WirePoint(x2, y2, 0) not in wirepoints:
         wirepoints.append(WirePoint(x2, y2, 0))
 
-    # Maak de wire aan met de lijst van wirepoints en de start- en eindnodes
-    return Wire(start_node=node1, end_node=node2, wirepoints=wirepoints)
-
+    # Update wirepoints in het wire-object
+    wire.wirepoints = wirepoints
+    return wire
 
 def plot_wires_3d(wires, breedte, lengte):
     """
@@ -86,9 +91,10 @@ if __name__ == '__main__':
 
             node1 = nodes_list[node1 - 1]
             node2 = nodes_list[node2 - 1]
+
             wire = maak_manhattan_wire(node1, node2)
 
-            # Voeg de wire toe aan het grid
+            # Voeg de wire toe aan de grid
             wires.append(wire)
 
         # Plot de wires in 3D
