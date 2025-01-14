@@ -8,17 +8,17 @@ import numpy as np
 
 def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str):
     """
-    Creëert een Wire op basis van Manhattan afstand tussen node1 en node2.
-    Vermijdt overlap met bestaande wires door omhoog, omlaag of buiten de grid te bewegen.
-    Nodes blijven altijd op de onderste laag (z=0).
+    Creates a wire based on the Manhattan distance between node1 and node2.
+    Avoids overlap with existing wires by moving upward, downward, or outside the grid.
+    Nodes always remain on the bottom layer (z=0).
     """
     wire = Wire(start_node=node1, end_node=node2, nodes_csv_path=nodes_csv_path)
 
     x1, y1 = node1.x, node1.y
     x2, y2 = node2.x, node2.y
-
     z = 0
-    # Beweeg horizontaal naar de eind-x
+
+    # Move horizontally to the x coordinate
     if x1 != x2:
         step = 1 if x1 < x2 else -1
         for x in range(x1, x2 + step, step):
