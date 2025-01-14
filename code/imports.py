@@ -1,5 +1,5 @@
 import pandas as pd
-from nodes_class import Node
+from Wijsneuzen.code.classes.nodes_class import Node
 
 def import_netlist(csv_path) -> list[tuple[int, int]]:
     """

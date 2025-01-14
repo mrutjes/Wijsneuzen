@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from grid_class import Grid_3D, plot_wires_3d
-from nodes_class import Node
-from wire_class import Wire, WirePoint
+from Wijsneuzen.code.classes.grid_class import Grid_3D, plot_wires_3d
+from Wijsneuzen.code.classes.nodes_class import Node
+from Wijsneuzen.code.classes.wire_class import Wire, WirePoint
 import pandas as pd
 from imports import import_netlist, import_nodes
-from Wijsneuzen.code.manhattan_algoritm import manhattan_wire
+from Wijsneuzen.code.algoritms.manhattan_algoritm import manhattan_wire
 
 nodes_csv_path = '../gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = '../gates&netlists/chip_0/netlist_1.csv'
