@@ -1,4 +1,5 @@
-from nodes_class import Node, import_nodes
+from nodes_class import Node
+from code.imports import import_nodes
 
 class WirePoint:
     """
@@ -53,11 +54,11 @@ class Wire:
     A class to combine wirepoints in order to form a wire.
     """
 
-    def __init__(self, start_node: Node, end_node: Node) -> None:
+    def __init__(self, start_node: Node, end_node: Node, nodes_csv_path: str) -> None:
         self.start_node = start_node
         self.end_node = end_node
         self.wirepoints = [WirePoint(self.start_node.x, self.start_node.y, 0), WirePoint(self.end_node.x, self.end_node.y, 0)]
-        self.nodes = import_nodes('../gates&netlists/chip_0/print_0.csv')
+        self.nodes = import_nodes(nodes_csv_path)
     
 
     def __eq__(self, other):

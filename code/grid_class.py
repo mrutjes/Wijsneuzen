@@ -1,6 +1,7 @@
 import pandas as pd
-from nodes_class import import_nodes, Node
+from nodes_class import Node
 import matplotlib.pyplot as plt
+from wire_class import Wire
 
 class Grid_3D:
     def __init__(self, n, m):
@@ -10,7 +11,7 @@ class Grid_3D:
         self.n = n
         self.m = m
         self.height = 8
-        self.wires = []
+        self._wires = []
         self.nodes = []
         self.lines_count = 0
         self.point_dict = {
@@ -27,6 +28,20 @@ class Grid_3D:
         """
         if not (0 <= node.x < self.n and 0 <= node.y < self.m and 0 <= z < self.height):
             raise IndexError("Coördinaten buiten de grid.")
+        
+    
+    def add_wire_list(self, wire) -> None:
+        """
+        Add a wire to the list of wires
+        """
+        self._wires.append(wire)
+
+
+    def return_wire_list(self) -> list[Wire]:
+        """
+        Returns the list of wires
+        """
+        return self._wires
 
 
     def add_wire_dict(self, wire) -> None:
@@ -41,7 +56,6 @@ class Grid_3D:
             else:
                 raise IndexError("Coördinaten buiten de grid.")
         self.lines_count += len(wire.wirepoints) - 1
-        self.wires.append(wire)
 
 
     def remove_nodes_pointdict(self):
@@ -63,13 +77,13 @@ class Grid_3D:
         """
         Checks if the wire does not run over another wire.
         """
-        if len(self.wires) == 0:
+        if len(self._wires) == 0:
             return True
 
         last_point = current_wire.wirepoints[-3]
         point_to_add = current_wire.wirepoints[-2]
 
-        for wire in self.wires:
+        for wire in self._wires:
             for i in range(len(wire.wirepoints) - 1):
                 seg_start = wire.wirepoints[i]
                 seg_end = wire.wirepoints[i + 1]
@@ -129,8 +143,9 @@ class Grid_3D:
         """
         intersections = self.total_intersections()
         return intersections * 300 + self.lines_count
-    
-def plot_wires_3d(wires, breedte, lengte):
+
+   
+def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
     """
     A function used to plot the wires of the grid in 3D.
     """
@@ -145,8 +160,8 @@ def plot_wires_3d(wires, breedte, lengte):
         # Teken de lijnen langs de wirepoints
         ax.plot(xs, ys, zs, marker='o')
 
-    ax.set_xlim(0, breedte)
-    ax.set_ylim(0, lengte)
+    ax.set_xlim(0, grid_width)
+    ax.set_ylim(0, grid_height)
     ax.set_zlim(0, 7)
 
     ax.set_xlabel('X')

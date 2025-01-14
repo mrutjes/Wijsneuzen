@@ -20,13 +20,3 @@ class Node:
         return f'({self.x}, {self.y})'
     
 
-def import_nodes(csv_path) -> list[Node]:
-    """
-    Imports nodes based on a csv file and returns a list of Node objects.
-    """
-    data = pd.read_csv(csv_path)
-
-    return [
-        Node(int(row['x']), int(row['y']))
-        for _, row in data.iterrows()
-    ]
