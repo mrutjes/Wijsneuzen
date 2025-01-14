@@ -1,5 +1,5 @@
 from nodes_class import Node
-from code.imports import import_nodes
+from imports import import_nodes
 
 class WirePoint:
     """

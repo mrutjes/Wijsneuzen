@@ -4,7 +4,7 @@ from grid_class import Grid_3D
 from nodes_class import import_nodes, Node
 from wire_class import Wire, WirePoint
 import pandas as pd
-from code.imports import import_netlist
+from imports import import_netlist
 
 # 1) Grid aanmaken
 x = 8
