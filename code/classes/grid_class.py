@@ -1,7 +1,6 @@
-import pandas as pd
-from nodes_class import Node
+from code.classes.nodes_class import Node
+from code.classes.wire_class import Wire
 import matplotlib.pyplot as plt
-from wire_class import Wire
 
 class Grid_3D:
     def __init__(self, n, m):
@@ -48,7 +47,7 @@ class Grid_3D:
         """
         adds a wire to the wirepoint dictionary which is a property of the grid class.
         """
-        from wire_class import WirePoint
+        from code.classes.wire_class import WirePoint
         for point in wire.wirepoints:
             x, y, z = point.x, point.y, point.z
             if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
@@ -102,7 +101,7 @@ class Grid_3D:
         """
         Checks if the last point in the current wire wirepoints list does not overwrite any rules.
         """
-        from wire_class import WirePoint, Wire
+        from code.classes.wire_class import WirePoint, Wire
 
         #Checks if the wirepoint is in the grid.
         wire_point = current_wire.wirepoints[-2]

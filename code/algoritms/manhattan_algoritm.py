@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from nodes_class import Node
-from wire_class import Wire, WirePoint
-from grid_class import Grid_3D
+from code.classes.nodes_class import Node
+from code.classes.wire_class import Wire, WirePoint
+from code.classes.grid_class import Grid_3D
 import numpy as np
 
 

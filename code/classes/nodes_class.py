@@ -1,5 +1,3 @@
-import pandas as pd
-
 class Node:
     """
     Class for nodes in the grid.
