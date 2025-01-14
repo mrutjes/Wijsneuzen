@@ -21,7 +21,7 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
     # Beweeg horizontaal naar de eind-x
     if x1 != x2:
         step = 1 if x1 < x2 else -1
-        for x in range(x1, x2 + step, step):
+        for x in range(x1 + 1, x2 + step, step):
             point = WirePoint(x, y1, z)
             if point != WirePoint(x2, y2, 0):
                 wire.add_wire_point(point)
@@ -29,13 +29,13 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
             if not grid.check_valid_addition(wire):
                 wire.pop_wire_point()
                 z += 1
-                transition_point = WirePoint(x, y1, z)
+                transition_point = WirePoint(x -1, y1, z)
                 wire.add_wire_point(transition_point)
 
     # Beweeg verticaal naar de eind-y
     if y1 != y2:
         step = 1 if y1 < y2 else -1
-        for y in range(y1, y2 + step, step):
+        for y in range(y1 + 1, y2 + step, step):
             point = WirePoint(x2, y, z)
             if point != WirePoint(x2, y2, 0):
                 wire.add_wire_point(point)
@@ -43,20 +43,20 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
             if not grid.check_valid_addition(wire):
                 wire.pop_wire_point()
                 z += 1
-                transition_point = WirePoint(x2, y, z)
+                transition_point = WirePoint(x2, y -1, z)
                 wire.add_wire_point(transition_point)
 
-    # Veilig afdalen naar z = 0
+    # Drop down to z=0
     while z > 0:
         z -= 1
         next_point = WirePoint(x2, y2, z)
         wire.add_wire_point(next_point)
 
-        # Check als afdaling niet mogelijk is
+        # Check if there is no overlapping wire in its place
         if not grid.check_valid_addition(wire):
-            wire.pop_wire_point()  # Blijf op huidige laag
-            continue  # Probeer opnieuw met een lagere z
+            wire.pop_wire_point()
+            continue
 
-    # Voeg de wire toe aan de grid
+    # Add wire to dict
     grid.add_wire_dict(wire)
     return wire
