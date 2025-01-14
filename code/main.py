@@ -5,7 +5,7 @@ from nodes_class import Node
 from wire_class import Wire, WirePoint
 import pandas as pd
 from imports import import_netlist, import_nodes
-from algoritmen import manhattan_wire
+from Wijsneuzen.code.manhattan_algoritm import manhattan_wire
 
 nodes_csv_path = '../gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = '../gates&netlists/chip_0/netlist_1.csv'
