@@ -13,7 +13,6 @@ grid_width = 10
 grid_length = 10
 functie = manhattan_wire
 
-
 # Initiate the grid, and import nodes and netlist
 grid = Grid_3D(grid_width, grid_length)
 nodes_list = import_nodes(nodes_csv_path)
