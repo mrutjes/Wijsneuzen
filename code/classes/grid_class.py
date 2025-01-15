@@ -11,9 +11,9 @@ class Grid_3D:
         self.m = m
         self.height = 8
         self._wires = []
-        self.nodes = []
-        self.lines_count = 0
-        self.point_dict = {
+        self._nodes = []
+        self._lines_count = 0
+        self._point_dict = {
             (x, y, z): 0
             for x in range(self.n)
             for y in range(self.m)
@@ -48,28 +48,28 @@ class Grid_3D:
         adds a wire to the wirepoint dictionary which is a property of the grid class.
         """
         from code.classes.wire_class import WirePoint
-        for point in wire.wirepoints:
-            x, y, z = point.x, point.y, point.z
+        for point in wire.give_wirepoints():
+            x, y, z = point.give_x(), point.give_y(), point.give_z()
             if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
                 self.point_dict[(x, y, z)] += 1
             else:
                 raise IndexError("Coördinaten buiten de grid.")
-        self.lines_count += len(wire.wirepoints) - 1
+        self.lines_count += len(wire.give_wirepoints()) - 1
 
 
     def remove_nodes_pointdict(self):
         """
         Removes the nodes from the point dictionary, to make sure they don't count as intersections
         """
-        for node in self.nodes:
-            self.point_dict[(node.x, node.y, 0)] = 0
+        for node in self._nodes:
+            self._point_dict[(node.give_x(), node.give_y(), 0)] = 0
 
 
     def distance_nodes(self, node1: Node, node2: Node) -> int:
         """
         Returns the manhattan distance between two nodes.
         """
-        return abs(node1.x - node2.x) + abs(node1.y - node2.y)
+        return abs(node1.give_x() - node2.give_x()) + abs(node1.give_y() - node2.give_y())
     
     
     def check_wire_overlap(self, current_wire) -> bool:
@@ -79,17 +79,17 @@ class Grid_3D:
         if len(self._wires) == 0:
             return True
 
-        last_point = current_wire.wirepoints[-3]
-        point_to_add = current_wire.wirepoints[-2]
+        last_point = current_wire.give_wirepoints()[-3] #AANPASSEN
+        point_to_add = current_wire.give_wirepoints()[-2] #AANPASSEN
 
         for wire in self._wires:
-            for i in range(len(wire.wirepoints) - 1):
-                seg_start = wire.wirepoints[i]
-                seg_end = wire.wirepoints[i + 1]
+            for i in range(len(wire.give_wirepoints()) - 1):
+                seg_start = wire.give_wirepoints()[i]
+                seg_end = wire.give_wirepoints()[i + 1]
 
-                for j in range(len(current_wire.wirepoints) - 1):
-                    current_start = current_wire.wirepoints[j]
-                    current_end = current_wire.wirepoints[j + 1]
+                for j in range(len(current_wire.give_wirepoints()) - 1):
+                    current_start = current_wire.give_wirepoints()[j]
+                    current_end = current_wire.give_wirepoints()[j + 1]
 
                     # Check voor kruisingen of overlappende segmenten
                     if (seg_start == current_end and seg_end == current_start) or \
@@ -104,8 +104,8 @@ class Grid_3D:
         from code.classes.wire_class import WirePoint, Wire
 
         #Checks if the wirepoint is in the grid.
-        wire_point = current_wire.wirepoints[-2]
-        if (wire_point.x, wire_point.y, wire_point.z) not in self.point_dict:
+        wire_point = current_wire.give_wirepoints()[-2]
+        if (wire_point.give_x(), wire_point.give_y(), wire_point.give_z()) not in self._point_dict:
             return False
 
         #Checks if the wirepoint does not run over another wire.
@@ -128,7 +128,7 @@ class Grid_3D:
         Calculates the total intersections based on if the value of the point dict is larger than 1.
         """
         intersections = 0
-        for value in self.point_dict.values():
+        for value in self._point_dict.values():
             if value > 1:
                 intersections += (value - 1)
         return intersections
@@ -141,7 +141,7 @@ class Grid_3D:
         - 1 per line
         """
         intersections = self.total_intersections()
-        return intersections * 300 + self.lines_count
+        return intersections * 300 + self._lines_count
 
    
 def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
@@ -152,9 +152,9 @@ def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
     ax = fig.add_subplot(111, projection='3d')
 
     for wire in wires:
-        xs = [p.x for p in wire.wirepoints]
-        ys = [p.y for p in wire.wirepoints]
-        zs = [p.z for p in wire.wirepoints]
+        xs = [p.give_x() for p in wire.give_wirepoints()]
+        ys = [p.give_y() for p in wire.give_wirepoints()]
+        zs = [p.give_z() for p in wire.give_wirepoints()]
         
         # Teken de lijnen langs de wirepoints
         ax.plot(xs, ys, zs, marker='o')

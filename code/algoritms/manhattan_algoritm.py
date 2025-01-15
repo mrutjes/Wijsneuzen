@@ -13,18 +13,21 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
     """
     wire = Wire(start_node=node1, end_node=node2, nodes_csv_path=nodes_csv_path)
 
-    x1, y1 = node1.x, node1.y
-    x2, y2 = node2.x, node2.y
+    x1, y1 = node1.give_x(), node1.give_y()
+    x2, y2 = node2.give_x(), node2.give_y()
     z = 0  # Start on the bottom layer
     visited = set()
 
-    def is_visited(point):
+
+    def is_visited(point: WirePoint):
         """Check if a point has already been visited."""
-        return (point.x, point.y, point.z) in visited
+        return (point.give_x(), point.give_y(), point.give_z()) in visited
+
 
     def mark_visited(point):
         """Mark a point as visited."""
-        visited.add((point.x, point.y, point.z))
+        visited.add((point.give_x(), point.give_y(), point.give_z()))
+
 
     def move_one_step(current, target, fixed1, fixed2, axis, z_level):
         """
@@ -34,6 +37,7 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
         step = 1 if current < target else -1
         next_point = WirePoint(current + step, fixed1, z_level) if axis == 'x' else WirePoint(fixed1, current + step, z_level)
         return next_point
+
 
     # Move along x-axis one step at a time
     while x1 != x2:
@@ -51,7 +55,7 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
             wire.add_wire_point(transition_point)
             mark_visited(transition_point)
         else:
-            x1 = next_point.x
+            x1 = next_point.give_x()
 
     # Move along y-axis one step at a time
     while y1 != y2:
@@ -69,7 +73,7 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
             wire.add_wire_point(transition_point)
             mark_visited(transition_point)
         else:
-            y1 = next_point.y
+            y1 = next_point.give_y()
 
     # Drop to z=0 after reaching the target x and y
     while z > 0:
@@ -86,7 +90,7 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
 
     # Ensure the final point (x2, y2, z=0) is added
     final_point = WirePoint(x2, y2, 0)
-    if final_point not in wire.wirepoints:
+    if final_point not in wire.give_wirepoints():
         wire.add_wire_point(final_point)
         mark_visited(final_point)
         if not grid.check_valid_addition(wire):

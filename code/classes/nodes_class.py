@@ -3,18 +3,27 @@ class Node:
     Class for nodes in the grid.
     """
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.z = 0
+        self._x = x
+        self._y = y
+        self._z = 0
 
 
     def __eq__(self, other):
         if not isinstance(other, Node):
             return False
-        return (self.x, self.y) == (other.x, other.y)
+        return (self._x, self._y) == (other._x, other._y)
     
 
     def __str__(self):
-        return f'({self.x}, {self.y})'
+        return f'({self._x}, {self._y})'
+    
+
+    def give_x(self):
+        return self._x
+    
+
+    def give_y(self):
+        return self._y
+    
     
 
