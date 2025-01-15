@@ -38,7 +38,11 @@ if len(netlist) >= 1:
     # Plot the wires
     plot_wires_3d(wires, grid_width, grid_length)
 
+    # Remove the nodes from the wires dict
+    grid.remove_nodes_pointdict()
+
     # Calculate the cost of the grid
     print(f"The total cost for this grid is: {grid.cost()}")
+
 else:
     raise ValueError("No netlist given.")

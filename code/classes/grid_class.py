@@ -25,7 +25,7 @@ class Grid_3D:
         """
         Places a node at the baselayer level at given coordinates.
         """
-        if not (0 <= node.x < self.n and 0 <= node.y < self.m and 0 <= z < self.height):
+        if not (0 <= node.give_x() < self.n and 0 <= node.give_y() < self.m and 0 <= z < self.height):
             raise IndexError("Coördinaten buiten de grid.")
         
     
@@ -51,10 +51,10 @@ class Grid_3D:
         for point in wire.give_wirepoints():
             x, y, z = point.give_x(), point.give_y(), point.give_z()
             if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
-                self.point_dict[(x, y, z)] += 1
+                self._point_dict[(x, y, z)] += 1
             else:
                 raise IndexError("Coördinaten buiten de grid.")
-        self.lines_count += len(wire.give_wirepoints()) - 1
+        self._lines_count += len(wire.give_wirepoints()) - 1
 
 
     def remove_nodes_pointdict(self):
