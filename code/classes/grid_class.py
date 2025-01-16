@@ -1,5 +1,5 @@
 from code.classes.nodes_class import Node
-from code.classes.wire_class import Wire
+from code.classes.wire_class import Wire, WirePoint
 import matplotlib.pyplot as plt
 
 class Grid_3D:
@@ -74,28 +74,25 @@ class Grid_3D:
     
     def check_wire_overlap(self, current_wire) -> bool:
         """
-        Checks if the wire does not run over another wire.
+        Checks if the wire does not run over another wire in any direction.
         """
         if len(self._wires) == 0:
             return True
-
-        last_point = current_wire.give_wirepoints()[-3] #AANPASSEN
-        point_to_add = current_wire.give_wirepoints()[-2] #AANPASSEN
-
+        
         for wire in self._wires:
             for i in range(len(wire.give_wirepoints()) - 1):
-                seg_start = wire.give_wirepoints()[i]
-                seg_end = wire.give_wirepoints()[i + 1]
+                existing_start = wire.give_wirepoints()[i]
+                existing_end = wire.give_wirepoints()[i + 1]
 
                 for j in range(len(current_wire.give_wirepoints()) - 1):
                     current_start = current_wire.give_wirepoints()[j]
                     current_end = current_wire.give_wirepoints()[j + 1]
 
-                    # Check voor kruisingen of overlappende segmenten
-                    if (seg_start == current_end and seg_end == current_start) or \
-                    (seg_start == current_start and seg_end == current_end):
+                    if (existing_start == current_start and existing_end == current_end) or (existing_start == current_end and existing_end == current_start):
                         return False
+
         return True
+
 
     def check_valid_addition(self, current_wire) -> bool:
         """
@@ -110,14 +107,17 @@ class Grid_3D:
 
         #Checks if the wirepoint does not run over another wire.
         if not self.check_wire_overlap(current_wire):
+            print("Would run over another wire")
             return False
                 
         #Checks if the wirepoint does not go through node.
         if not current_wire.check_not_through_node():
+            print("Would run through node")
             return False
         
         #Checks if the wire does not return on itself
         if not current_wire.check_not_return():
+            print("Would return on itself")
             return False
 
         return True

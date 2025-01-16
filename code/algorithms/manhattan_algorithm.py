@@ -29,7 +29,7 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
         visited.add((point.give_x(), point.give_y(), point.give_z()))
 
 
-    def move_one_step(current, target, fixed1, fixed2, axis, z_level):
+    def move_one_step(current, target, fixed1, axis, z_level):
         """
         Move one step along the specified axis.
         `axis` can be 'x' or 'y', while `fixed1` and `fixed2` are the fixed coordinates.
@@ -37,17 +37,22 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
         step = 1 if current < target else -1
         next_point = WirePoint(current + step, fixed1, z_level) if axis == 'x' else WirePoint(fixed1, current + step, z_level)
         return next_point
+    
+    print("New netlist connection:")
 
+    step_x = 1 if x1 < x2 else -1
+    step_y = 1 if y1 < y2 else -1
 
     # Move along x-axis one step at a time
     while x1 != x2:
-        next_point = move_one_step(x1, x2, y1, z, 'x', z)
+        next_point = move_one_step(x1, x2, y1, 'x', z)
         if is_visited(next_point):
             continue
         wire.add_wire_point(next_point)
-        mark_visited(next_point)
 
-        if not grid.check_valid_addition(wire):
+        if z >= 7:
+            break
+        elif not grid.check_valid_addition(wire):
             # Handle conflict by moving up one layer
             wire.pop_wire_point()
             z += 1
@@ -55,17 +60,20 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
             wire.add_wire_point(transition_point)
             mark_visited(transition_point)
         else:
+            mark_visited(next_point)
             x1 = next_point.give_x()
+        print(f"X loop Moving along x: x1={x1}, x2={x2}, y1={y1}, y2={y2}, z={z}")
 
     # Move along y-axis one step at a time
     while y1 != y2:
-        next_point = move_one_step(y1, y2, x1, z, 'y', z)
+        next_point = move_one_step(y1, y2, x2, 'y', z)
         if is_visited(next_point):
             continue
         wire.add_wire_point(next_point)
-        mark_visited(next_point)
 
-        if not grid.check_valid_addition(wire):
+        if z >= 7:
+            break
+        elif not grid.check_valid_addition(wire):
             # Handle conflict by moving up one layer
             wire.pop_wire_point()
             z += 1
@@ -73,20 +81,41 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str)
             wire.add_wire_point(transition_point)
             mark_visited(transition_point)
         else:
+            mark_visited(next_point)
             y1 = next_point.give_y()
+        print(f"Y loop Moving along x: x1={x1}, x2={x2}, y1={y1}, y2={y2}, z={z}")
 
     # Drop to z=0 after reaching the target x and y
     while z > 0:
+        print(f"Descending to z=0: z={z}")
         z -= 1
-        descent_point = WirePoint(x2, y2, z)
-        if is_visited(descent_point):
+        descend_point = WirePoint(x2, y2, z)
+        if is_visited(descend_point):
             continue
-        wire.add_wire_point(descent_point)
-        mark_visited(descent_point)
+        wire.add_wire_point(descend_point)
+        mark_visited(descend_point)
 
+        # HEEL OMSLACHTIG GEDAAN ZODAT IK HET STAP VOOR STAP KON OPZETTEN MAAR MOET LATER GEWOON EVEN NETJES MET LOOPS
         if not grid.check_valid_addition(wire):
             wire.pop_wire_point()
-            continue
+            z += 1
+            transition_point = WirePoint(x2 + step_x, y2, z)
+            wire.add_wire_point(transition_point)
+            mark_visited(transition_point)
+            transition_point = WirePoint(x2 + step_x, y2 + step_y, z)
+            wire.add_wire_point(transition_point)
+            mark_visited(transition_point)
+            transition_point = WirePoint(x2, y2 + step_y, z)
+            wire.add_wire_point(transition_point)
+            mark_visited(transition_point)
+            while z > 0:
+                z -= 1
+                transition_point = WirePoint(x2, y2 + step_y, z)
+                wire.add_wire_point(transition_point)
+                mark_visited(transition_point)
+            transition_point = WirePoint(x2, y2, z)
+            wire.add_wire_point(transition_point)
+            mark_visited(transition_point)
 
     # Ensure the final point (x2, y2, z=0) is added
     final_point = WirePoint(x2, y2, 0)

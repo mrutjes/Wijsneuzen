@@ -5,10 +5,10 @@ from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
 import pandas as pd
 from code.imports import import_netlist, import_nodes
-from code.algoritms.manhattan_algoritm import manhattan_wire
+from code.algorithms.manhattan_algorithm import manhattan_wire
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
 grid_width = 10
 grid_length = 10
 functie = manhattan_wire
@@ -35,8 +35,8 @@ if len(netlist) >= 1:
 
         grid.add_wire_list(wire)
 
-    # Plot the wires
-    plot_wires_3d(wires, grid_width, grid_length)
+        # Plot the wires
+        plot_wires_3d(wires, grid_width, grid_length)
 
     # Remove the nodes from the wires dict
     grid.remove_nodes_pointdict()
