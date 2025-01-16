@@ -107,23 +107,26 @@ class Wire:
 
     def check_wire(self) -> bool:
         """
-        Checks if a wire is uninterrupted.
+        Checks if a wire is uninterrupted and follows Manhattan movement rules.
         """
-        for i in range(len(self._wirepoints) - 1):
+        for i in range(len(self._wirepoints) - 2):
             current = self._wirepoints[i]
             next_point = self._wirepoints[i + 1]
+
+            # Manhattan movement: exactly one coordinate must differ
             if not (
                 (abs(current.give_x() - next_point.give_x()) == 1 and
-                 current.give_y() == next_point.give_y() and
-                 current.give_z() == next_point.give_z()) or
+                current.give_y() == next_point.give_y() and
+                current.give_z() == next_point.give_z()) or
                 (abs(current.give_y() - next_point.give_y()) == 1 and
-                 current.give_x() == next_point.give_x() and
-                 current.give_z() == next_point.give_z()) or
+                current.give_x() == next_point.give_x() and
+                current.give_z() == next_point.give_z()) or
                 (abs(current.give_z() - next_point.give_z()) == 1 and
-                 current.give_x() == next_point.give_x() and
-                 current.give_y() == next_point.give_y())
+                current.give_x() == next_point.give_x() and
+                current.give_y() == next_point.give_y())
             ):
-                return False
+                print(f"Diagonal movement detected between {current.give_place()} and {next_point.give_place()}")
+                return False  # Movement is invalid
             
         return True
 
@@ -161,26 +164,32 @@ class Wire:
 
     def check_not_return(self) -> bool:
         """
-        Check if the wire does not return on itself.
+        Enhanced debugging with explicit logging of segment comparisons.
         """
-
-        # If there are fewer than 4 points, a return is impossible.
         if len(self._wirepoints) < 4:
+            print("Fewer than 4 points: Cannot return on itself.")
             return True
 
-        # The last two points form the most recently added segment.
+        # Get the most recently added segment with ordered points
         last_point = self._wirepoints[-2]
         point_to_add = self._wirepoints[-1]
+        current_segment = tuple(sorted([last_point, point_to_add], key=lambda wp: (wp.give_x(), wp.give_y(), wp.give_z())))
 
-        # Check if the new segment reverses any previous segment.
-        for i in range(len(self._wirepoints) - 2):
+        print(f"Current Segment (Ordered): {[(wp.give_x(), wp.give_y(), wp.give_z()) for wp in current_segment]}")
+
+        # Check against all previous segments with ordered points
+        for i in range(len(self._wirepoints) - 3):
             seg_start = self._wirepoints[i]
             seg_end = self._wirepoints[i + 1]
+            previous_segment = tuple(sorted([seg_start, seg_end], key=lambda wp: (wp.give_x(), wp.give_y(), wp.give_z())))
 
-            # If the new segment (point_to_add -> last_point) is the reverse of an existing segment, return False.
-            if seg_start == point_to_add and seg_end == last_point:
+            print(f"Comparing with Segment (Ordered): {[(wp.give_x(), wp.give_y(), wp.give_z()) for wp in previous_segment]}")
+
+            if current_segment == previous_segment:
+                print(f"Return detected: {current_segment} matches {previous_segment}")
                 return False
 
+        print("No return detected.")
         return True
 
     def pop_wire_point(self) -> None:

@@ -112,11 +112,12 @@ class Grid_3D:
         current_segments = [
             Segment(current_wire.give_wirepoints()[i], current_wire.give_wirepoints()[i + 1])
             for i in range(len(current_wire.give_wirepoints()) - 1)
-        ]
+        ]   
 
         # Check for overlap with any existing segments
         for current_segment in current_segments:
             if current_segment in self._segments:
+                print(f"Overlap detected with segment: {current_segment}")
                 return False
 
         return True
