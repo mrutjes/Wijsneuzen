@@ -125,6 +125,9 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
         if not grid.check_valid_addition(wire):
             raise ValueError(f"Failed to route wire from {node1} to {node2}.")
 
+    if not wire.check_wire():
+        raise ValueError(f"Wire from {node1} to {node2} is not Manhattan.")
+        
     # Add the completed wire to the grid
     grid.add_wire_dict(wire)
     return wire
