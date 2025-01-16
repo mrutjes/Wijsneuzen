@@ -1,0 +1,52 @@
+# Stap 1: Deel de grid op in lagen
+
+    1.1 Bepaal het aantal lagen op basis van het grid en het aantal nodes
+    
+    1.2 Maak voor elke laag een lege lijst voor draden
+
+# Stap 2: Voor elke connectie (start_node, eind_node) in de netlist:
+
+    2.1 Bepaal welke laag de start_node en eind_node moeten krijgen:
+        - Bereken op basis van de x-, y-, en z-coördinaten in welke laag de draad zal liggen
+        - Zet de start_node en eind_node in de juiste laag
+
+    2.2 Maak een nieuwe Wire instantie met start_node en eind_node op z = 0
+
+    2.3 Bereken het verschil in x- en y-coördinaten:
+        - Bereken het verschil tussen start_node en eind_node
+        - Zet de stapgrootte voor zowel x als y
+
+    2.4 Leg de draad per laag:
+        - Begin met de laag van start_node en leg de draad in de juiste richting
+        - Maak WirePoints in elke stap en voeg ze toe aan de draad
+        - Zorg ervoor dat elke WirePoint toegevoegd wordt aan de lijst van de juiste laag
+
+# Stap 3: Conflicten oplossen per laag
+
+    3.1 Terwijl er conflicten binnen de laag zijn:
+        3.1.1 Controleer of een WirePoint overlapt met een andere draad in dezelfde laag
+        3.1.2 Als er een conflict is:
+            - Probeer de draad naar een andere richting binnen de laag te leggen
+            - Maak extra WirePoints aan om het conflict op te lossen
+            - Voeg de nieuwe WirePoints toe aan de lijst van de laag en verwijder de oude WirePoint
+
+        3.1.3 Als er geen alternatieve oplossing binnen de laag mogelijk is:
+            - Verander het z-niveau van de draad en probeer opnieuw om het conflict op te lossen
+
+        3.1.4 Herhaal het proces totdat alle conflicten in de laag opgelost zijn
+
+# Stap 4: Voeg draden toe aan het grid
+
+    4.1 Na het oplossen van conflicten binnen de laag, voeg de draden toe aan het grid
+        - Voeg de draad toe aan de grid via add_wire_list()
+        - Voeg de draad toe aan de WirePoint dictionary via add_wire_dict()
+
+# Stap 5: Bereken kosten
+
+    5.1 Bereken de hoeveelheid kruispunten per laag en voeg deze samen tot het totaal
+    
+    5.2 Bereken de hoeveelheid draden
+
+    5.3 Bereken de kosten op basis van het aantal kruispunten en draden in het grid
+
+# Stap 6: Print de grid met draden
