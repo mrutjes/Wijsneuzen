@@ -5,13 +5,13 @@ from code.classes.wire_class import Wire, WirePoint
 from code.classes.grid_class import Grid_3D
 import numpy as np
 
-def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str):
+def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str):
     """
     Creates a wire based on the Manhattan distance between node1 and node2.
     Ensures strictly Manhattan movement, with only one coordinate changing at a time.
     Avoids overlap with existing wires by dynamically rerouting and resolving conflicts.
     """
-    wire = Wire(start_node=node1, end_node=node2, nodes_csv_path=nodes_csv_path)
+    wire = Wire(start_node=node1, end_node=node2, nodes_csv_path=nodes_csv_path, netlist_csv_path=netlist_csv_path)
 
     x1, y1 = node1.give_x(), node1.give_y()
     x2, y2 = node2.give_x(), node2.give_y()

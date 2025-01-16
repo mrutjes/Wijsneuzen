@@ -1,5 +1,5 @@
 from code.classes.nodes_class import Node
-from code.imports import import_nodes
+from code.imports import import_nodes, import_netlist
 
 class WirePoint:
     """
@@ -54,12 +54,40 @@ class Wire:
     A class to combine wirepoints in order to form a wire.
     """
 
-    def __init__(self, start_node: Node, end_node: Node, nodes_csv_path: str) -> None:
+    def __init__(self, start_node: Node, end_node: Node, nodes_csv_path: str, netlist_csv_path: str) -> None:
         self.start_node = start_node
         self.end_node = end_node
         self._wirepoints = [WirePoint(self.start_node.give_x(), self.start_node.give_y(), 0), WirePoint(self.end_node.give_x(), self.end_node.give_y(), 0)]
         self._nodes = import_nodes(nodes_csv_path)
+        self._netlist = import_netlist(netlist_csv_path)
 
+
+    def give_netlist(self) -> list[tuple[int,int]]:
+        """
+        Returns the netlist of the wire.
+        """
+        return self._netlist
+    
+    
+    def count_nodes_connections(self) -> dict[int, int]:
+        """
+        Counts the amount of times a node appears in the netlist.
+        """
+        _node_count_dict = {}
+
+        for connection in self._netlist:
+            if connection[0] in _node_count_dict:
+                _node_count_dict[connection[0]] += 1
+            else:
+                _node_count_dict[connection[0]] = 1
+
+            if connection[1] in _node_count_dict:
+                _node_count_dict[connection[1]] += 1
+            else:
+                _node_count_dict[connection[1]] = 1
+        
+        return _node_count_dict
+        
 
     def add_wire_point(self, wire_point: WirePoint) -> None:
         """

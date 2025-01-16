@@ -26,4 +26,8 @@ class Node:
         return self._y
     
     
+    def give_z(self):
+        return 0
+    
+    
 

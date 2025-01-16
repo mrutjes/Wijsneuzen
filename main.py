@@ -8,13 +8,13 @@ from code.imports import import_netlist, import_nodes
 from code.algorithms.manhattan_algorithm import manhattan_wire
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
 grid_width = 10
 grid_length = 10
 functie = manhattan_wire
 
 # Initiate the grid, and import nodes and netlist
-grid = Grid_3D(grid_width, grid_length)
+grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
 nodes_list = import_nodes(nodes_csv_path)
 for node in nodes_list:
     grid.place_node(node)
@@ -31,7 +31,7 @@ if len(netlist) >= 1:
         node1 = nodes_list[node1 - 1]
         node2 = nodes_list[node2 - 1]
 
-        wire = functie(node1, node2, grid, nodes_csv_path)
+        wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
 
         grid.add_wire_list(wire)
 
