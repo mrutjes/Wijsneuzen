@@ -1,0 +1,68 @@
+# Stap 1: Voor elke connectie (start_node, eind_node) in de netlist:
+    
+    1.1 Maak een nieuwe Wire instantie met start_node en eind_node op z = 0
+
+    1.2 Zolang de draad het eindpunt niet heeft bereikt:
+        1.2.1 Bereken het verschil in x- en y-coördinaten:
+            - Bereken tussen het huidige WirePoint en het eindpunt
+            - Neem de stapgrootte:
+                - stapgrootte = 1 als verschil positief is
+                - stapgrootte = -1 als verschil negatief is
+                
+        1.2.2 Zet een stap:
+            - Als het verschil in x groter of gelijk is dan in y:
+                - Verander de x-coordinaat met + stapgrootte
+                - Markeer x_positief = 1 als stapgrootte = 1, anders markeer x_negatief = 1 
+                
+            - Als het verschil in y groter is dan in x:
+                - Verander de y-coordinaat met + stapgrootte
+                - Markeer y_positief = 1 als stapgrootte = 1, anders markeer y_negatief = 1 
+
+        1.2.3 WirePoint maken:
+            - Maak een nieuw WirePoint met de nieuwe coördinaten
+            - Voeg het WirePoint toe aan de draad met add_wire_point()
+
+        1.2.4 Zolang check_valid_addition() voor het nieuwe WirePoint False retourneert:
+            - Verwijder de WirePoint van de draad
+            
+            - Als de positieve x richting gemarkeerd is als geprobeerd:
+                - Verander het y-coordinaat met + stapgrootte
+                - Markeer y_positief = 1 als stapgrootte = 1, anders markeer y_negatief = 1
+                
+            - Anders, als de positieve y richting gemarkeerd is als geprobeerd:
+                - Verander het x-coordinaat met - stapgrootte
+                - Markeer x_positief = 1 als stapgrootte = -1, anders markeer x_negatief = 1
+                
+            - Anders, als de negatieve x richting gemarkeerd is als geprobeerd:
+                - Verander het y-coordinaat met - stapgrootte
+                - Markeer y_positief = 1 als stapgrootte = -1, anders markeer y_negatief = 1
+                
+            - Anders, als alle x en y richtingen gemarkeerd zijn als 1:
+                - Verander het z-coordinaat met + 1
+                - Markeer z_positief = 1
+                
+            - Anders, als z != 0 en z_negatief != 1:
+                - Verander het z-coordinaat met - 1
+                - Markeer z_negatief = 1
+                
+            - Anders, als alle richtingen gemarkeerd zijn als geprobeerd EN we zijn in de startnode:
+                - Raise error "Node ingebouwd, kan draad niet leggen."
+                
+            - Anders:
+                - Markeer x_positief = 1
+                - Continue
+                 
+    1.3 Draad afmaken
+        - Voeg de draad toe aan de grid met add_wire_list()
+        - Voeg de draad toe aan de WirePoint dictionary in het grid met add_wire_dict()
+        - Markeer x_postief, x_negatief, y_postief, y_negatief, z_postief = 0
+            
+# Stap 2: Bereken kosten
+    
+    2.1 Bereken de hoeveelheid kruispunten o.b.v. de dictionary
+    
+    2.2 Bereken de hoeveelheid draden
+    
+    2.3 Bereken de kosten
+    
+# Stap 3: Print de grid met draden

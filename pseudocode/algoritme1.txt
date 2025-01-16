@@ -1,0 +1,44 @@
+# Stap 1: Voor elke connectie (start_node, eind_node) in de netlist:
+
+    1.1 Bereken het kortste pad tussen start_node en eind_node
+        - Gebruik een algoritme zoals Dijkstra of A* om het kortste pad te vinden
+        - Zorg ervoor dat het kortste pad eerst wordt gelegd
+
+    1.2 Maak een nieuwe Wire instantie met start_node en eind_node op z = 0
+    1.3 Plaats het startpunt en eindpunt van de draad op z = 0
+
+    1.4 Leg de draad over het kortste pad:
+        - Begin bij de start_node en volg het pad naar de eind_node
+        - Maak WirePoints voor elke stap langs het pad
+        - Voeg elke WirePoint toe aan de draad
+
+# Stap 2: Conflicten oplossen
+
+    2.1 Terwijl er conflicten zijn (bijvoorbeeld overlappende draden):
+
+        2.1.1 Identificeer de conflicterende draden
+            - Controleer of een WirePoint op dezelfde locatie als een andere draad ligt
+
+        2.1.2 Probeer het conflict op te lossen:
+            - Probeer de draad naar een alternatieve route te verplaatsen
+            - Als een alternatieve route gevonden wordt:
+                - Maak nieuwe WirePoints voor de gewijzigde route
+                - Voeg de nieuwe WirePoints toe aan de draad en verwijder de oude
+            - Als er geen alternatieve route mogelijk is:
+                - Verhoog het z-niveau van de draad (wijzig de hoogte) om het conflict te ontwijken
+
+        2.1.3 Als het conflict opgelost is, voeg de draad toe aan het grid:
+            - Voeg de draad toe aan de grid via add_wire_list()
+            - Voeg de draad toe aan de WirePoint dictionary via add_wire_dict()
+
+# Stap 3: Herhaal voor elke andere connectie
+
+    3.1 Voor elke andere connectie (start_node, eind_node) in de netlist herhaal stap 1 en stap 2
+
+# Stap 4: Bereken kosten
+
+    4.1 Bereken de hoeveelheid kruispunten op basis van de grid
+    4.2 Bereken de hoeveelheid draden die gelegd zijn
+    4.3 Bereken de kosten op basis van het aantal kruispunten en draden
+
+# Stap 5: Print de grid met draden
