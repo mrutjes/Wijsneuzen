@@ -10,10 +10,10 @@ import itertools
 
 nodes_csv_path = './gates&netlists/chip_1/print_1.csv'
 netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
-grid_width = 10
-grid_length = 10
+nodes_list = import_nodes(nodes_csv_path)
+grid_width = max(node._max_value for node in nodes_list)
+grid_length = max(node._max_value for node in nodes_list)
 functie = manhattan_wire
-
 
 # Initiate the grid, and import nodes and netlist
 grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
