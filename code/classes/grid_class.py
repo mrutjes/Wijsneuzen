@@ -66,7 +66,7 @@ class Grid_3D:
         """
         Places a node at the baselayer level at given coordinates.
         """
-        if not (0 <= node.give_x() < self.n and 0 <= node.give_y() < self.m and 0 <= z < self.height):
+        if not (0 <= node.give_x() <= self.n and 0 <= node.give_y() <= self.m and 0 <= z < self.height):
             raise IndexError("Coördinaten buiten de grid.")
         
     
