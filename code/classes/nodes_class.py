@@ -6,7 +6,11 @@ class Node:
         self._x = x
         self._y = y
         self._z = 0
+        self._max_value = max(self._x, self._y)
 
+    def __lt__(self, other):
+        return self._max_value < other._max_value
+    
 
     def __eq__(self, other):
         if not isinstance(other, Node):
