@@ -180,6 +180,8 @@ class Wire:
         if len(self._wirepoints) < 4:
             print("Fewer than 4 points: Cannot return on itself.")
             return True
+        
+        
 
         # Get the most recently added segment with ordered points
         last_point = self._wirepoints[-2]
