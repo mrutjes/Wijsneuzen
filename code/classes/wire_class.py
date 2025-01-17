@@ -1,5 +1,6 @@
-from code.classes.nodes_class import Node
-from code.imports import import_nodes, import_netlist
+from classes.nodes_class import Node
+from imports import import_nodes, import_netlist
+
 
 class WirePoint:
     """
@@ -60,6 +61,7 @@ class Wire:
         self._wirepoints = [WirePoint(self.start_node.give_x(), self.start_node.give_y(), 0), WirePoint(self.end_node.give_x(), self.end_node.give_y(), 0)]
         self._nodes = import_nodes(nodes_csv_path)
         self._netlist = import_netlist(netlist_csv_path)
+        self._segments = set()
 
 
     def give_netlist(self) -> list[tuple[int,int]]:
@@ -87,13 +89,22 @@ class Wire:
                 _node_count_dict[connection[1]] = 1
         
         return _node_count_dict
+    
+    def give_segments(self) -> set:
+        """
+        Returns a set of the segments of the wire.
+        """
+        return self._segments
         
 
     def add_wire_point(self, wire_point: WirePoint) -> None:
         """
         Adds a given wirepoint to the wire. The wirepoints list is always consistent of the start and end node.
         """
+        from classes.segment_class import Segment
+        
         self._wirepoints.remove(self._wirepoints[-1])
+        self._segments.add(Segment(self._wirepoints[-1], wire_point))
         self._wirepoints.append(wire_point)
         self._wirepoints.append(WirePoint(self.end_node.give_x(), self.end_node.give_y(), 0))
 
