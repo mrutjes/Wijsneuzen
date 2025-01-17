@@ -1,6 +1,5 @@
-from classes.nodes_class import Node
-from imports import import_nodes, import_netlist
-
+from code.classes.nodes_class import Node
+from code.imports import import_nodes, import_netlist
 
 class WirePoint:
     """
@@ -101,7 +100,7 @@ class Wire:
         """
         Adds a given wirepoint to the wire. The wirepoints list is always consistent of the start and end node.
         """
-        from classes.segment_class import Segment
+        from code.classes.segment_class import Segment
         
         self._wirepoints.remove(self._wirepoints[-1])
         self._segments.add(Segment(self._wirepoints[-1], wire_point))

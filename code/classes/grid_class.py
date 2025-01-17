@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 
-from classes.nodes_class import Node
-from classes.wire_class import Wire, WirePoint
-from imports import import_netlist, import_nodes
-from classes.segment_class import Segment
+from code.classes.nodes_class import Node
+from code.classes.wire_class import Wire, WirePoint
+from code.imports import import_netlist, import_nodes
+from code.classes.segment_class import Segment
 
 class Grid_3D:
     def __init__(self, n, m, nodes_csv_path):
@@ -148,7 +148,7 @@ class Grid_3D:
         """
         from code.classes.wire_class import WirePoint, Wire
 
-            # Ensure the wire has at least two points
+        # Ensure the wire has at least two points
         if len(current_wire.give_wirepoints()) < 2:
             return False
 
@@ -168,9 +168,9 @@ class Grid_3D:
             return False
         
         #Checks if the wire does not return on itself
-        if not current_wire.check_not_return():
-            print("Would return on itself")
-            return False
+        #if not current_wire.check_not_return():
+        #    print("Would return on itself")
+        #    return False
         
         #if not self.check_reservation(wire_point):
         #    return False
