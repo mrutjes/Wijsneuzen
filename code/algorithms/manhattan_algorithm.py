@@ -38,15 +38,27 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
 
         if z >= 7:
             break
-        elif not grid.check_valid_addition(wire):
-            # Handle conflict by moving up one layer
-            wire.pop_wire_point()
-            z += 1
-            transition_point = WirePoint(x1, y1, z)
-            wire.add_wire_point(transition_point)
+        
+        if not grid.check_valid_addition(wire):
+            if y1 != y2:
+                wire.pop_wire_point()
+                next_point = move_one_step(y1, y2, x1, 'y', z)
+                wire.add_wire_point(next_point)
+            if not grid.check_valid_addition(wire):
+                wire.pop_wire_point()
+                z += 1
+                transition_point = WirePoint(x1, y1, z)
+                wire.add_wire_point(transition_point)
+                x1 = transition_point.give_x()
+                y1 = transition_point.give_y()
+                z = transition_point.give_z()
+            else:
+                x1 = next_point.give_x()
+                y1 = next_point.give_y()
         else:
             x1 = next_point.give_x()
-        print(f"X loop Moving along x: x1={x1}, x2={x2}, y1={y1}, y2={y2}, z={z}")
+        
+        print(f"X loop Moving along: x1={x1}, x2={x2}, y1={y1}, y2={y2}, z={z}")
 
     # Move along y-axis one step at a time
     while y1 != y2:
@@ -55,15 +67,27 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
 
         if z >= 7:
             break
-        elif not grid.check_valid_addition(wire):
-            # Handle conflict by moving up one layer
-            wire.pop_wire_point()
-            z += 1
-            transition_point = WirePoint(x1, y1, z)
-            wire.add_wire_point(transition_point)
+
+        if not grid.check_valid_addition(wire):
+            if x1 != x2:
+                wire.pop_wire_point()
+                next_point = move_one_step(x1, x2, y1, 'x', z)
+                wire.add_wire_point(next_point)
+            if not grid.check_valid_addition(wire):
+                wire.pop_wire_point()
+                z += 1
+                transition_point = WirePoint(x1, y1, z)
+                wire.add_wire_point(transition_point)
+                x2 = transition_point.give_x()
+                y1 = transition_point.give_y()
+                z = transition_point.give_z()
+            else:
+                x2 = next_point.give_x()
+                y1 = next_point.give_y()
         else:
             y1 = next_point.give_y()
-        print(f"Y loop Moving along x: x1={x1}, x2={x2}, y1={y1}, y2={y2}, z={z}")
+
+        print(f"Y loop Moving along: x1={x1}, x2={x2}, y1={y1}, y2={y2}, z={z}")
 
     # Drop to z=0 after reaching the target x and y
     while z > 0:

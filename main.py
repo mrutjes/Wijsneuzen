@@ -7,10 +7,10 @@ import pandas as pd
 from code.imports import import_netlist, import_nodes
 from code.algorithms.manhattan_algorithm import manhattan_wire
 
-nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
-grid_width = 10
-grid_length = 10
+nodes_csv_path = './gates&netlists/chip_1/print_1.csv'
+netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
+grid_width = 17
+grid_length = 17
 functie = manhattan_wire
 
 # Initiate the grid, and import nodes and netlist
@@ -35,8 +35,8 @@ if len(netlist) >= 1:
 
         grid.add_wire_list(wire)
 
-        # Plot the wires
-        plot_wires_3d(wires, grid_width, grid_length)
+    # Plot the wires
+    plot_wires_3d(wires, grid_width, grid_length)
 
     # Remove the nodes from the wires dict
     grid.remove_nodes_pointdict()

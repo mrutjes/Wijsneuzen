@@ -1,6 +1,7 @@
+import matplotlib.pyplot as plt
+
 from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
-import matplotlib.pyplot as plt
 from code.imports import import_netlist, import_nodes
 from code.classes.segment_class import Segment
 
@@ -14,7 +15,7 @@ class Grid_3D:
         self.height = 8
         self._wires = []
         self._lines_count = 0
-        self._segments = set()
+        self._wires_segments = set()
         self._nodes = import_nodes(nodes_csv_path)
         self._reserved_points = set()
         self._point_dict = {
@@ -72,10 +73,6 @@ class Grid_3D:
             start_point = wirepoints[i]
             end_point = wirepoints[i + 1]
 
-            # Add segment to the set
-            segment = Segment(start_point, end_point)
-            self._segments.add(segment)
-
             x, y, z = start_point.give_x(), start_point.give_y(), start_point.give_z()
             if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
                 self._point_dict[(x, y, z)] += 1
@@ -83,6 +80,8 @@ class Grid_3D:
                 raise IndexError("Coordinates outside the grid.")
         
         self._lines_count += len(wirepoints) - 1
+
+        self._wires_segments.update(wire.give_segments())
 
 
     def remove_nodes_pointdict(self):
@@ -98,28 +97,22 @@ class Grid_3D:
         Returns the manhattan distance between two nodes.
         """
         return abs(node1.give_x() - node2.give_x()) + abs(node1.give_y() - node2.give_y())
-    
-    
+
+
     def check_wire_overlap(self, current_wire) -> bool:
         """
         Checks if the wire does not run over another wire in any direction.
         Uses the precomputed set of segments for efficient checks.
         """
-        if len(self._segments) == 0:
+        if len(self._wires_segments) == 0:
             return True
+        
+        current_segment = Segment(current_wire.give_wirepoints()[-3], current_wire.give_wirepoints()[-2])
 
-        # Create segments for the current wire
-        current_segments = [
-            Segment(current_wire.give_wirepoints()[i], current_wire.give_wirepoints()[i + 1])
-            for i in range(len(current_wire.give_wirepoints()) - 1)
-        ]   
-
-        # Check for overlap with any existing segments
-        for current_segment in current_segments:
-            if current_segment in self._segments:
-                print(f"Overlap detected with segment: {current_segment}")
-                return False
-
+        if current_segment in self._wires_segments:
+            print(f"Overlap detected with segment: {current_segment}")
+            return False
+            
         return True
     
     def add_reservation(self, point: WirePoint) -> None:
@@ -155,7 +148,7 @@ class Grid_3D:
         """
         from code.classes.wire_class import WirePoint, Wire
 
-            # Ensure the wire has at least two points
+        # Ensure the wire has at least two points
         if len(current_wire.give_wirepoints()) < 2:
             return False
 
@@ -175,9 +168,9 @@ class Grid_3D:
             return False
         
         #Checks if the wire does not return on itself
-        if not current_wire.check_not_return():
-            print("Would return on itself")
-            return False
+        #if not current_wire.check_not_return():
+        #    print("Would return on itself")
+        #    return False
         
         #if not self.check_reservation(wire_point):
         #    return False
@@ -204,6 +197,12 @@ class Grid_3D:
         """
         intersections = self.total_intersections()
         return intersections * 300 + self._lines_count
+    
+    def percentage_connected(self) -> int:
+        """
+        Returns the percentage of succesfully connected nodes.
+        """
+        
 
    
 def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):

@@ -1,6 +1,6 @@
 import pytest
-from nodes_class import Node
-from wire_class import WirePoint, Wire
+from code.classes.nodes_class import Node
+from code.classes.wire_class import WirePoint, Wire
 
 
 # ------------------------

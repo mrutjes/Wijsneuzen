@@ -1,9 +1,7 @@
-# Filename: test_grid.py
-
 import pytest
-from grid_class import Grid_3D
-from nodes_class import Node
-from wire_class import Wire, WirePoint
+from ..classes.grid_class import Grid_3D
+from ..classes.nodes_class import Node
+from ..classes.wire_class import Wire, WirePoint
 
 
 @pytest.fixture
@@ -11,7 +9,7 @@ def grid():
     """
     Creëert een Grid_3D object met afmeting 10x10.
     """
-    return Grid_3D(n=10, m=10)
+    return Grid_3D(n=10, m=10, nodes_csv_path='./gates&netlists/chip_0/print_0.csv')
 
 
 def test_init_grid(grid):
@@ -254,3 +252,10 @@ def test_kosten(grid):
     # Er is 1 kruising (punt (0,1,0) gebruikt door beide wires)
     # Kosten = 1*300 + 2 = 302
     assert grid.kosten() == 302
+
+def test_wire_overlap(grid):
+    """
+    Test the wire overlap method.
+    """
+    
+
