@@ -12,7 +12,6 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
     Avoids overlap with existing wires by dynamically rerouting and resolving conflicts.
     """
 
-
     wire = Wire(start_node=node1, end_node=node2, nodes_csv_path=nodes_csv_path, netlist_csv_path=netlist_csv_path)
 
     x_start, y_start = node1.give_x(), node1.give_y()
