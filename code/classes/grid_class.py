@@ -19,6 +19,8 @@ class Grid_3D:
         self._nodes = import_nodes(nodes_csv_path)
         self.nodes_csv_path = nodes_csv_path
         self._reserved_points = set()
+        self.failed_wires = 0
+        self.total_wires = 0
         self._point_dict = {
             (x, y, z): 0
             for x in range(self.n)
@@ -36,6 +38,8 @@ class Grid_3D:
         self._wires_segments = set()
         self._nodes = import_nodes(self.nodes_csv_path)
         self._reserved_points = set()
+        self.failed_wires = 0
+        self.total_wires = 0
         self._point_dict = {
             (x, y, z): 0
             for x in range(self.n)
@@ -128,7 +132,6 @@ class Grid_3D:
         current_segment = Segment(current_wire.give_wirepoints()[-3], current_wire.give_wirepoints()[-2])
 
         if current_segment in self._wires_segments:
-            print(f"Overlap detected with segment: {current_segment}")
             return False
             
         return True
@@ -177,12 +180,10 @@ class Grid_3D:
 
         #Checks if the wirepoint does not run over another wire.
         if not self.check_wire_overlap(current_wire):
-            print("Would run over another wire")
             return False
                 
         #Checks if the wirepoint does not go through node.
         if not current_wire.check_not_through_node():
-            print("Would run through node")
             return False
         
         #Checks if the wire does not return on itself
@@ -219,6 +220,12 @@ class Grid_3D:
     def percentage_connected(self) -> int:
         """
         Returns the percentage of succesfully connected nodes.
+        """
+
+
+    def valid_grid(self) -> bool:
+        """
+        Checks if the grid is existent of all valid additions.
         """
         
 

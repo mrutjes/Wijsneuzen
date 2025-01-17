@@ -26,8 +26,6 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
         next_point = WirePoint(current + step, fixed1, z_level) if axis == 'x' else WirePoint(fixed1, current + step, z_level)
         return next_point
     
-    print("New netlist connection:")
-
     step_x = 1 if x1 < x2 else -1
     step_y = 1 if y1 < y2 else -1
 
@@ -57,9 +55,10 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
                 y1 = next_point.give_y()
         else:
             x1 = next_point.give_x()
-        
-        print(f"X loop Moving along: x1={x1}, x2={x2}, y1={y1}, y2={y2}, z={z}")
 
+        if not grid.check_valid_addition(wire):
+            grid.failed_wires += 1
+        
     # Move along y-axis one step at a time
     while y1 != y2:
         next_point = move_one_step(y1, y2, x2, 'y', z)
@@ -87,11 +86,11 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
         else:
             y1 = next_point.give_y()
 
-        print(f"Y loop Moving along: x1={x1}, x2={x2}, y1={y1}, y2={y2}, z={z}")
+        if not grid.check_valid_addition(wire):
+            grid.failed_wires += 1
 
     # Drop to z=0 after reaching the target x and y
     while z > 0:
-        print(f"Descending to z=0: z={z}")
         z -= 1
         descend_point = WirePoint(x2, y2, z)
         wire.add_wire_point(descend_point)
@@ -112,6 +111,9 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
                 wire.add_wire_point(transition_point)
             transition_point = WirePoint(x2, y2, z)
             wire.add_wire_point(transition_point)
+        
+        if not grid.check_valid_addition(wire):
+            grid.failed_wires += 1
 
     # Ensure the final point (x2, y2, z=0) is added
     final_point = WirePoint(x2, y2, 0)
@@ -120,7 +122,8 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
         if not grid.check_valid_addition(wire):
             raise ValueError(f"Failed to route wire from {node1} to {node2}.")
 
-        
+    grid.total_wires += 1
+    
     # Add the completed wire to the grid
     grid.add_wire_dict(wire)
     return wire

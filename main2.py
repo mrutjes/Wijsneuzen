@@ -8,8 +8,8 @@ from code.imports import import_netlist, import_nodes
 from code.algorithms.manhattan_algorithm import manhattan_wire
 import itertools
 
-nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
+nodes_csv_path = './gates&netlists/chip_1/print_1.csv'
+netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
 grid_width = 10
 grid_length = 10
 functie = manhattan_wire
@@ -22,6 +22,8 @@ for node in nodes_list:
     grid.place_node(node)
 netlist = import_netlist(netlist_csv_path)
 all_wire_runs = []
+succesfull_grid = 0
+total_tries = 0
 
 for netlists in itertools.permutations(netlist): 
     # Initiate the wires
@@ -40,17 +42,26 @@ for netlists in itertools.permutations(netlist):
             wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
 
             grid.add_wire_list(wire)
+            
         
         all_wire_runs.append(wires)
 
+        # Calculate the cost of the grid and baseline
+
+        if grid.failed_wires == 0:
+            succesfull_grid += 1
+
+        total_tries += 1
+
         # Plot the wires
-        plot_wires_3d(wires, grid_width, grid_length)
+        #plot_wires_3d(wires, grid_width, grid_length)
 
         # Remove the nodes from the wires dict
         grid.remove_nodes_pointdict()
 
-        # Calculate the cost of the grid
-        print(f"The total cost for this grid is: {grid.cost()}")
-
     else:
         raise ValueError("No netlist given.")
+
+succes_percentage = succesfull_grid / total_tries * 100
+
+print(f'{succes_percentage}% of the grids were succesfull')
