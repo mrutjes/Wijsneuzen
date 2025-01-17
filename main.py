@@ -13,8 +13,8 @@ functie = manhattan_wire
 
 # Initiate the grid, and import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
-grid_width = max(node._max_value for node in nodes_list)
-grid_length = max(node._max_value for node in nodes_list)
+grid_width = max(node._max_value for node in nodes_list) + 1
+grid_length = max(node._max_value for node in nodes_list) + 1
 grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
 for node in nodes_list:
     grid.place_node(node)

@@ -8,11 +8,11 @@ from code.imports import import_netlist, import_nodes
 from code.algorithms.manhattan_algorithm import manhattan_wire
 import itertools
 
-nodes_csv_path = './gates&netlists/chip_1/print_1.csv'
-netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
+nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
 nodes_list = import_nodes(nodes_csv_path)
-grid_width = max(node._max_value for node in nodes_list)
-grid_length = max(node._max_value for node in nodes_list)
+grid_width = max(node._max_value for node in nodes_list) + 1
+grid_length = max(node._max_value for node in nodes_list) + 1
 functie = manhattan_wire
 
 # Initiate the grid, and import nodes and netlist
@@ -25,10 +25,12 @@ all_wire_runs = []
 succesfull_grid = 0
 total_tries = 0
 
-for netlists in itertools.permutations(netlist): 
+for netlists in itertools.permutations(netlist):
     # Initiate the wires
     grid.clear_wires()
     wires = []
+    if total_tries > 100000000000:
+        break
     if len(netlists) >= 1:
         # Form the wires between the nodes based on the given netlist
         wires = grid.return_wire_list()
