@@ -26,6 +26,12 @@ class Grid_3D:
         }
 
 
+    def clear_wires(self):
+        """
+        Deletes all wires from wire. 
+        """
+        self._wires.clear()
+
     def give_height(self) -> int:
         """
         Returns the height of the grid.
