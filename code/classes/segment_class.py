@@ -1,4 +1,4 @@
-from code.classes.wire_class import WirePoint
+from classes.wire_class import WirePoint
 
 class Segment:
     def __init__(self, segment_start: WirePoint, segment_finish: WirePoint):
