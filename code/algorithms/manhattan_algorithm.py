@@ -40,9 +40,10 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
             break
         
         if not grid.check_valid_addition(wire):
-            wire.pop_wire_point()
-            next_point = move_one_step(y1, y2, x1, 'y', z)
-            wire.add_wire_point(next_point)
+            if y1 != y2:
+                wire.pop_wire_point()
+                next_point = move_one_step(y1, y2, x1, 'y', z)
+                wire.add_wire_point(next_point)
             if not grid.check_valid_addition(wire):
                 wire.pop_wire_point()
                 z += 1
@@ -68,19 +69,20 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
             break
 
         if not grid.check_valid_addition(wire):
-            wire.pop_wire_point()
-            next_point = move_one_step(x1, x2, y1, 'x', z)
-            wire.add_wire_point(next_point)
+            if x1 != x2:
+                wire.pop_wire_point()
+                next_point = move_one_step(x1, x2, y1, 'x', z)
+                wire.add_wire_point(next_point)
             if not grid.check_valid_addition(wire):
                 wire.pop_wire_point()
                 z += 1
                 transition_point = WirePoint(x1, y1, z)
                 wire.add_wire_point(transition_point)
-                x1 = transition_point.give_x()
+                x2 = transition_point.give_x()
                 y1 = transition_point.give_y()
                 z = transition_point.give_z()
             else:
-                x1 = next_point.give_x()
+                x2 = next_point.give_x()
                 y1 = next_point.give_y()
         else:
             y1 = next_point.give_y()
