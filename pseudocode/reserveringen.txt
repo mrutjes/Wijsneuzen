@@ -1,3 +1,6 @@
+Lobke
+Hier nog toevoegen dat er reserveringen in moeten.
+
 # Stap 1: Voor elke connectie (start_node, eind_node) in de netlist:
     
     1.1 Maak een nieuwe Wire instantie met start_node en eind_node op z = 0
