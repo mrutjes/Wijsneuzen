@@ -17,6 +17,7 @@ class Grid_3D:
         self._lines_count = 0
         self._wires_segments = set()
         self._nodes = import_nodes(nodes_csv_path)
+        self.nodes_csv_path = nodes_csv_path
         self._reserved_points = set()
         self._point_dict = {
             (x, y, z): 0
@@ -30,7 +31,18 @@ class Grid_3D:
         """
         Deletes all wires from wire. 
         """
-        self._wires.clear()
+        self._wires = []
+        self._lines_count = 0
+        self._wires_segments = set()
+        self._nodes = import_nodes(self.nodes_csv_path)
+        self._reserved_points = set()
+        self._point_dict = {
+            (x, y, z): 0
+            for x in range(self.n)
+            for y in range(self.m)
+            for z in range(self.height)
+        }
+        
 
     def give_height(self) -> int:
         """

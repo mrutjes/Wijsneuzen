@@ -27,12 +27,12 @@ for netlists in itertools.permutations(netlist):
     # Initiate the wires
     grid.clear_wires()
     wires = []
-    if len(netlist) >= 1:
+    if len(netlists) >= 1:
         # Form the wires between the nodes based on the given netlist
         wires = grid.return_wire_list()
-        for i in range(0, len(netlist)):
-            node1 = netlist[i][0]
-            node2 = netlist[i][1]
+        for i in range(0, len(netlists)):
+            node1 = netlists[i][0]
+            node2 = netlists[i][1]
 
             node1 = nodes_list[node1 - 1]
             node2 = nodes_list[node2 - 1]
