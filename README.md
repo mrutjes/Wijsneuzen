@@ -23,7 +23,8 @@ Where:
 - \( k \): Number of intersections between wires.
 
 ### Baseline
-An algorithm is 
+An algorithm is evaluated based on how many netlists it can successfully connect. Because a chip can be wired in various orders, the chosen sequence of connections can greatly influence the feasibility of a solution. To address this, we test the most promising netlist orders and look for any configurations that meet the requirements—specifically, that there is no short circuit. This will be our primary focus. Once we confirm that a valid wiring exists (i.e., no short circuits), we then aim to minimize the cost. Alternatively, the cost can also be taken into account during the routing process itself, for instance by using an A* approach.
+
 
 ---
 
