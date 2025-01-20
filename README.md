@@ -8,9 +8,8 @@ This repository contains our project for the *Algorithms and Heuristics* course.
 ## Problem Description
 Integrated circuits, commonly known as chips, are essential components in modern technology. These circuits consist of gates that need to be connected through a grid. The goal is to:
 
-1. **Minimize wire length**: Shorter connections lead to faster and cheaper circuits.
-2. **Avoid collisions**: Wires cannot share grid segments to prevent circuit failures.
-3. **Minimize intersections**: Crossings between wires increase costs and complexity.
+1. **Avoid short circuits**: Wires cannot share grid segments to prevent circuit failures.
+2. **Minimize intersections**: Crossings between wires increase costs and complexity.
 
 ### Cost Function
 The total cost of a solution is calculated as:
@@ -23,6 +22,9 @@ Where:
 - \( n \): Total wire length (in units).
 - \( k \): Number of intersections between wires.
 
+### Baseline
+An algorithm is 
+
 ---
 
 ## Approach
@@ -30,14 +32,16 @@ Where:
 1. **Grid Representation**: Create a data structure to represent the grid and fixed gate positions (only on base layer)
 2. **Netlist Handling**: Implement a data structure to manage connections (nets) between gates.
 3. **Algorithms**: Develop and test various algorithms and heuristics to minimize costs, such as:
-   - Greedy approaches
-   - A* search
-   - Simulated annealing
+   - Manhattan distance based
+   - Bread First Search
+   - A* algoritms
 4. **Layered Design**: Use multiple grid layers (up to 8) to resolve collisions and optimize layouts.
-5. **Random Netlists**: Test performance on randomly generated netlists to evaluate robustness and scalability.
+5. **Reservation System**: Use a reservation system to make sure that two nodes can always be connected to one another. Makes path finding presumably easier. 
+5. **Optimize Parameters**: Optimize the parameters of the algorithms with grid searches to ensure that the best combination is used. 
+6. **Random Netlists (optional)**: Test performance on randomly generated netlists to evaluate robustness and scalability.
 
 ### Output
-The solution is outputted in a standardized `.csv` format, detailing the wiring and associated costs.
+The solution is visualized in a 3D grid. 
 
 ---
 
@@ -47,16 +51,54 @@ Our project includes solutions for:
 - **Randomly generated netlists**: Created to test algorithm performance and limitations.
 
 We document the results of each approach, including:
-- Percentage of nets successfully connected.
+- Percentage of nets succesfully conneted when testing different orders of netlists
 - Total cost and breakdown (wire length and intersections).
 - Computational efficiency.
+   - The amount of steps an algorithm has to take.
+   - The time it takes for an algorithm to find one succesful solution.
 
 ---
 
 ## Getting Started
+
+### Running the code
+
+0. **Install the requirements**
+   ```bash
+   pip install -r requirements.txt
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/[your-repo]/Wijsneuzen.git
+2. **Navitage to the main directory**
+   ```bash 
+   cd Wijsneuzen
+3. **Run the code**
+   ```bash
+   python main.py
+---
+
 ### Prerequisites
 - Python 3.8+
 - Required libraries (also listed in requirements.txt):
   - `numpy`
   - `matplotlib`
   - `pandas`
+
+---
+### Structure of the Directory
+
+- **gates&netlists**  
+  This folder contains all the chip configurations along with their corresponding netlists. You will find multiple `.csv` files that define the gates’ positions (chip conformations) and the connections (netlists).
+
+- **code**  
+  The main codebase resides here:
+  - **classes**  
+    Contains all Python classes used throughout the project (e.g., data models, utility classes).
+  - **classes tests**  
+    Includes PyTest files for unit testing the classes and functions in the project.
+  - **algorithms**  
+    Holds the core algorithmic functions and heuristics for solving the wiring problem.
+
+   - **imports**  
+   Located in the `code` directory, this file bundles essential functions for tasks such as loading netlists, parsing CSV data, and setting up project resources.
