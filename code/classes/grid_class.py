@@ -163,6 +163,44 @@ class Grid_3D:
         return True
     
 
+    def check_not_through_node(self, point: WirePoint) -> bool:
+        """
+        Checks if a wirepoint doesn't have the same coordinates as a node
+        """
+        for node in self._nodes:
+            if (point.give_x(), point.give_y(), point.give_z()) == (node.give_x(), node.give_y(), node.give_z()):
+                return False
+
+        return True    
+
+    def check_obstacle(self, point: WirePoint, segment: Segment) -> bool:
+        """
+        Checks if a wirepoint does not collide with an obstacle.
+        """
+        
+        if not self.check_in_grid(point):
+            return False
+        
+        if not self.check_not_through_node(point):
+            return False
+        
+        if not self.check_wire_overlap_point(segment):
+            return False
+        
+        return True
+        
+
+    def check_wire_overlap_point(self, segment: Segment) -> bool:  
+        """
+        Checks if the wire does not run over another wire in any direction.
+        Uses the precomputed set of segments for efficient checks.
+        """
+
+        if segment in self._wires_segments:
+            return False
+            
+        return True
+
     def check_in_grid(self, point: WirePoint) -> bool:
         """
         Checks if a given point exists in the grid
@@ -217,6 +255,7 @@ class Grid_3D:
             if value > 1:
                 intersections += (value - 1)
         return intersections
+    
     
     def give_nodes(self) -> list[Node]:
         """
