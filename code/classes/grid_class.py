@@ -161,6 +161,15 @@ class Grid_3D:
             return False
         
         return True
+    
+
+    def check_in_grid(self, point: WirePoint) -> bool:
+        """
+        Checks if a given point exists in the grid
+        """
+        wire_point = point
+        if (wire_point.give_x(), wire_point.give_y(), wire_point.give_z()) not in self._point_dict:
+            return False
 
 
     def check_valid_addition(self, current_wire: Wire) -> bool:
