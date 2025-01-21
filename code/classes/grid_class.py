@@ -206,6 +206,12 @@ class Grid_3D:
             if value > 1:
                 intersections += (value - 1)
         return intersections
+    
+    def give_nodes(self) -> list[Node]:
+        """
+        Returns the list of nodes.
+        """
+        return self._nodes
 
 
     def cost(self) -> int:
