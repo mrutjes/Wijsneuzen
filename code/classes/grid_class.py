@@ -170,6 +170,8 @@ class Grid_3D:
         wire_point = point
         if (wire_point.give_x(), wire_point.give_y(), wire_point.give_z()) not in self._point_dict:
             return False
+        
+        return True
 
 
     def check_valid_addition(self, current_wire: Wire) -> bool:
