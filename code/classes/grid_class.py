@@ -279,7 +279,7 @@ class Grid_3D:
         Calculates the cost of a given point.
         """
         if self._point_dict[point.give_place()] > 1:
-            return self._point_dict[point.give_place()] * 300
+            return self._point_dict[point.give_place()] * 300 + 1
         
         else:
             return 1
