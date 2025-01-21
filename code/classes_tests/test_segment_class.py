@@ -1,6 +1,6 @@
 import pytest
 from classes.segment_class import Segment
-from classes.wire_class import WirePoint
+from code.classes.wire_class import WirePoint
 
 def test_segment_initialization():
     segment = Segment(WirePoint(0, 0, 0), WirePoint(1, 0, 0))

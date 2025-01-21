@@ -5,11 +5,11 @@ from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
 import pandas as pd
 from code.imports import import_netlist, import_nodes
-from code.algorithms.manhattan_algorithm import manhattan_wire
+from code.algorithms.BFS import lee_algorithm as Algorithm
 
-nodes_csv_path = './gates&netlists/chip_1/print_1.csv'
-netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
-functie = manhattan_wire
+nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
+functie = Algorithm
 
 # Initiate the grid, and import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)

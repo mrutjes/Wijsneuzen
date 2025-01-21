@@ -256,7 +256,7 @@ class Grid_3D:
                 intersections += (value - 1)
         return intersections
     
-    
+
     def give_nodes(self) -> list[Node]:
         """
         Returns the list of nodes.
@@ -273,17 +273,16 @@ class Grid_3D:
         intersections = self.total_intersections()
         return intersections * 300 + self._lines_count
     
-    def percentage_connected(self) -> int:
-        """
-        Returns the percentage of succesfully connected nodes.
-        """
 
-
-    def valid_grid(self) -> bool:
+    def cost_point(self, point: WirePoint) -> int:
         """
-        Checks if the grid is existent of all valid additions.
+        Calculates the cost of a given point.
         """
+        if self._point_dict[point.give_place()] > 1:
+            return self._point_dict[point.give_place()] * 300
         
+        else:
+            return 1
 
    
 def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
