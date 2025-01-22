@@ -92,13 +92,15 @@ class Grid_3D:
             # If node used >=4 times, apply big cost
             if node_counts[node] >= 4:
                 for dx, dy, dz, cost in [
-                    (0, 0, 0, 50),
-                    (-1, 0, 0, 50), (1, 0, 0, 50),
-                    (0, -1, 0, 50), (0, 1, 0, 50),
-                    (-2, 0, 0, 25), (2, 0, 0, 25),
-                    (0, -2, 0, 25), (0, 2, 0, 25),
-                    (-3, 0, 0, 5),  (3, 0, 0, 5),
-                    (0, -3, 0, 5),  (0, 3, 0, 5)
+                    (0, 0, 1, 50),  # Above
+                    (0, -1, 0, 50), (0, 1, 0, 50),  # Vertical neighbors
+                    (-1, 0, 0, 50), (1, 0, 0, 50),  # Horizontal neighbors
+                    (0, 0, 2, 25),  # Two steps above
+                    (0, -2, 0, 25), (0, 2, 0, 25),  # Two steps vertical
+                    (-2, 0, 0, 25), (2, 0, 0, 25),  # Two steps horizontal
+                    (0, 0, 3, 5),  # Three steps above
+                    (0, -3, 0, 5), (0, 3, 0, 5),  # Three steps vertical
+                (-3, 0, 0, 5), (3, 0, 0, 5)  # Three steps horizontal
                 ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
@@ -107,26 +109,28 @@ class Grid_3D:
             # If node used >=3 times, apply smaller ring
             elif node_counts[node] >= 3:
                 for dx, dy, dz, cost in [
-                    (0, 0, 0, 40),
-                    (-1, 0, 0, 40), (1, 0, 0, 40),
-                    (0, -1, 0, 40), (0, 1, 0, 40),
-                    (-2, 0, 0, 20), (2, 0, 0, 20),
-                    (0, -2, 0, 20), (0, 2, 0, 20)
+                    (0, 0, 1, 40),  # Above
+                    (0, -1, 0, 40), (0, 1, 0, 40),  # Vertical neighbors
+                    (-1, 0, 0, 40), (1, 0, 0, 40),  # Horizontal neighbors
+                    (0, 0, 2, 20),  # Two steps above
+                    (0, -2, 0, 20), (0, 2, 0, 20),  # Two steps vertical
+                    (-2, 0, 0, 20), (2, 0, 0, 20)  # Two steps horizontal
                 ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
 
-            # If node used >=2 times, apply a small ring
+        # If node used >=2 times, apply a small ring
             elif node_counts[node] >= 2:
                 for dx, dy, dz, cost in [
-                    (0, 0, 0, 30),
-                    (-1, 0, 0, 30), (1, 0, 0, 30),
-                    (0, -1, 0, 30), (0, 1, 0, 30)
+                    (0, 0, 1, 30),  # Above
+                    (0, -1, 0, 30), (0, 1, 0, 30),  # Vertical neighbors
+                    (-1, 0, 0, 30), (1, 0, 0, 30)  # Horizontal neighbors
                 ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
+
 
         # -----------------------------------------------------
         # 2) MAKE OUTER CELLS CHEAPER AND CENTER CELLS PRICIER
