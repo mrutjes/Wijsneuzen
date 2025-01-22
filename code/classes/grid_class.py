@@ -177,6 +177,47 @@ class Grid_3D:
             (x, y, z): 1 for x in range(self.n) for y in range(self.m) for z in range(self.height)
         }
 
+    def remove_wire(self, wire: Wire) -> None:
+        """
+        Removes a wire from the grid and updates the grid's data structures.
+
+        Args:
+            wire (Wire): The wire to remove.
+        """
+        # Get the wirepoints from the wire
+        wirepoints = wire.give_wirepoints()
+
+        # Iterate through the wirepoints and update the grid values and point dictionary
+        for point in wirepoints:
+            x, y, z = point.give_x(), point.give_y(), point.give_z()
+
+            # Update the grid values to default (1 in this case)
+            self.grid_values[(x, y, z)] = 1
+
+            # Decrease the count in the point dictionary
+            if (x, y, z) in self._point_dict:
+                self._point_dict[(x, y, z)] -= 1
+                if self._point_dict[(x, y, z)] < 0:
+                    self._point_dict[(x, y, z)] = 0
+
+        # Remove segments associated with the wire from the segment set
+        for i in range(len(wirepoints) - 1):
+            start_point = wirepoints[i]
+            end_point = wirepoints[i + 1]
+            segment = Segment(start_point, end_point)
+            if segment in self._wires_segments:
+                self._wires_segments.remove(segment)
+
+        # Remove the wire from the list of wires
+        if wire in self._wires:
+            self._wires.remove(wire)
+
+        # Update line count
+        self._lines_count -= len(wirepoints) - 1
+        if self._lines_count < 0:
+            self._lines_count = 0
+
+
     def give_height(self) -> int:
         """
         Returns the height of the grid.
@@ -364,7 +405,7 @@ class Grid_3D:
             return False
 
         #Checks if the wirepoint does not run over another wire.
-        if not self.check_wire_overlap(current_wire):
+        if not self.check_wire_overlap_point(current_wire):
             return False
                 
         #Checks if the wirepoint does not go through node.
