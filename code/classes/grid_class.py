@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from collections import Counter
 
 from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
@@ -62,6 +63,61 @@ class Grid_3D:
             return self.grid_values[(point.give_x(), point.give_y(), point.give_z())]
         else:
             raise ValueError("Point is out of grid bounds.")
+        
+    
+    def apply_costs_around_nodes(self, nodes_list, netlist):
+        """
+        Apply costs to grid cells based on node frequency in the netlist.
+
+        Args:
+            nodes_list (list[Node]): The list of nodes.
+            netlist (list[tuple]): The netlist containing node pairs.
+        """
+
+        # Count how many times each node appears in the netlist
+        node_counts = Counter([node for pair in netlist for node in pair])
+
+        for node in nodes_list:
+            x, y, z = node.give_x(), node.give_y(), 0
+
+            # Check if node appears 4 times or more
+            if node_counts[node] >= 4:
+                for dx, dy, dz, cost in [
+                    (0, 0, 0, 50),
+                    (-1, 0, 0, 50), (1, 0, 0, 50),
+                    (0, -1, 0, 50), (0, 1, 0, 50),
+                    (-2, 0, 0, 25), (2, 0, 0, 25),
+                    (0, -2, 0, 25), (0, 2, 0, 25),
+                    (-3, 0, 0, 5), (3, 0, 0, 5),
+                    (0, -3, 0, 5), (0, 3, 0, 5)
+                ]:
+                    nx, ny, nz = x + dx, y + dy, z + dz
+                    if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
+                        self.grid_values[(nx, ny, nz)] = cost
+
+            # Check if node appears 3 times or more
+            elif node_counts[node] >= 3:
+                for dx, dy, dz, cost in [
+                    (0, 0, 0, 40),
+                    (-1, 0, 0, 40), (1, 0, 0, 40),
+                    (0, -1, 0, 40), (0, 1, 0, 40),
+                    (-2, 0, 0, 20), (2, 0, 0, 20),
+                    (0, -2, 0, 20), (0, 2, 0, 20)
+                ]:
+                    nx, ny, nz = x + dx, y + dy, z + dz
+                    if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
+                        self.grid_values[(nx, ny, nz)] = cost
+
+            # Check if node appears 2 times or more
+            elif node_counts[node] >= 2:
+                for dx, dy, dz, cost in [
+                    (0, 0, 0, 30),
+                    (-1, 0, 0, 30), (1, 0, 0, 30),
+                    (0, -1, 0, 30), (0, 1, 0, 30)
+                ]:
+                    nx, ny, nz = x + dx, y + dy, z + dz
+                    if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
+                        self.grid_values[(nx, ny, nz)] = cost
 
 
     def clear_wires(self):
