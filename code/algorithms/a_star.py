@@ -11,7 +11,7 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
     """
     Same as BFS lee's algorithm, except that the distance between nodes is used as a heuristic
     """
-    
+
     wire = Wire(start_node=node1, end_node=node2, nodes_csv_path=nodes_csv_path, netlist_csv_path=netlist_csv_path)
     x_start, y_start, z_start = node1.give_x(), node1.give_y(), node1.give_z()
     x_end, y_end, z_end = node2.give_x(), node2.give_y(), node2.give_z()
@@ -43,6 +43,8 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
             for point in path:
                 wire.add_wire_point(point)
 
+            # Add the completed wire to the grid
+            grid.add_wire_dict(wire)
             return wire
 
         neighbors = []
@@ -53,14 +55,15 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
             # Validate the neighbor and segment
             if (
                 grid.check_obstacle(temp_wirepoint, temp_segment)
-                and (current, temp_wirepoint) not in visited_segments
+                and (temp_segment) not in visited_segments
             ):
                 neighbors.append(temp_wirepoint)
 
         for neighbor in neighbors:
-            crossing_penalty = 300 if grid.is_crossing(neighbor) else 0
-            layer_change_penalty = 1 if current.give_z() != neighbor.give_z() else 0
-            g_cost = costs[current] + grid.cost_point(neighbor) + crossing_penalty + layer_change_penalty
+            #crossing_penalty = 300 if grid.is_crossing(neighbor) else 0
+            #layer_change_penalty = 1 if current.give_z() != neighbor.give_z() else 0
+            #g_cost = costs[current] + grid.cost_point(neighbor) + crossing_penalty + layer_change_penalty
+            g_cost = costs[current] + grid.get_point_value(neighbor) + grid.cost_point(neighbor)
             # Use the grid's distance_nodes method for the heuristic
             h_cost = grid.distance_nodes(neighbor, WirePoint(x_end, y_end, z_end))
             f_cost = g_cost + h_cost
@@ -69,7 +72,7 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
             if g_cost < costs.get(neighbor, float('inf')):
                 costs[neighbor] = g_cost
                 parents[neighbor] = current
-                visited_segments.add((current, neighbor))  # Mark the segment as visited
+                visited_segments.add(Segment(current, neighbor))  # Mark the segment as visited
                 heapq.heappush(q, (f_cost, neighbor))
 
     # If the loop exits without connecting the nodes
