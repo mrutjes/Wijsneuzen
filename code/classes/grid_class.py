@@ -73,20 +73,23 @@ class Grid_3D:
     
     def apply_costs_around_nodes(self, netlist):
         """
-        Apply costs to grid cells based on node frequency in the netlist.
+        1) Apply extra cost around nodes that appear frequently in the netlist.
+        2) Then, ALSO make outer cells cheaper and center cells more expensive.
 
-        Args:
-            nodes_list (list[Node]): The list of nodes.
-            netlist (list[tuple]): The netlist containing node pairs.
+        The end result:
+        - Heavily used nodes still get big cost in/around them (as before).
+        - Among the "non-node" space, cells near the grid edges are cheaper,
+        and cells near the center are more expensive.
         """
 
         # Count how many times each node appears in the netlist
         node_counts = Counter([node for pair in netlist for node in pair])
 
+        # For each node, set certain rings of cells around it to a higher cost
         for node in self._nodes:
             x, y, z = node.give_x(), node.give_y(), 0
 
-            # Check if node appears 4 times or more
+            # If node used >=4 times, apply big cost
             if node_counts[node] >= 4:
                 for dx, dy, dz, cost in [
                     (0, 0, 0, 50),
@@ -94,14 +97,14 @@ class Grid_3D:
                     (0, -1, 0, 50), (0, 1, 0, 50),
                     (-2, 0, 0, 25), (2, 0, 0, 25),
                     (0, -2, 0, 25), (0, 2, 0, 25),
-                    (-3, 0, 0, 5), (3, 0, 0, 5),
-                    (0, -3, 0, 5), (0, 3, 0, 5)
+                    (-3, 0, 0, 5),  (3, 0, 0, 5),
+                    (0, -3, 0, 5),  (0, 3, 0, 5)
                 ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
 
-            # Check if node appears 3 times or more
+            # If node used >=3 times, apply smaller ring
             elif node_counts[node] >= 3:
                 for dx, dy, dz, cost in [
                     (0, 0, 0, 40),
@@ -114,7 +117,7 @@ class Grid_3D:
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
 
-            # Check if node appears 2 times or more
+            # If node used >=2 times, apply a small ring
             elif node_counts[node] >= 2:
                 for dx, dy, dz, cost in [
                     (0, 0, 0, 30),
@@ -125,6 +128,34 @@ class Grid_3D:
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
 
+        # -----------------------------------------------------
+        # 2) MAKE OUTER CELLS CHEAPER AND CENTER CELLS PRICIER
+        # -----------------------------------------------------
+        #
+        # We'll do a simple formula: the cost at each cell (x,y,z)
+        # will be increased by an amount proportional to "distance from the edge."
+        #
+        # distance_to_edge = min(x, (self.n - 1 - x), y, (self.m - 1 - y), z, (self.height - 1 - z))
+        #
+        # The bigger that distance, the more "center" the cell is => the bigger cost we add.
+
+        for x in range(self.n):
+            for y in range(self.m):
+                for z in range(self.height):
+                    dist_to_edge = min(
+                        x,               # distance from left edge
+                        self.n - 1 - x,  # distance from right edge
+                        y,               # distance from top edge
+                        self.m - 1 - y,  # distance from bottom edge
+                        z,               # distance from top layer in 3D
+                        self.height - 1 - z  # distance from bottom layer in 3D
+                    )
+
+                    cost_bump = dist_to_edge * 2
+
+                    self.grid_values[(x, y, z)] += cost_bump
+
+
 
     def clear_wires(self):
         """
@@ -133,7 +164,6 @@ class Grid_3D:
         self._wires = []
         self._lines_count = 0
         self._wires_segments = set()
-        self._nodes = import_nodes(self.nodes_csv_path)
         self._reserved_points = set()
         self.failed_wires = 0
         self.total_wires = 0
@@ -143,7 +173,9 @@ class Grid_3D:
             for y in range(self.m)
             for z in range(self.height)
         }
-        
+        self.grid_values = {
+            (x, y, z): 1 for x in range(self.n) for y in range(self.m) for z in range(self.height)
+        }
 
     def give_height(self) -> int:
         """

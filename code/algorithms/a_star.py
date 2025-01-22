@@ -86,7 +86,6 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
                 continue
 
             # Compute g_cost (distance so far) + h_cost (heuristic)
-            print(grid.cost_point(neighbor))
             g_cost = costs[current] + grid.get_point_value(neighbor) + grid.cost_point(neighbor)
             h_cost = grid.distance_nodes(neighbor, WirePoint(x_end, y_end, z_end))
             f_cost = g_cost + h_cost
