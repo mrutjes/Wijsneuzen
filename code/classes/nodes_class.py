@@ -12,6 +12,10 @@ class Node:
         return self._max_value < other._max_value
     
 
+    def __hash__(self):
+        return hash((self._x, self._y, self._z))
+    
+
     def __eq__(self, other):
         if not isinstance(other, Node):
             return False

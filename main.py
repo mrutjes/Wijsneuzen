@@ -23,7 +23,7 @@ netlist = import_netlist(netlist_csv_path)
 
 # Give certain points certain values
 
-grid.apply_costs_around_nodes(nodes_list, netlist)
+grid.apply_costs_around_nodes(netlist)
 
 
 # Initiate the wires

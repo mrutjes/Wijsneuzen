@@ -65,7 +65,7 @@ class Grid_3D:
             raise ValueError("Point is out of grid bounds.")
         
     
-    def apply_costs_around_nodes(self, nodes_list, netlist):
+    def apply_costs_around_nodes(self, netlist):
         """
         Apply costs to grid cells based on node frequency in the netlist.
 
@@ -77,7 +77,7 @@ class Grid_3D:
         # Count how many times each node appears in the netlist
         node_counts = Counter([node for pair in netlist for node in pair])
 
-        for node in nodes_list:
+        for node in self._nodes:
             x, y, z = node.give_x(), node.give_y(), 0
 
             # Check if node appears 4 times or more

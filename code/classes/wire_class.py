@@ -10,44 +10,49 @@ class WirePoint:
         self._y = y
         self._z = z
 
-
     def __eq__(self, other):
         if not isinstance(other, WirePoint):
             return False
         return (self._x, self._y, self._z) == (other._x, other._y, other._z)
-    
 
     def __hash__(self):
         return hash((self._x, self._y, self._z))
-        
 
-    def give_place(self) -> (int,int,int): # type: ignore
+    def __lt__(self, other):
+        if not isinstance(other, WirePoint):
+            return NotImplemented
+        return (self._x, self._y, self._z) < (other._x, other._y, other._z)
+
+    def __le__(self, other):
+        if not isinstance(other, WirePoint):
+            return NotImplemented
+        return (self._x, self._y, self._z) <= (other._x, other._y, other._z)
+
+    def __gt__(self, other):
+        if not isinstance(other, WirePoint):
+            return NotImplemented
+        return (self._x, self._y, self._z) > (other._x, other._y, other._z)
+
+    def __ge__(self, other):
+        if not isinstance(other, WirePoint):
+            return NotImplemented
+        return (self._x, self._y, self._z) >= (other._x, other._y, other._z)
+
+    def give_place(self) -> (int, int, int):  # type: ignore
         """
         Returns the coordinates of a wirepoint as integers.
         """
         return (self._x, self._y, self._z)
-    
 
     def give_x(self) -> int:
-        """
-        Returns the x coordinate of a wirepoint.
-        """
         return self._x
-    
 
     def give_y(self) -> int:
-        """
-        Returns the y coordinate of a wirepoint.
-        """
         return self._y
-    
-    
+
     def give_z(self) -> int:
-        """
-        Returns the z coordinate of a wirepoint.
-        """
         return self._z
-        
+
 
 class Wire:
     """
