@@ -1,14 +1,7 @@
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from code.classes.grid_class import Grid_3D, plot_wires_3d
-from code.classes.nodes_class import Node
-from code.classes.wire_class import Wire, WirePoint
-import pandas as pd
+from code.classes.grid_class import Grid_3D
 from code.imports import import_netlist, import_nodes
-from code.algorithms.a_star import a_star_algorithm
 from code.algorithms.DFS import dfs_algorithm as Algorithm
 import itertools
-import csv
 
 nodes_csv_path = './gates&netlists/chip_2/print_2.csv'
 netlist_csv_path = './gates&netlists/chip_2/netlist_9.csv'
@@ -30,18 +23,19 @@ total_tries = 0
 for netlists in itertools.permutations(netlist):
     if total_tries > 20:
         break
+
     # Reinitialize the grid for each permutation
     grid.clear_wires()
-    wires = grid.return_wire_list()  # empty right now
+    wires = grid.return_wire_list()
 
-    success_for_this_permutation = True  # a flag we set to false if a route fails
+    success_for_this_permutation = True
 
     if len(netlists) == 0:
         raise ValueError("No netlist given.")
 
-    laid_wires = []  # Keep track of successfully laid wires
+    laid_wires = []
 
-    # Attempt to form wires for each pair in this permutation
+    # Lay wires for this order of the netlist
     for i in range(len(netlists)):
         node1_id, node2_id = netlists[i]
         node1 = nodes_list[node1_id - 1]
@@ -49,29 +43,25 @@ for netlists in itertools.permutations(netlist):
 
         while True:
             try:
-                # Attempt to find a route
+                # Find a path
                 wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
                 if wire is not None:
-                    laid_wires.append(wire)  # Add wire to the list of laid wires
-                    break  # Exit the loop if the wire is laid successfully
-                else:
-                    raise Exception("No valid path found")
+                    laid_wires.append(wire)
+                    break
             except Exception as e:
-                # If we fail, backtrack by removing the last wire
+                # Backtrack
                 if laid_wires:
-                    last_wire = laid_wires.pop()  # Remove the last laid wire
-                    grid.remove_wire(last_wire)  # Remove it from the grid
+                    last_wire = laid_wires.pop()
+                    grid.remove_wire(last_wire)
                 else:
-                    # If no wires to backtrack, mark permutation as failed
                     success_for_this_permutation = False
                     break
 
         if not success_for_this_permutation:
-            break  # Skip the rest of the permutation if any route fails
+            break
 
-    # Now we've tried to route all pairs in this permutation (unless we broke early)
+    # If we're succesfull
     if success_for_this_permutation:
-        # This permutation succeeded for all net pairs
         all_wire_runs.append(wires)
         successful_grid += 1
 
