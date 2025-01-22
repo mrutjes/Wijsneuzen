@@ -5,7 +5,7 @@ from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
 import pandas as pd
 from code.imports import import_netlist, import_nodes
-from code.algorithms.BFS import lee_algorithm as Algorithm
+from code.algorithms.a_star import a_star_algorithm as Algorithm
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
