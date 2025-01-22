@@ -7,9 +7,10 @@ import pandas as pd
 from code.imports import import_netlist, import_nodes
 from code.algorithms.a_star import a_star_algorithm as Algorithm
 
+
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
-functie = Algorithm
+functie = a_star
 
 # Initiate the grid, and import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
@@ -19,6 +20,11 @@ grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
 for node in nodes_list:
     grid.place_node(node)
 netlist = import_netlist(netlist_csv_path)
+
+# Give certain points certain values
+
+grid.apply_costs_around_nodes(nodes_list, netlist)
+
 
 # Initiate the wires
 if len(netlist) >= 1:
