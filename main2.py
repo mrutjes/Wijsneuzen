@@ -9,7 +9,7 @@ from code.algorithms.a_star import a_star_algorithm as Algorithm
 import itertools
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_3.csv'
 nodes_list = import_nodes(nodes_csv_path)
 grid_width = max(node._max_value for node in nodes_list) + 1
 grid_length = max(node._max_value for node in nodes_list) + 1
@@ -46,7 +46,7 @@ for netlists in itertools.permutations(netlist):
             wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
         except Exception as e:
             # If we fail, log it and mark this permutation as failed
-            print(f"Route for pair index {i} in netlist {netlists} failed: {e}")
+            #print(f"Route for pair index {i} in netlist {netlists} failed: {e}")
             success_for_this_permutation = False
             break  # skip the rest of pairs in this permutation
 
