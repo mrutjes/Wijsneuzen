@@ -375,23 +375,6 @@ class Grid_3D:
         else:
             return 1
         
-class GridCostMapper:
-    def __init__(self):
-        self.grid_costs = {}
-
-    def pull_cost_grid_point(self, point: WirePoint, cost: int):
-        """
-        Adds a point and its associated cost to the grid.
-        """
-
-        self.grid_costs[(point.give_x(), point.give_y())] = cost
-
-    def push_display_grid_costs(self):
-        """
-        Displays all points in the grid and their associated costs.
-        """
-        for point, cost in self.grid_costs.items():
-            print(f"Point {point} -> Cost: {cost}")
         
 
    
