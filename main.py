@@ -5,11 +5,11 @@ from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
 import pandas as pd
 from code.imports import import_netlist, import_nodes
-from code.algorithms.debug_a_star import a_star_algorithm as Algorithm
+from code.algorithms.a_star import a_star_algorithm as Algorithm
 
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_3.csv'
 functie = Algorithm
 
 # Initiate the grid, and import nodes and netlist
@@ -28,8 +28,8 @@ netlist_2 = [(nodes_list[x1 - 1], nodes_list[x2 - 1]) for x1, x2 in netlist]
 
 # Give certain points certain values
 
-grid.apply_costs_around_nodes(netlist_2)
-print(f'{grid.grid_values}')
+#grid.apply_costs_around_nodes(netlist_2)
+#print(f'{grid.grid_values}')
 
 # Initiate the wires
 if len(netlist) >= 1:
@@ -47,7 +47,7 @@ if len(netlist) >= 1:
         grid.add_wire_list(wire)
 
     # Plot the wires
-        plot_wires_3d(wires, grid_width, grid_length)
+    plot_wires_3d(wires, grid_width, grid_length)
 
     # Remove the nodes from the wires dict
     grid.remove_nodes_pointdict()

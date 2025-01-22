@@ -46,6 +46,12 @@ class Grid_3D:
             self.grid_values[(point.give_x(), point.give_y(), point.give_z())] = value
         else:
             raise ValueError("Point is out of grid bounds.")
+        
+    def return_point_dict(self):
+        """
+        Returns the point dict.
+        """
+        return self._point_dict
 
     def get_point_value(self, point: WirePoint) -> int:
         """
@@ -194,7 +200,12 @@ class Grid_3D:
         
         self._lines_count += len(wirepoints) - 1
 
-        self._wires_segments.update(wire.give_segments())
+
+    def add_wire_segment(self, segment: Segment) -> None:
+        """
+        Adds a segment to the set of segments.
+        """
+        self._wires_segments.add(segment)
 
 
     def remove_nodes_pointdict(self):
@@ -209,7 +220,10 @@ class Grid_3D:
         """
         Returns the manhattan distance between two nodes.
         """
-        return abs(node1.give_x() - node2.give_x()) + abs(node1.give_y() - node2.give_y())
+        return (abs(node1.give_x() - node2.give_x()) +
+            abs(node1.give_y() - node2.give_y()) +
+            abs(node1.give_z() - node2.give_z()))
+
 
 
     def check_wire_overlap(self, current_wire) -> bool:
@@ -286,7 +300,6 @@ class Grid_3D:
         Checks if the wire does not run over another wire in any direction.
         Uses the precomputed set of segments for efficient checks.
         """
-
         if segment in self._wires_segments:
             return False
             

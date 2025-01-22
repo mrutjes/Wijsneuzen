@@ -9,7 +9,10 @@ class WirePoint:
         self._x = x
         self._y = y
         self._z = z
-
+        
+    def __repr__(self):
+        return f"WirePoint(x={self._x}, y={self._y}, z={self._z})"
+    
     def __eq__(self, other):
         if not isinstance(other, WirePoint):
             return False
