@@ -27,6 +27,41 @@ class Grid_3D:
             for y in range(self.m)
             for z in range(self.height)
         }
+        self.grid_values = {
+            (x, y, z): 1 for x in range(self.n) for y in range(self.m) for z in range(self.height)
+        }
+
+    def set_point_value(self, x: int, y: int, z: int, value: int):
+        """
+        Sets a value for a specific point in the grid.
+
+        Args:
+            x (int): X-coordinate of the point.
+            y (int): Y-coordinate of the point.
+            z (int): Z-coordinate of the point.
+            value (int): The value to set for the point.
+        """
+        if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
+            self.grid_values[(x, y, z)] = value
+        else:
+            raise ValueError("Point is out of grid bounds.")
+
+    def get_point_value(self, x: int, y: int, z: int) -> int:
+        """
+        Gets the value of a specific point in the grid.
+
+        Args:
+            x (int): X-coordinate of the point.
+            y (int): Y-coordinate of the point.
+            z (int): Z-coordinate of the point.
+
+        Returns:
+            int: The value of the point.
+        """
+        if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
+            return self.grid_values[(x, y, z)]
+        else:
+            raise ValueError("Point is out of grid bounds.")
 
 
     def clear_wires(self):
@@ -283,6 +318,25 @@ class Grid_3D:
         
         else:
             return 1
+        
+class GridCostMapper:
+    def __init__(self):
+        self.grid_costs = {}
+
+    def pull_cost_grid_point(self, point: WirePoint, cost: int):
+        """
+        Adds a point and its associated cost to the grid.
+        """
+
+        self.grid_costs[(point.give_x(), point.give_y())] = cost
+
+    def push_display_grid_costs(self):
+        """
+        Displays all points in the grid and their associated costs.
+        """
+        for point, cost in self.grid_costs.items():
+            print(f"Point {point} -> Cost: {cost}")
+        
 
    
 def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
