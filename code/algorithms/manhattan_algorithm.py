@@ -119,7 +119,7 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
     final_point = WirePoint(x2, y2, 0)
     if final_point not in wire.give_wirepoints():
         wire.add_wire_point(final_point)
-        if not grid.check_valid_addition(wire):
+        if not grid.check_obstacle(wire):
             raise ValueError(f"Failed to route wire from {node1} to {node2}.")
 
     grid.total_wires += 1
