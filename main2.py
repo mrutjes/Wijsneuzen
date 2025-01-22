@@ -7,6 +7,7 @@ import pandas as pd
 from code.imports import import_netlist, import_nodes
 from code.algorithms.a_star import a_star_algorithm as Algorithm
 import itertools
+import csv
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = './gates&netlists/chip_0/netlist_3.csv'
@@ -46,7 +47,9 @@ for netlists in itertools.permutations(netlist):
             wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
         except Exception as e:
             # If we fail, log it and mark this permutation as failed
-            #print(f"Route for pair index {i} in netlist {netlists} failed: {e}")
+            with open('error_log.csv', 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([f"Route for pair index {i} in netlist {netlists} failed: {e}"])
             success_for_this_permutation = False
             break  # skip the rest of pairs in this permutation
 
