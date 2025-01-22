@@ -31,7 +31,7 @@ class Grid_3D:
             (x, y, z): 1 for x in range(self.n) for y in range(self.m) for z in range(self.height)
         }
 
-    def set_point_value(self, x: int, y: int, z: int, value: int):
+    def set_point_value(self, point: WirePoint, value: int):
         """
         Sets a value for a specific point in the grid.
 
@@ -41,12 +41,12 @@ class Grid_3D:
             z (int): Z-coordinate of the point.
             value (int): The value to set for the point.
         """
-        if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
-            self.grid_values[(x, y, z)] = value
+        if 0 <= point.give_x() < self.n and 0 <= point.give_y() < self.m and 0 <= point.give_z() < self.height:
+            self.grid_values[(point.give_x(), point.give_y(), point.give_z())] = value
         else:
             raise ValueError("Point is out of grid bounds.")
 
-    def get_point_value(self, x: int, y: int, z: int) -> int:
+    def get_point_value(self, point: WirePoint) -> int:
         """
         Gets the value of a specific point in the grid.
 
@@ -58,8 +58,8 @@ class Grid_3D:
         Returns:
             int: The value of the point.
         """
-        if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
-            return self.grid_values[(x, y, z)]
+        if 0 <= point.give_x() < self.n and 0 <= point.give_y() < self.m and 0 <= point.give_z() < self.height:
+            return self.grid_values[(point.give_x(), point.give_y(), point.give_z())]
         else:
             raise ValueError("Point is out of grid bounds.")
 
