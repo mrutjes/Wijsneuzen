@@ -20,11 +20,16 @@ grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
 for node in nodes_list:
     grid.place_node(node)
 netlist = import_netlist(netlist_csv_path)
+# Netlist for apply_costs_around_nodes function
+netlist_2 = [(nodes_list[x1 - 1], nodes_list[x2 - 1]) for x1, x2 in netlist]
+
+
+
 
 # Give certain points certain values
 
-grid.apply_costs_around_nodes(netlist)
-
+grid.apply_costs_around_nodes(netlist_2)
+print(f'{grid.grid_values}')
 
 # Initiate the wires
 if len(netlist) >= 1:
