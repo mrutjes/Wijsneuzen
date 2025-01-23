@@ -2,54 +2,84 @@ from code.classes.grid_class import Grid_3D
 from code.imports import *
 from code.algorithms import *
 
-while:
-    netlist = input("What netlist do you want to use?")
-    if netlist >= 1 and netlist <= 3:
-        chip = 0
-        break
-    elif netlist >= 4 and netlist <= 6:
-        chip = 1
-        break
-    elif netlist >= 7 and netlist <= 9:
-        chip = 2
-        break
+# Setup
 
-# Import paths
-nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
+## Get netlist
+while True:
+    netlist = input("What netlist do you want to use? Answer must lie between 1-9: ").lower()
+    if netlist == '1' or netlist == '2' or netlist == '3':
+        chip = '0'
+        break
+    elif netlist == '4' or netlist == '5' or netlist == '6':
+        chip = '1'
+        break
+    elif netlist == '7' or netlist == '8' or netlist == '9':
+        chip = '2'
+        break
+    else:
+        print("Not a valid entry")
 
-# Import nodes and netlist
+## Get algorithm
+while True:
+    #algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
+    algorithm = 'm'
+    if algorithm == 'm' or algorithm == 'manhattan':
+        functie = manhattan_wire
+        break
+    elif algorithm == 'd' or algorithm == 'depth first':
+        functie = dfs_algorithm
+        break
+    elif algorithm == 'l' or algorithm == 'lee':
+        functie = lee_algorithm
+        break
+    elif algorithm == 'a' or algorithm == 'a*':
+        functie = a_star_algorithm
+        break
+    else:
+        print("Not a valid entry")
+
+## Create paths
+nodes_csv_path = './gates&netlists/chip_' + chip + '/print_' + chip + '.csv'
+netlist_csv_path = './gates&netlists/chip_' + chip + '/netlist_' + netlist + '.csv'
+
+## Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
 netlist = import_netlist(netlist_csv_path)
 
-# Initialize grid
+## Initialize grid
 grid_width = max(node._max_value for node in nodes_list) + 1
 grid_length = max(node._max_value for node in nodes_list) + 1
 grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
 for node in nodes_list:
     grid.place_node(node)
 
-# -----------------------------------------------------------
-# Choose the algorithm you want to use:
-# functie = a_star_algorithm
-# functie = manhattan_wire
-# functie = dfs_algorithm
-# functie = lee_algorithm
-# -----------------------------------------------------------
+## Get sorting method
+while True:
+    ans = input("How do you want to sort the netlist? Choose between by: Random (R), Busy nodes (B) or Distance of a connection (D): ").lower()
+    if ans == 'r' or ans == 'random':
+        ans = input("How many combinations of the netlist do you want to try?: Default is 100. ")
+        sort = random_permutations(netlist, int(ans))
+        break
+    elif ans == 'd' or ans == 'distance of a connection':
+        ans = input("How many combinations of the sorted netlist do you want to try?: Default is 100. ")
+        sort = sort_multiple_netlist_distance(netlist, nodes_list, int(ans))
+        break
+    elif ans == 'b' or ans == 'busy nodes':
+        ans = input("How many combinations of the sorted netlist do you want to try?: Default is 100.")
+        sort = sort_multiple_netlist_busy_nodes(netlist, int(ans))
+        break
+    else:
+        print("Not a valid entry")
 
-# -----------------------------------------------------------
-# Choose the sorting method you want to use:
-# sort = random_permutations(netlist, 10) # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
-# sort = sort_multiple_netlist_busy_nodes(netlist)
-# sort = sort_multiple_netlist_distance(netlist, nodes_list)
-# -----------------------------------------------------------
-
-# Set variables to keep score of succesfull grids
+## Set variables to keep score of succesfull grids
 all_wire_runs = []
 successful_grid = 0
 total_tries = 0
 
+
 # Generating solutions
+
+print("Starting algorithm...")
 
 if functie == dfs_algorithm:
     for netlists in sort:
@@ -97,7 +127,7 @@ if functie == dfs_algorithm:
             successful_grid += 1
 
         total_tries += 1
-        print(total_tries)
+        print(f"Amount of solutions attempted: {total_tries}")
 
         # Optionally remove the nodes from the wire dict
         grid.remove_nodes_pointdict()
@@ -136,6 +166,7 @@ else:
             successful_grid += 1
 
         total_tries += 1
+        print(f"Amount of solutions attempted: {total_tries}")
 
         # Optionally remove the nodes from the wire dict
         # (so they don’t appear as intersections, etc.)

@@ -2,8 +2,11 @@ from code.classes.grid_class import Grid_3D, plot_wires_3d
 from code.imports import *
 from code.algorithms import *
 
+# Setup
+
+## Get netlist
 while True:
-    netlist = input("What netlist do you want to use? ")
+    netlist = input("What netlist do you want to use? Answer must lie between 1-9: ").lower()
     if netlist == '1' or netlist == '2' or netlist == '3':
         chip = '0'
         break
@@ -13,45 +16,66 @@ while True:
     elif netlist == '7' or netlist == '8' or netlist == '9':
         chip = '2'
         break
+    else:
+        print("Not a valid entry")
 
-# Import paths
+## Get algorithm
+while True:
+    #algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
+    algorithm = 'm' #DIT WEGHALEN
+    if algorithm == 'm' or algorithm == 'manhattan':
+        functie = manhattan_wire
+        break
+    elif algorithm == 'd' or algorithm == 'depth first':
+        functie = dfs_algorithm
+        break
+    elif algorithm == 'l' or algorithm == 'lee':
+        functie = lee_algorithm
+        break
+    elif algorithm == 'a' or algorithm == 'a*':
+        functie = a_star_algorithm
+        break
+    else:
+        print("Not a valid entry")
+
+## Create paths
 nodes_csv_path = './gates&netlists/chip_' + chip + '/print_' + chip + '.csv'
 netlist_csv_path = './gates&netlists/chip_' + chip + '/netlist_' + netlist + '.csv'
 
-# Import nodes and netlist
+## Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
 netlist = import_netlist(netlist_csv_path)
 
-# Initialize grid
-grid_width = max(node._max_value for node in nodes_list) + 1
-grid_length = max(node._max_value for node in nodes_list) + 1
+## Initialize grid
+grid_width = max(node._max_value for node in nodes_list) + 2
+grid_length = max(node._max_value for node in nodes_list) + 2
 grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
 for node in nodes_list:
     grid.place_node(node)
 
-# -----------------------------------------------------------
-# Choose the algorithm you want to use:
-functie = a_star_algorithm
-# functie = manhattan_wire
-# functie = dfs_algorithm
-# functie = lee_algorithm
-# -----------------------------------------------------------
+## Get sorting method
+while True:
+    ans = input("How do you want to sort the netlist? Choose between by: None (N), Busy nodes (B) or Distance of a connection (D): ").lower()
+    if ans == 'n' or ans == 'none':
+        break
+    elif ans == 'd' or ans == 'distance of a connection':
+        netlist = sort_netlist_distance(netlist, nodes_list)
+        break
+    elif ans == 'b' or ans == 'busy nodes':
+        netlist = sort_netlist_busy_nodes(netlist)
+        break
+    else:
+        print("Not a valid entry")
 
-# -----------------------------------------------------------
-# Choose the sorting of the netlist you want to do (or none):
-netlist = sort_netlist_busy_nodes(netlist)
-# netlist = sort_netlist_distance(netlist)
-# -----------------------------------------------------------
-
-# For a* based algorithms
+## For a* based algorithms, apply costs to certain points
 if functie != dfs_algorithm or functie != manhattan_wire:
-    # Netlist for apply_costs_around_nodes function
     netlist_2 = [(nodes_list[x1 - 1], nodes_list[x2 - 1]) for x1, x2 in netlist]
-
-    # Give certain points certain values
     grid.apply_costs_around_nodes(netlist_2)
 
+
 # Laying wires
+
+print("Starting algorithm...")
 
 if functie == dfs_algorithm:
     # Track wires and success
@@ -91,15 +115,14 @@ if functie == dfs_algorithm:
                 break  # Stop trying if the entire run is marked as failed
 
         if success_for_this_run:
+            # Calculate and print the cost
+            print(f"The total cost for this grid is: {grid.cost()}")
+
             # Plot the wires
             plot_wires_3d(wires, grid_width, grid_length)
 
             # Remove the nodes from the wires dictionary
             grid.remove_nodes_pointdict()
-
-            # Calculate and print the cost
-            total_cost = grid.cost()
-            print(f"The total cost for this grid is: {total_cost}")
         else:
             print("Routing failed for the current netlist.")
     else:
@@ -119,14 +142,16 @@ else:
 
             grid.add_wire_list(wire)
 
+        # Calculate the cost of the grid
+        print(f"The total cost for this grid is: {grid.cost()}")
+
         # Plot the wires
-            plot_wires_3d(wires, grid_width, grid_length)
+        #plot_wires_3d(wires, grid_width, grid_length)
 
         # Remove the nodes from the wires dict
         grid.remove_nodes_pointdict()
 
-        # Calculate the cost of the grid
-        print(f"The total cost for this grid is: {grid.cost()}")
+
 
     else:
         raise ValueError("No netlist given.")

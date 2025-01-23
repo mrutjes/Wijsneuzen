@@ -511,6 +511,7 @@ class Grid_3D:
         """
         Calculates the total intersections based on if the value of the point dict is larger than 1.
         """
+        self.remove_nodes_pointdict()
         intersections = 0
         for value in self._point_dict.values():
             if value > 1:
