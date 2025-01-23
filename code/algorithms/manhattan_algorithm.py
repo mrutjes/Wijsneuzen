@@ -125,5 +125,7 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
     grid.total_wires += 1
     
     # Add the completed wire to the grid
+    print(f'Segment set: {wire.give_segments()}')
+    grid.add_entire_wire_segments(wire)
     grid.add_wire_dict(wire)
     return wire

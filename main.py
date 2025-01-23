@@ -4,7 +4,7 @@ from code.algorithms.a_star import a_star_algorithm as Algorithm
 
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_3.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
 functie = Algorithm
 
 # Initiate the grid, and import nodes and netlist
@@ -39,9 +39,10 @@ if len(netlist) >= 1:
         wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
 
         grid.add_wire_list(wire)
+        print(f'Grid wire segments set {grid._wires_segments}')
 
     # Plot the wires
-    plot_wires_3d(wires, grid_width, grid_length)
+        plot_wires_3d(wires, grid_width, grid_length)
 
     # Remove the nodes from the wires dict
     grid.remove_nodes_pointdict()
