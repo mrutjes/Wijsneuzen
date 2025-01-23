@@ -1,9 +1,6 @@
-import pandas as pd
-import matplotlib.pyplot as plt
 from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
 from code.classes.grid_class import Grid_3D
-import numpy as np
 import heapq
 from code.classes.segment_class import Segment
 

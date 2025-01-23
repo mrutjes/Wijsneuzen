@@ -1,7 +1,6 @@
 from code.classes.grid_class import Grid_3D
 from code.imports import import_netlist, import_nodes, random_permutations
 from code.algorithms.DFS import dfs_algorithm as Algorithm
-import itertools
 
 nodes_csv_path = './gates&netlists/chip_2/print_2.csv'
 netlist_csv_path = './gates&netlists/chip_2/netlist_9.csv'
