@@ -288,6 +288,14 @@ class Grid_3D:
         """
         self._wires_segments.add(segment)
 
+    
+    def add_entire_wire_segments(self, wire: Wire) -> None:
+        """
+        Adds the entire segment set of a wire to the grid. 
+        """
+        segments = wire.give_segments()
+        self._wires_segments.update(segments)
+
 
     def remove_nodes_pointdict(self):
         """
@@ -413,7 +421,7 @@ class Grid_3D:
             return False
 
         #Checks if the wirepoint does not run over another wire.
-        if not self.check_wire_overlap_point(current_wire):
+        if not self.check_wire_overlap(current_wire):
             return False
                 
         #Checks if the wirepoint does not go through node.
