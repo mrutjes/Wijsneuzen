@@ -1,7 +1,7 @@
 # Chips and Circuits Project
 
 ## Overview
-This repository contains our project for the *Algorithms and Heuristics* course. The primary focus is on solving the **Chips and Circuits** problem, a computational challenge involving the efficient wiring of gates on a grid to minimize costs. The project explores algorithms and heuristics to achieve optimal solutions within the constraints of the problem.
+This repository contains our project for the *Algorithms and Heuristics* course. The primary focus is on solving the **Chips and Circuits** problem, a computational challenge involving the efficient wiring of gates on a grid to minimize costs. The project explores algorithms and heuristics to achieve (optimal) solutions within the constraints of the problem.
 
 ---
 
@@ -23,7 +23,7 @@ Where:
 - \( k \): Number of intersections between wires.
 
 ### Baseline
-An algorithm is evaluated based on how many netlists it can successfully connect. Because a chip can be wired in various orders, the chosen sequence of connections can greatly influence the feasibility of a solution. To address this, we test the most promising netlist orders and look for any configurations that meet the requirements—specifically, that there is no short circuit. This will be our primary focus. Once we confirm that a valid wiring exists (i.e., no short circuits), we then aim to minimize the cost. Alternatively, the cost can also be taken into account during the routing process itself, for instance by using an A* approach.
+An algorithm is evaluated based on how many netlists it can successfully connect. Because a chip can be wired in various orders, the chosen sequence of connections can greatly influence the feasibility of a solution. To address this, we test the most promising netlist orders and look for any configurations that meet the requirements—specifically, that there is no short circuit. This will be our primary focus. Once we confirm that a valid wiring exists (i.e., no short circuits), we then aim to minimize the cost. 
 
 
 ---
@@ -34,11 +34,12 @@ An algorithm is evaluated based on how many netlists it can successfully connect
 2. **Netlist Handling**: Implement a data structure to manage connections (nets) between gates.
 3. **Algorithms**: Develop and test various algorithms and heuristics to minimize costs, such as:
    - Manhattan distance based
-   - Bread First Search
-   - A* algoritms
+   - Breath First Search (Lee's algorithm)
+   - Depth First Search
+   - A* algorithm
 4. **Layered Design**: Use multiple grid layers (up to 8) to resolve collisions and optimize layouts.
-5. **Reservation System**: Use a reservation system to make sure that two nodes can always be connected to one another. Makes path finding presumably easier. 
-5. **Optimize Parameters**: Optimize the parameters of the algorithms with grid searches to ensure that the best combination is used. 
+5. **Cost System**: Use a cost system to make sure that certain areas on the grid are more and less expensive to avoid collisions.
+5. **Optimize Parameters**: Optimize the parameters of the cost of the grid to ensure that obtimal routing is achieved.
 6. **Random Netlists (optional)**: Test performance on randomly generated netlists to evaluate robustness and scalability.
 
 ### Output
@@ -77,6 +78,15 @@ We document the results of each approach, including:
 3. **Run the code**
    ```bash
    python main.py
+
+4. **To use a different algorithm, simply uncomment the desired algorithm, and comment the other ones in main.py**
+   ```python
+   # Choose the algorithm you want to use:
+   # functie = a_star_algorithm
+   # functie = manhattan_wire
+   # functie = dfs_algorithm
+   functie = lee_algorithm
+
 ---
 
 ### Prerequisites
