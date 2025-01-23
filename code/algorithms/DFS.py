@@ -1,10 +1,7 @@
-import pandas as pd
-import matplotlib.pyplot as plt
 from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
 from code.classes.grid_class import Grid_3D
 from code.classes.segment_class import Segment
-import numpy as np
 
 def dfs_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str):
     """

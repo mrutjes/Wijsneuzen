@@ -1,5 +1,5 @@
 from code.classes.grid_class import Grid_3D, plot_wires_3d
-from code.imports import import_netlist, import_nodes
+from code.imports import import_netlist, import_nodes, sort_netlist_busy_nodes
 from code.algorithms.DFS import dfs_algorithm as Algorithm
 
 nodes_csv_path = './gates&netlists/chip_2/print_2.csv'
@@ -18,6 +18,8 @@ for node in nodes_list:
 
 # Import the netlist
 netlist = import_netlist(netlist_csv_path)
+
+sort_netlist_busy_nodes(netlist)
 
 # Track wires and success
 wires = []
