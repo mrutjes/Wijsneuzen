@@ -124,7 +124,21 @@ class Grid_3D:
                     (0, -2, 0, 50), (0, 2, 0, 50),  # Two steps vertical
                     (-2, 0, 0, 50), (2, 0, 0, 50),  # Two steps horizontal
                     (-1, -1, 0, 50), (-1, 1, 0, 50), (1, 1, 0, 50), (1, -1, 0, 50), # Non direct neighbors bottom layer
-                    (1, 0, 1, 50), (-1, 0, 1, 50), (0, -1, 1, 50), (0, 1, 1, 50) # One horizontal one vertical
+                    (1, 0, 1, 50), (-1, 0, 1, 50), (0, -1, 1, 50), (0, 1, 1, 50), # One horizontal one vertical
+
+                    # Now all points with a distance of 3 steps
+                    # Pure axis-aligned points
+                    (3, 0, 0, 5), (-3, 0, 0, 5), (0, 3, 0, 5), (0, -3, 0, 5), (0, 0, 3, 5),
+
+                    # Two-axis combinations
+                    (2, 1, 0, 5), (2, -1, 0, 5), (2, 0, 1, 5),
+                    (-2, 1, 0, 5), (-2, -1, 0, 5), (-2, 0, 1, 5),
+                    (1, 2, 0, 5), (1, -2, 0, 5), (0, 2, 1, 5),
+                    (-1, 2, 0, 5), (-1, -2, 0, 5), (0, -2, 1, 5),
+                    (1, 0, 2, 5), (-1, 0, 2, 5), (0, 1, 2, 5), (0, -1, 2, 5),
+
+                    # Three-axis combinations
+                    (1, 1, 1, 5), (1, -1, 1, 5), (-1, 1, 1, 5), (-1, -1, 1, 5)
                     ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
@@ -141,7 +155,21 @@ class Grid_3D:
                     (0, -2, 0, 25), (0, 2, 0, 25),  # Two steps vertical
                     (-2, 0, 0, 25), (2, 0, 0, 25),  # Two steps horizontal
                     (-1, -1, 0, 25), (-1, 1, 0, 25), (1, 1, 0, 25), (1, -1, 0, 25), # Non direct neighbors bottom layer
-                    (1, 0, 1, 25), (-1, 0, 1, 25), (0, -1, 1, 25), (0, 1, 1, 25) # One horizontal one vertical
+                    (1, 0, 1, 25), (-1, 0, 1, 25), (0, -1, 1, 25), (0, 1, 1, 25), # One horizontal one vertical
+
+                    # Now all points with a distance of 3 steps
+                    # Pure axis-aligned points
+                    (3, 0, 0, 5), (-3, 0, 0, 5), (0, 3, 0, 5), (0, -3, 0, 5), (0, 0, 3, 5),
+
+                    # Two-axis combinations
+                    (2, 1, 0, 5), (2, -1, 0, 5), (2, 0, 1, 5),
+                    (-2, 1, 0, 5), (-2, -1, 0, 5), (-2, 0, 1, 5),
+                    (1, 2, 0, 5), (1, -2, 0, 5), (0, 2, 1, 5),
+                    (-1, 2, 0, 5), (-1, -2, 0, 5), (0, -2, 1, 5),
+                    (1, 0, 2, 5), (-1, 0, 2, 5), (0, 1, 2, 5), (0, -1, 2, 5),
+
+                    # Three-axis combinations
+                    (1, 1, 1, 5), (1, -1, 1, 5), (-1, 1, 1, 5), (-1, -1, 1, 5)
                     ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:

@@ -4,7 +4,7 @@ from code.algorithms import *
 
 # Import paths
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
 
 # Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
@@ -19,9 +19,9 @@ for node in nodes_list:
 
 # -----------------------------------------------------------
 # Choose the algorithm you want to use:
-# functie = a_star_algorithm
+functie = a_star_algorithm
 # functie = manhattan_wire
-functie = dfs_algorithm
+#functie = dfs_algorithm
 # functie = lee_algorithm
 # -----------------------------------------------------------
 
