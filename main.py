@@ -2,18 +2,21 @@ from code.classes.grid_class import Grid_3D, plot_wires_3d
 from code.imports import *
 from code.algorithms import *
 
-# -----------------------------------------------------------
-# Choose the algorithm you want to use:
-functie = a_star_algorithm
-# functie = manhattan_wire
-# functie = dfs_algorithm
-# functie = lee_algorithm
-# -----------------------------------------------------------
+while True:
+    netlist = input("What netlist do you want to use? ")
+    if netlist == '1' or netlist == '2' or netlist == '3':
+        chip = '0'
+        break
+    elif netlist == '4' or netlist == '5' or netlist == '6':
+        chip = '1'
+        break
+    elif netlist == '7' or netlist == '8' or netlist == '9':
+        chip = '2'
+        break
 
 # Import paths
-nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
-
+nodes_csv_path = './gates&netlists/chip_' + chip + '/print_' + chip + '.csv'
+netlist_csv_path = './gates&netlists/chip_' + chip + '/netlist_' + netlist + '.csv'
 
 # Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
@@ -28,7 +31,7 @@ for node in nodes_list:
 
 # -----------------------------------------------------------
 # Choose the algorithm you want to use:
-# functie = a_star_algorithm
+functie = a_star_algorithm
 # functie = manhattan_wire
 # functie = dfs_algorithm
 # functie = lee_algorithm
@@ -36,8 +39,8 @@ for node in nodes_list:
 
 # -----------------------------------------------------------
 # Choose the sorting of the netlist you want to do (or none):
-# netlist = sort_netlist_busy_nodes(netlist)
-# netlist = sort_netlist_distance
+netlist = sort_netlist_busy_nodes(netlist)
+# netlist = sort_netlist_distance(netlist)
 # -----------------------------------------------------------
 
 # For a* based algorithms

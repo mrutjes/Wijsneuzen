@@ -2,6 +2,18 @@ from code.classes.grid_class import Grid_3D
 from code.imports import *
 from code.algorithms import *
 
+while:
+    netlist = input("What netlist do you want to use?")
+    if netlist >= 1 and netlist <= 3:
+        chip = 0
+        break
+    elif netlist >= 4 and netlist <= 6:
+        chip = 1
+        break
+    elif netlist >= 7 and netlist <= 9:
+        chip = 2
+        break
+
 # Import paths
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
