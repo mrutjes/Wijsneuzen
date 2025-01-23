@@ -8,65 +8,92 @@ import heapq
 from code.classes.segment_class import Segment
 
 def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str):
-    wire = Wire(start_node=node1, end_node=node2, nodes_csv_path=nodes_csv_path, netlist_csv_path=netlist_csv_path)
+    """
+    Breath first search with applied cost function. Works the same as the a* algorithm, except
+    that it does not use a heuristic.
+    """
+
+    wire = Wire(start_node=node1, end_node=node2,
+                nodes_csv_path=nodes_csv_path, netlist_csv_path=netlist_csv_path)
     x_start, y_start, z_start = node1.give_x(), node1.give_y(), node1.give_z()
-    x_end, y_end, z_end = node2.give_x(), node2.give_y(), node2.give_z()
+    x_end,   y_end,   z_end   = node2.give_x(), node2.give_y(), node2.give_z()
 
-    # Priority queue for BFS (min-heap)
+    # Priority queue for A* (min-heap of (f_cost, WirePoint))
     q = []
-    heapq.heappush(q, (0, WirePoint(x_start, y_start, z_start)))
+    start_point = WirePoint(x_start, y_start, z_start)
+    heapq.heappush(q, (0, start_point))
 
-    # Dictionary to track cumulative costs and parents
-    costs = {WirePoint(x_start, y_start, z_start): 0}
+    # Keep track of g_cost (distance so far) and parents for path reconstruction
+    costs = {start_point: 0}
     parents = {}
 
-    # Set to track visited segments (current_point, neighbor_point)
-    visited_segments = set()
+    # Standard A* closed set of already-processed nodes
+    closed_set = set()
 
     while q:
-        current_cost, current = heapq.heappop(q)
+        current_f_cost, current = heapq.heappop(q)
         x, y, z = current.give_place()
 
-        # Check if we have reached the endpoint
-        if current.give_place() == (x_end, y_end, z_end):
-            print("Endpoint reached")
-            # Reconstruct the path
+        # If we've already processed this node at its best cost, skip
+        if current in closed_set:
+            continue
+        closed_set.add(current)
+
+        # Check if we've reached a point adjacent to the end (distance == 1)
+        point_dict = grid.return_point_dict()
+        if (grid.distance_nodes(current, WirePoint(x_end, y_end, z_end)) == 1 and point_dict[current.give_place()] == 0):
+            # Reconstruct the path by backtracking through parents
             path = []
             while current in parents:
                 path.append(current)
                 current = parents[current]
             path.reverse()
+
+            # Now add the final route into the wire
             for point in path:
                 wire.add_wire_point(point)
 
+            # After final route is known, add each segment to the grid
+            wirepoints = wire.give_wirepoints()
+            for i in range(len(wirepoints) - 1):
+                segment = Segment(wirepoints[i], wirepoints[i + 1])
+                grid.add_wire_segment(segment)  # Mark the segment as occupied
+            
+            # Also add the final segment to the grid
+            node_point = WirePoint(node2.give_x(), node2.give_y(), node2.give_z())
+            final_segment = Segment(wirepoints[-1], node_point)
+            grid.add_wire_segment(final_segment)
+            
+            # Return wire and add to dict to update cost calculations
+            grid.add_wire_dict(wire)
             return wire
 
+        # Generate neighbors in 6 directions
         neighbors = []
-        for dx, dy, dz in [(-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1)]:
+        for dx, dy, dz in [(-1, 0, 0), (1, 0, 0),
+                           (0, -1, 0), (0, 1, 0),
+                           (0, 0, -1), (0, 0, 1)]:
             temp_wirepoint = WirePoint(x + dx, y + dy, z + dz)
             temp_segment = Segment(current, temp_wirepoint)
 
-            # Validate the neighbor and segment
-            if (
-                grid.check_obstacle(temp_wirepoint, temp_segment)
-                and (current, temp_wirepoint) not in visited_segments
-            ):
+            # Only add neighbor if it's a valid, unblocked cell
+            if grid.check_obstacle(temp_wirepoint, temp_segment):
                 neighbors.append(temp_wirepoint)
 
-        for neighbor in neighbors: ###AANPASSEN GEBRUIK DE COST_POINT FUNCTIE OM TE BEPALEN OF ER EEN PENALTY IS
-            crossing_penalty = 300 if grid.is_crossing(neighbor) else 0
-            layer_change_penalty = 1 if current.give_z() != neighbor.give_z() else 0
-            cost = current_cost + grid.cost_point(neighbor) + crossing_penalty + layer_change_penalty
+        # Evaluate each neighbor
+        for neighbor in neighbors:
+            if neighbor in closed_set:
+                continue
 
-            # Ensure continuity and no returns
-            if cost < costs.get(neighbor, float('inf')):
-                costs[neighbor] = cost
+            # Compute g_cost (distance so far) + h_cost (heuristic)
+            g_cost = costs[current] + grid.get_point_value(neighbor) + grid.cost_point(neighbor)
+            f_cost = g_cost
+
+            # If this new route to neighbor is cheaper, update
+            if g_cost < costs.get(neighbor, float('inf')):
+                costs[neighbor] = g_cost
                 parents[neighbor] = current
-                visited_segments.add((current, neighbor))  # Mark the segment as visited
-                heapq.heappush(q, (cost, neighbor))
+                heapq.heappush(q, (f_cost, neighbor))
 
-    # If the loop exits without connecting the nodes
+    # If the priority queue empties out and we never found a path:
     raise Exception("No valid path found between the nodes.")
-
-
-
