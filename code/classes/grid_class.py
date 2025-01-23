@@ -95,12 +95,16 @@ class Grid_3D:
                     (0, 0, 1, 50),  # Above
                     (0, -1, 0, 50), (0, 1, 0, 50),  # Vertical neighbors
                     (-1, 0, 0, 50), (1, 0, 0, 50),  # Horizontal neighbors
+
                     (0, 0, 2, 25),  # Two steps above
                     (0, -2, 0, 25), (0, 2, 0, 25),  # Two steps vertical
                     (-2, 0, 0, 25), (2, 0, 0, 25),  # Two steps horizontal
-                    (0, 0, 3, 5),  # Three steps above
+                    (-1, -1, 0, 25), (-1, 1, 0, 25), (1, 1, 0, 25), (1, -1, 0, 25), # Non direct neighbors bottom layer
+                    (1, 0, 1, 25), (-1, 0, 1, 25), (0, -1, 1, 25), (0, 1, 1, 25), # One horizontal one vertical
+
+                    """(0, 0, 3, 5),  # Three steps above
                     (0, -3, 0, 5), (0, 3, 0, 5),  # Three steps vertical
-                (-3, 0, 0, 5), (3, 0, 0, 5)  # Three steps horizontal
+                (-3, 0, 0, 5), (3, 0, 0, 5)  # Three steps horizontal"""
                 ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
