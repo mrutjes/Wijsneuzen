@@ -124,7 +124,7 @@ class Grid_3D:
                     (0, -2, 0, 50), (0, 2, 0, 50),  # Two steps vertical
                     (-2, 0, 0, 50), (2, 0, 0, 50),  # Two steps horizontal
                     (-1, -1, 0, 50), (-1, 1, 0, 50), (1, 1, 0, 50), (1, -1, 0, 50), # Non direct neighbors bottom layer
-                    (1, 0, 1, 50), (-1, 0, 1, 50), (0, -1, 1, 50), (0, 1, 1, 50), # One horizontal one vertical
+                    (1, 0, 1, 50), (-1, 0, 1, 50), (0, -1, 1, 50), (0, 1, 1, 50) # One horizontal one vertical
                     ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
@@ -141,12 +141,8 @@ class Grid_3D:
                     (0, -2, 0, 25), (0, 2, 0, 25),  # Two steps vertical
                     (-2, 0, 0, 25), (2, 0, 0, 25),  # Two steps horizontal
                     (-1, -1, 0, 25), (-1, 1, 0, 25), (1, 1, 0, 25), (1, -1, 0, 25), # Non direct neighbors bottom layer
-                    (1, 0, 1, 25), (-1, 0, 1, 25), (0, -1, 1, 25), (0, 1, 1, 25), # One horizontal one vertical
-
-                    """(0, 0, 3, 5),  # Three steps above
-                    (0, -3, 0, 5), (0, 3, 0, 5),  # Three steps vertical
-                (-3, 0, 0, 5), (3, 0, 0, 5)  # Three steps horizontal"""
-                ]:
+                    (1, 0, 1, 25), (-1, 0, 1, 25), (0, -1, 1, 25), (0, 1, 1, 25) # One horizontal one vertical
+                    ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
@@ -162,7 +158,7 @@ class Grid_3D:
                     (0, -2, 0, 20), (0, 2, 0, 20),  # Two steps vertical
                     (-2, 0, 0, 20), (2, 0, 0, 20),  # Two steps horizontal
                     (-1, -1, 0, 20), (-1, 1, 0, 20), (1, 1, 0, 20), (1, -1, 0, 20), # Non direct neighbors bottom layer
-                    (1, 0, 1, 20), (-1, 0, 1, 20), (0, -1, 1, 25), (0, 1, 1, 25), # One horizontal one vertical
+                    (1, 0, 1, 20), (-1, 0, 1, 20), (0, -1, 1, 25), (0, 1, 1, 25) # One horizontal one vertical
                 ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
