@@ -21,8 +21,7 @@ while True:
 
 ## Get algorithm
 while True:
-    #algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
-    algorithm = 'm' #DIT WEGHALEN
+    algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
     if algorithm == 'm' or algorithm == 'manhattan':
         functie = manhattan_wire
         break

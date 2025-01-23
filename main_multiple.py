@@ -1,4 +1,4 @@
-from code.classes.grid_class import Grid_3D
+from code.classes.grid_class import *
 from code.imports import *
 from code.algorithms import *
 
@@ -21,8 +21,7 @@ while True:
 
 ## Get algorithm
 while True:
-    #algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
-    algorithm = 'm'
+    algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
     if algorithm == 'm' or algorithm == 'manhattan':
         functie = manhattan_wire
         break
@@ -75,6 +74,7 @@ while True:
 all_wire_runs = []
 successful_grid = 0
 total_tries = 0
+cost_min = 1000000000
 
 
 # Generating solutions
@@ -126,6 +126,10 @@ if functie == dfs_algorithm:
             all_wire_runs.append(wires)
             successful_grid += 1
 
+            if cost_min > grid.cost():
+                cost_min = grid.cost()
+                wires_cost_min = laid_wires
+
         total_tries += 1
         print(f"Amount of solutions attempted: {total_tries}")
 
@@ -165,6 +169,10 @@ else:
             # If all pairs routed successfully, increment success count
             successful_grid += 1
 
+            if cost_min > grid.cost():
+                cost_min = grid.cost()
+                wires_cost_min = laid_wires
+
         total_tries += 1
         print(f"Amount of solutions attempted: {total_tries}")
 
@@ -176,3 +184,8 @@ else:
 success_percentage = (successful_grid / total_tries) * 100
 print(f'{success_percentage}% of the grids were successful')
 print(f'{successful_grid} out of {total_tries} permutations were successful')
+
+# Best solution according to price
+if successful_grid >= 1:
+    print(f'The grid with minimal cost costs: {cost_min}')
+    plot_wires_3d(wires_cost_min, grid_width, grid_length)
