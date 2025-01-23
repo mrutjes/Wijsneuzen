@@ -1,3 +1,4 @@
+import os
 from code.classes.grid_class import Grid_3D, plot_wires_3d
 from code.imports import *
 from code.algorithms import *
@@ -7,13 +8,13 @@ from code.algorithms import *
 ## Get netlist
 while True:
     netlist = input("What netlist do you want to use? Answer must lie between 1-9: ").lower()
-    if netlist == '1' or netlist == '2' or netlist == '3':
+    if netlist in {'1', '2', '3'}:
         chip = '0'
         break
-    elif netlist == '4' or netlist == '5' or netlist == '6':
+    elif netlist in {'4', '5', '6'}:
         chip = '1'
         break
-    elif netlist == '7' or netlist == '8' or netlist == '9':
+    elif netlist in {'7', '8', '9'}:
         chip = '2'
         break
     else:
@@ -22,24 +23,26 @@ while True:
 ## Get algorithm
 while True:
     algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
-    if algorithm == 'm' or algorithm == 'manhattan':
+    if algorithm in {'m', 'manhattan'}:
         functie = manhattan_wire
         break
-    elif algorithm == 'd' or algorithm == 'depth first':
+    elif algorithm in {'d', 'depth first'}:
         functie = dfs_algorithm
         break
-    elif algorithm == 'l' or algorithm == 'lee':
+    elif algorithm in {'l', 'lee'}:
         functie = lee_algorithm
         break
-    elif algorithm == 'a' or algorithm == 'a*':
+    elif algorithm in {'a', 'a*'}:
         functie = a_star_algorithm
         break
     else:
         print("Not a valid entry")
 
 ## Create paths
-nodes_csv_path = './gates&netlists/chip_' + chip + '/print_' + chip + '.csv'
-netlist_csv_path = './gates&netlists/chip_' + chip + '/netlist_' + netlist + '.csv'
+base_path = os.path.join('.', 'gates&netlists')
+nodes_csv_path = os.path.join(base_path, f'chip_{chip}', f'print_{chip}.csv')
+netlist_csv_path = os.path.join(base_path, f'chip_{chip}', f'netlist_{netlist}.csv')
+
 
 ## Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
