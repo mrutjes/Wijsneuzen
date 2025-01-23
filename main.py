@@ -5,11 +5,11 @@ from code.classes.nodes_class import Node
 from code.classes.wire_class import Wire, WirePoint
 import pandas as pd
 from code.imports import import_netlist, import_nodes
-from code.algorithms.BFS import lee_algorithm as Algorithm
+from code.algorithms.manhattan_algorithm import manhattan_wire as Algorithm
 
 
-nodes_csv_path = './gates&netlists/chip_2/print_2.csv'
-netlist_csv_path = './gates&netlists/chip_2/netlist_9.csv'
+nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
 functie = Algorithm
 
 # Initiate the grid, and import nodes and netlist
@@ -29,7 +29,7 @@ netlist_2 = [(nodes_list[x1 - 1], nodes_list[x2 - 1]) for x1, x2 in netlist]
 # Give certain points certain values
 
 grid.apply_costs_around_nodes(netlist_2)
-print(f'{grid.grid_values}')
+#print(f'{grid.grid_values}')
 
 # Initiate the wires
 if len(netlist) >= 1:
@@ -45,9 +45,10 @@ if len(netlist) >= 1:
         wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
 
         grid.add_wire_list(wire)
+        print(f'Grid wire segments set {grid._wires_segments}')
 
     # Plot the wires
-    plot_wires_3d(wires, grid_width, grid_length)
+        plot_wires_3d(wires, grid_width, grid_length)
 
     # Remove the nodes from the wires dict
     grid.remove_nodes_pointdict()
