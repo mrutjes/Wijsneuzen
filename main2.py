@@ -1,11 +1,10 @@
 from code.classes.grid_class import Grid_3D
 from code.imports import *
 from code.algorithms import *
-import csv
 
 # Import paths
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_3.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
 
 # Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
@@ -26,6 +25,13 @@ for node in nodes_list:
 # functie = lee_algorithm
 # -----------------------------------------------------------
 
+# -----------------------------------------------------------
+# Choose the sorting method you want to use:
+# sort = random_permutations(netlist, 10) # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
+# sort = sort_multiple_netlist_busy_nodes(netlist)
+# sort = sort_multiple_netlist_distance(netlist, nodes_list)
+# -----------------------------------------------------------
+
 # Set variables to keep score of succesfull grids
 all_wire_runs = []
 successful_grid = 0
@@ -34,7 +40,7 @@ total_tries = 0
 # Generating solutions
 
 if functie == dfs_algorithm:
-    for netlists in random_permutations(netlist, 10): # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
+    for netlists in sort:
         # Reinitialize the grid for each permutation
         grid.clear_wires()
         wires = grid.return_wire_list()
@@ -84,7 +90,7 @@ if functie == dfs_algorithm:
         # Optionally remove the nodes from the wire dict
         grid.remove_nodes_pointdict()
 else:
-    for netlists in random_permutations(netlist, 100): # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
+    for netlists in sort:
         # Reinitialize the grid for each permutation
         grid.clear_wires()
         wires = grid.return_wire_list()  # empty right now

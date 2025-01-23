@@ -28,10 +28,16 @@ for node in nodes_list:
 
 # -----------------------------------------------------------
 # Choose the algorithm you want to use:
-functie = a_star_algorithm
+# functie = a_star_algorithm
 # functie = manhattan_wire
-#functie = dfs_algorithm
+# functie = dfs_algorithm
 # functie = lee_algorithm
+# -----------------------------------------------------------
+
+# -----------------------------------------------------------
+# Choose the sorting of the netlist you want to do (or none):
+# netlist = sort_netlist_busy_nodes(netlist)
+# netlist = sort_netlist_distance
 # -----------------------------------------------------------
 
 # For a* based algorithms
@@ -41,12 +47,6 @@ if functie != dfs_algorithm or functie != manhattan_wire:
 
     # Give certain points certain values
     grid.apply_costs_around_nodes(netlist_2)
-
-# -----------------------------------------------------------
-# Choose the sorting of the netlist you want to do (or none):
-netlist = sort_netlist_busy_nodes(netlist)
-# netlist = sort_netlist_distance
-# -----------------------------------------------------------
 
 # Laying wires
 
