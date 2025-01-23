@@ -1,10 +1,19 @@
 from code.classes.grid_class import Grid_3D, plot_wires_3d
-from code.imports import import_netlist, import_nodes, sort_netlist_busy_nodes, sort_netlist_distance
+from code.imports import *
 from code.algorithms import *
+
+# -----------------------------------------------------------
+# Choose the algorithm you want to use:
+functie = a_star_algorithm
+# functie = manhattan_wire
+# functie = dfs_algorithm
+# functie = lee_algorithm
+# -----------------------------------------------------------
 
 # Import paths
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
+
 
 # Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
@@ -42,7 +51,6 @@ netlist = sort_netlist_busy_nodes(netlist)
 # Laying wires
 
 if functie == dfs_algorithm:
-
     # Track wires and success
     wires = []
     laid_wires = []  # Track successfully laid wires for potential backtracking
