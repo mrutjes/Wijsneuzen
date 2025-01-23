@@ -4,14 +4,14 @@ from code.algorithms import *
 
 # -----------------------------------------------------------
 # Choose the algorithm you want to use:
-# functie = a_star_algorithm
+functie = a_star_algorithm
 # functie = manhattan_wire
 # functie = dfs_algorithm
-functie = lee_algorithm
+# functie = lee_algorithm
 # -----------------------------------------------------------
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_3.csv'
 
 # Initiate the grid, and import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
