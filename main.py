@@ -11,8 +11,8 @@ functie = a_star_algorithm
 # -----------------------------------------------------------
 
 # Import paths
-nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
+nodes_csv_path = './gates&netlists/chip_1/print_1.csv'
+netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
 
 
 # Import nodes and netlist
@@ -117,7 +117,7 @@ else:
             grid.add_wire_list(wire)
 
         # Plot the wires
-        plot_wires_3d(wires, grid_width, grid_length)
+            plot_wires_3d(wires, grid_width, grid_length)
 
         # Remove the nodes from the wires dict
         grid.remove_nodes_pointdict()

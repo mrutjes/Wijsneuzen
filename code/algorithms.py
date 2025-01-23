@@ -63,6 +63,7 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
             grid.add_wire_segment(final_segment)
             
             # Return wire and add to dict to update cost calculations
+            grid.set_point_value(wire, 200)
             grid.add_wire_dict(wire)
             return wire
 
