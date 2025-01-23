@@ -39,7 +39,7 @@ while True:
         print("Not a valid entry")
 
 ## Create paths
-base_path = os.path.join('.', 'gates&netlists')
+base_path = os.path.join('.', 'gates_netlists')
 nodes_csv_path = os.path.join(base_path, f'chip_{chip}', f'print_{chip}.csv')
 netlist_csv_path = os.path.join(base_path, f'chip_{chip}', f'netlist_{netlist}.csv')
 
