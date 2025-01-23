@@ -63,3 +63,25 @@ def sort_netlist_busy_nodes(netlist):
     sorted_netlist = sorted(netlist, key=lambda x: (node_counts[x[0]] + node_counts[x[1]]), reverse=True)
 
     return sorted_netlist
+
+def sort_netlist_distance(netlist, nodeslist):
+    """
+    Sorts a netlist based on the distance between two nodes for each connection.
+    """
+    num = 0
+    dict = {}
+
+    for connection in netlist:
+        num += 1
+        x_1 = nodeslist[connection[0] - 1].give_x()
+        y_1 = nodeslist[connection[0] - 1].give_y()
+        x_2 = nodeslist[connection[1] - 1].give_x()
+        y_2 = nodeslist[connection[1] - 1].give_y()
+
+        dist = abs(x_1 - x_2) + abs(y_1 - y_2)
+
+        dict[(connection)] = dist
+
+    sorted_netlist = sorted(netlist, key=lambda x: (dict[x]), reverse=True)
+
+    return sorted_netlist

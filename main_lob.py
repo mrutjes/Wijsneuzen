@@ -1,9 +1,9 @@
 from code.classes.grid_class import Grid_3D, plot_wires_3d
-from code.imports import import_netlist, import_nodes, sort_netlist_busy_nodes
-from code.algorithms.DFS import dfs_algorithm as Algorithm
+from code.imports import import_netlist, import_nodes, sort_netlist_busy_nodes, sort_netlist_distance
+from code.algorithms import dfs_algorithm as Algorithm
 
-nodes_csv_path = './gates&netlists/chip_2/print_2.csv'
-netlist_csv_path = './gates&netlists/chip_2/netlist_9.csv'
+nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
 functie = Algorithm
 
 # Initiate the grid and nodes
@@ -19,6 +19,7 @@ for node in nodes_list:
 # Import the netlist
 netlist = import_netlist(netlist_csv_path)
 netlist = sort_netlist_busy_nodes(netlist)
+netlist = sort_netlist_distance(netlist, nodes_list)
 
 # Track wires and success
 wires = []
