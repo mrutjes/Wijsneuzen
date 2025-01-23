@@ -3,8 +3,8 @@ from code.imports import import_netlist, import_nodes, sort_netlist_busy_nodes
 from code.algorithms.a_star import a_star_algorithm as Algorithm
 
 
-nodes_csv_path = './gates&netlists/chip_1/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
+nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
 functie = Algorithm
 
 # Initiate the grid, and import nodes and netlist
