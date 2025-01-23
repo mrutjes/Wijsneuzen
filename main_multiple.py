@@ -143,6 +143,8 @@ else:
         grid.clear_wires()
         wires = grid.return_wire_list()  # empty right now
 
+        laid_wires = []
+
         success_for_this_permutation = True  # a flag we set to false if a route fails
 
         if len(netlists) == 0:
