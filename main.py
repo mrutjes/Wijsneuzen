@@ -120,7 +120,7 @@ else:
             grid.add_wire_list(wire)
 
         # Plot the wires
-        plot_wires_3d(wires, grid_width, grid_length)
+            plot_wires_3d(wires, grid_width, grid_length)
 
         # Remove the nodes from the wires dict
         grid.remove_nodes_pointdict()
