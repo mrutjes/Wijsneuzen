@@ -1,5 +1,5 @@
 from code.classes.grid_class import Grid_3D, plot_wires_3d
-from code.imports import import_netlist, import_nodes
+from code.imports import import_netlist, import_nodes, sort_netlist_busy_nodes
 from code.algorithms import *
 
 # -----------------------------------------------------------
