@@ -18,8 +18,7 @@ for node in nodes_list:
 
 # Import the netlist
 netlist = import_netlist(netlist_csv_path)
-
-sort_netlist_busy_nodes(netlist)
+netlist = sort_netlist_busy_nodes(netlist)
 
 # Track wires and success
 wires = []

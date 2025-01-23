@@ -3,8 +3,8 @@ from code.imports import import_netlist, import_nodes, sort_netlist_busy_nodes
 from code.algorithms.a_star import a_star_algorithm as Algorithm
 
 
-nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
+nodes_csv_path = './gates&netlists/chip_1/print_0.csv'
+netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
 functie = Algorithm
 
 # Initiate the grid, and import nodes and netlist
@@ -23,7 +23,7 @@ netlist_2 = [(nodes_list[x1 - 1], nodes_list[x2 - 1]) for x1, x2 in netlist]
 grid.apply_costs_around_nodes(netlist_2)
 print(f'{grid.grid_values}')
 
-sort_netlist_busy_nodes(netlist)
+netlist = sort_netlist_busy_nodes(netlist)
 
 # Initiate the wires
 if len(netlist) >= 1:
