@@ -2,12 +2,13 @@ from code.classes.grid_class import Grid_3D, plot_wires_3d
 from code.imports import import_netlist, import_nodes
 from code.algorithms.algorithms import *
 
-
+# -----------------------------------------------------------
 # Choose the algorithm you want to use:
 # functie = a_star_algorithm
 # functie = manhattan_wire
 # functie = dfs_algorithm
 functie = lee_algorithm
+# -----------------------------------------------------------
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = './gates&netlists/chip_0/netlist_1.csv'
