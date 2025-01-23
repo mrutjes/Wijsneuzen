@@ -70,7 +70,31 @@ class Grid_3D:
         else:
             raise ValueError("Point is out of grid bounds.")
         
-    
+    def count_neighbors(self, x, y, z):
+        """
+        Count the number of valid neighboring cells for a given cell at (x, y, z).
+
+        Parameters:
+            x (int): X-coordinate of the cell.
+            y (int): Y-coordinate of the cell.
+            z (int): Z-coordinate of the cell.
+
+        Returns:
+            int: The count of valid neighboring cells.
+        """
+        neighbor_count = 0
+        for dx, dy, dz in [
+            (1, 0, 0), (-1, 0, 0),  # Horizontal neighbors
+            (0, 1, 0), (0, -1, 0),  # Vertical neighbors
+            (0, 0, 1), (0, 0, -1)   # Above and below neighbors
+        ]:
+            nx, ny, nz = x + dx, y + dy, z + dz
+
+            # Check if the neighbor is within grid boundaries
+            if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
+                neighbor_count += 1
+        return neighbor_count
+
     def apply_costs_around_nodes(self, netlist):
         """
         1) Apply extra cost around nodes that appear frequently in the netlist.
@@ -88,9 +112,26 @@ class Grid_3D:
         # For each node, set certain rings of cells around it to a higher cost
         for node in self._nodes:
             x, y, z = node.give_x(), node.give_y(), 0
+            
+            # If node used >=5 times, apply big cost
+            if node_counts[node] >= 5 or (node_counts[node] >= 4 and self.count_neighbors(x,y,z) <= 4) or (node_counts[node] >= 3 and self.count_neighbors(x,y,z) <= 3):
+                for dx, dy, dz, cost in [
+                    (0, 0, 1, 150),  # Above
+                    (0, -1, 0, 150), (0, 1, 0, 150),  # Vertical neighbors
+                    (-1, 0, 0, 150), (1, 0, 0, 150),  # Horizontal neighbors
+
+                    (0, 0, 2, 50),  # Two steps above
+                    (0, -2, 0, 50), (0, 2, 0, 50),  # Two steps vertical
+                    (-2, 0, 0, 50), (2, 0, 0, 50),  # Two steps horizontal
+                    (-1, -1, 0, 50), (-1, 1, 0, 50), (1, 1, 0, 50), (1, -1, 0, 50), # Non direct neighbors bottom layer
+                    (1, 0, 1, 50), (-1, 0, 1, 50), (0, -1, 1, 50), (0, 1, 1, 50), # One horizontal one vertical
+                    ]:
+                    nx, ny, nz = x + dx, y + dy, z + dz
+                    if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
+                        self.grid_values[(nx, ny, nz)] = cost
 
             # If node used >=4 times, apply big cost
-            if node_counts[node] >= 4:
+            if node_counts[node] >= 4 or (node_counts[node] >= 3 and self.count_neighbors(x,y,z) <= 4) or (node_counts[node] >= 2 and self.count_neighbors(x,y,z) <= 3):
                 for dx, dy, dz, cost in [
                     (0, 0, 1, 50),  # Above
                     (0, -1, 0, 50), (0, 1, 0, 50),  # Vertical neighbors
@@ -111,7 +152,7 @@ class Grid_3D:
                         self.grid_values[(nx, ny, nz)] = cost
 
             # If node used >=3 times, apply smaller ring
-            elif node_counts[node] >= 3:
+            elif node_counts[node] >= 3 or (node_counts[node] >= 2 and self.count_neighbors(x,y,z) <= 3):
                 for dx, dy, dz, cost in [
                     (0, 0, 1, 40),  # Above
                     (0, -1, 0, 40), (0, 1, 0, 40),  # Vertical neighbors
