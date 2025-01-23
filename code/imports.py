@@ -40,3 +40,4 @@ def random_permutations(netlist, num_samples):
         selected_permutations.add(perm)
 
     return list(selected_permutations)
+

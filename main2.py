@@ -26,7 +26,7 @@ all_wire_runs = []
 successful_grid = 0
 total_tries = 0
 
-for netlists in itertools.permutations(netlist):
+for netlists in random_permutations(netlist, 100): # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
     # Reinitialize the grid for each permutation
     grid.clear_wires()
     wires = grid.return_wire_list()  # empty right now

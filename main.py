@@ -9,7 +9,7 @@ from code.algorithms.a_star import a_star_algorithm as Algorithm
 
 
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
-netlist_csv_path = './gates&netlists/chip_0/netlist_2.csv'
+netlist_csv_path = './gates&netlists/chip_0/netlist_3.csv'
 functie = Algorithm
 
 # Initiate the grid, and import nodes and netlist

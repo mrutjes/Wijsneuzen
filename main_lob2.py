@@ -3,8 +3,8 @@ from code.imports import import_netlist, import_nodes, random_permutations
 from code.algorithms.DFS import dfs_algorithm as Algorithm
 import itertools
 
-nodes_csv_path = './gates&netlists/chip_1/print_1.csv'
-netlist_csv_path = './gates&netlists/chip_1/netlist_4.csv'
+nodes_csv_path = './gates&netlists/chip_2/print_2.csv'
+netlist_csv_path = './gates&netlists/chip_2/netlist_9.csv'
 nodes_list = import_nodes(nodes_csv_path)
 grid_width = max(node._max_value for node in nodes_list) + 1
 grid_length = max(node._max_value for node in nodes_list) + 1
@@ -20,7 +20,7 @@ all_wire_runs = []
 successful_grid = 0
 total_tries = 0
 
-for netlists in random_permutations(netlist, 100): # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
+for netlists in random_permutations(netlist, 10): # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
     # Reinitialize the grid for each permutation
     grid.clear_wires()
     wires = grid.return_wire_list()
