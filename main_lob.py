@@ -1,11 +1,5 @@
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from code.classes.grid_class import Grid_3D, plot_wires_3d
-from code.classes.nodes_class import Node
-from code.classes.wire_class import Wire, WirePoint
-import pandas as pd
 from code.imports import import_netlist, import_nodes
-from code.algorithms.a_star import a_star_algorithm
 from code.algorithms.DFS import dfs_algorithm as Algorithm
 
 nodes_csv_path = './gates&netlists/chip_2/print_2.csv'
