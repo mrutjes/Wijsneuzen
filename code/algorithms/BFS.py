@@ -85,7 +85,7 @@ def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, 
             if neighbor in closed_set:
                 continue
 
-            # Compute g_cost (distance so far) + h_cost (heuristic)
+            # Compute g_cost (distance so far)
             g_cost = costs[current] + grid.get_point_value(neighbor) + grid.cost_point(neighbor)
             f_cost = g_cost
 
