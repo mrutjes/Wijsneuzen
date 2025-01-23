@@ -1,67 +1,127 @@
 from code.classes.grid_class import Grid_3D
-from code.imports import import_netlist, import_nodes
-from code.algorithms.a_star import a_star_algorithm as Algorithm
+from code.imports import *
+from code.algorithms import *
 import csv
 
+# Import paths
 nodes_csv_path = './gates&netlists/chip_0/print_0.csv'
 netlist_csv_path = './gates&netlists/chip_0/netlist_3.csv'
+
+# Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
+netlist = import_netlist(netlist_csv_path)
+
+# Initialize grid
 grid_width = max(node._max_value for node in nodes_list) + 1
 grid_length = max(node._max_value for node in nodes_list) + 1
-functie = Algorithm
-
-# Initiate the grid, and import nodes and netlist
 grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
-nodes_list = import_nodes(nodes_csv_path)
 for node in nodes_list:
     grid.place_node(node)
-netlist = import_netlist(netlist_csv_path)
+
+# -----------------------------------------------------------
+# Choose the algorithm you want to use:
+# functie = a_star_algorithm
+# functie = manhattan_wire
+# functie = dfs_algorithm
+# functie = lee_algorithm
+# -----------------------------------------------------------
+
+# Set variables to keep score of succesfull grids
 all_wire_runs = []
 successful_grid = 0
 total_tries = 0
 
-for netlists in random_permutations(netlist, 100): # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
-    # Reinitialize the grid for each permutation
-    grid.clear_wires()
-    wires = grid.return_wire_list()  # empty right now
+# Generating solutions
 
-    success_for_this_permutation = True  # a flag we set to false if a route fails
+if functie == dfs_algorithm:
+    for netlists in random_permutations(netlist, 10): # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
+        # Reinitialize the grid for each permutation
+        grid.clear_wires()
+        wires = grid.return_wire_list()
 
-    if len(netlists) == 0:
-        raise ValueError("No netlist given.")
+        success_for_this_permutation = True
 
-    # Attempt to form wires for each pair in this permutation
-    for i in range(len(netlists)):
-        node1_id, node2_id = netlists[i]
-        node1 = nodes_list[node1_id - 1]
-        node2 = nodes_list[node2_id - 1]
+        if len(netlists) == 0:
+            raise ValueError("No netlist given.")
 
-        try:
-            # Attempt to find a route
-            wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
-        except Exception as e:
-            # If we fail, log it and mark this permutation as failed
-            with open('error_log.csv', 'a', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow([f"Route for pair index {i} in netlist {netlists} failed: {e}"])
-            success_for_this_permutation = False
-            break  # skip the rest of pairs in this permutation
+        laid_wires = []
 
-        # If success, add this wire to the grid's wire list
-        grid.add_wire_list(wire)
+        # Lay wires for this order of the netlist
+        for i in range(len(netlists)):
+            node1_id, node2_id = netlists[i]
+            node1 = nodes_list[node1_id - 1]
+            node2 = nodes_list[node2_id - 1]
 
-    # Now we've tried to route all pairs in this permutation (unless we broke early)
-    if success_for_this_permutation:
-        # This permutation succeeded for all net pairs
-        all_wire_runs.append(wires)
-        # If all pairs routed successfully, increment success count
-        successful_grid += 1
+            while True:
+                try:
+                    # Find a path
+                    wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+                    if wire is not None:
+                        laid_wires.append(wire)
+                        break
+                    else:
+                        raise Exception(f"No valid path found for net {i+1}: {node1_id} -> {node2_id}")
+                except Exception as e:
+                    # Backtrack
+                    if laid_wires:
+                        last_wire = laid_wires.pop()
+                        grid.remove_wire(last_wire)
+                    else:
+                        success_for_this_permutation = False
+                        break
 
-    total_tries += 1
+            if not success_for_this_permutation:
+                break
 
-    # Optionally remove the nodes from the wire dict
-    # (so they don’t appear as intersections, etc.)
-    grid.remove_nodes_pointdict()
+        # If we're succesfull
+        if success_for_this_permutation:
+            all_wire_runs.append(wires)
+            successful_grid += 1
+
+        total_tries += 1
+        print(total_tries)
+
+        # Optionally remove the nodes from the wire dict
+        grid.remove_nodes_pointdict()
+else:
+    for netlists in random_permutations(netlist, 100): # 100 vervangen door hoeveelheid permutaties die je van de netlist wilt
+        # Reinitialize the grid for each permutation
+        grid.clear_wires()
+        wires = grid.return_wire_list()  # empty right now
+
+        success_for_this_permutation = True  # a flag we set to false if a route fails
+
+        if len(netlists) == 0:
+            raise ValueError("No netlist given.")
+
+        # Attempt to form wires for each pair in this permutation
+        for i in range(len(netlists)):
+            node1_id, node2_id = netlists[i]
+            node1 = nodes_list[node1_id - 1]
+            node2 = nodes_list[node2_id - 1]
+
+            try:
+                # Attempt to find a route
+                wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+            except Exception as e:
+                success_for_this_permutation = False
+                break  # skip the rest of pairs in this permutation
+
+            # If success, add this wire to the grid's wire list
+            grid.add_wire_list(wire)
+
+        # Now we've tried to route all pairs in this permutation (unless we broke early)
+        if success_for_this_permutation:
+            # This permutation succeeded for all net pairs
+            all_wire_runs.append(wires)
+            # If all pairs routed successfully, increment success count
+            successful_grid += 1
+
+        total_tries += 1
+
+        # Optionally remove the nodes from the wire dict
+        # (so they don’t appear as intersections, etc.)
+        grid.remove_nodes_pointdict()
 
 # After trying all permutations
 success_percentage = (successful_grid / total_tries) * 100
