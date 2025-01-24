@@ -24,7 +24,6 @@ netlist = import_netlist(netlist_csv_path)
 
 ## Initialize grid
 grid, grid_width, grid_length = initialise_grid(nodes_list, nodes_csv_path, algorithm, netlist_csv_path)
-print(grid.grid_values)
 
 ## Get sorting method
 sort, iter = get_sorting_method(netlist, nodes_list)
