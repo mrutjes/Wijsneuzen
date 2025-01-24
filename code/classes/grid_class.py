@@ -547,7 +547,13 @@ class Grid_3D:
             return 1
         
         
-
+def initialise_grid(nodes_list, nodes_csv_path):
+    grid_width = max(node._max_value for node in nodes_list) + 1
+    grid_length = max(node._max_value for node in nodes_list) + 1
+    grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
+    for node in nodes_list:
+        grid.place_node(node)
+    return grid, grid_width, grid_length
    
 def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
     """

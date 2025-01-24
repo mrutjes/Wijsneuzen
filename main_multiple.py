@@ -1,41 +1,15 @@
 from code.classes.grid_class import *
 from code.imports import *
+from code.functions import *
 from code.algorithms import *
 
 # Setup
 
 ## Get netlist
-while True:
-    netlist = input("What netlist do you want to use? Answer must lie between 1-9: ").lower()
-    if netlist == '1' or netlist == '2' or netlist == '3':
-        chip = '0'
-        break
-    elif netlist == '4' or netlist == '5' or netlist == '6':
-        chip = '1'
-        break
-    elif netlist == '7' or netlist == '8' or netlist == '9':
-        chip = '2'
-        break
-    else:
-        print("Not a valid entry")
+chip, netlist = get_netlist()
 
 ## Get algorithm
-while True:
-    algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
-    if algorithm == 'm' or algorithm == 'manhattan':
-        functie = manhattan_wire
-        break
-    elif algorithm == 'd' or algorithm == 'depth first':
-        functie = dfs_algorithm
-        break
-    elif algorithm == 'l' or algorithm == 'lee':
-        functie = lee_algorithm
-        break
-    elif algorithm == 'a' or algorithm == 'a*':
-        functie = a_star_algorithm
-        break
-    else:
-        print("Not a valid entry")
+functie = get_algorithms()
 
 ## Create paths
 nodes_csv_path = './gates&netlists/chip_' + chip + '/print_' + chip + '.csv'
@@ -46,35 +20,16 @@ nodes_list = import_nodes(nodes_csv_path)
 netlist = import_netlist(netlist_csv_path)
 
 ## Initialize grid
-grid_width = max(node._max_value for node in nodes_list) + 1
-grid_length = max(node._max_value for node in nodes_list) + 1
-grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
-for node in nodes_list:
-    grid.place_node(node)
+grid, grid_width, grid_length = initialise_grid(nodes_list, nodes_csv_path)
 
 ## Get sorting method
-while True:
-    ans = input("How do you want to sort the netlist? Choose between by: Random (R), Busy nodes (B) or Distance of a connection (D): ").lower()
-    if ans == 'r' or ans == 'random':
-        ans = input("How many combinations of the netlist do you want to try?: Default is 100. ")
-        sort = random_permutations(netlist, int(ans))
-        break
-    elif ans == 'd' or ans == 'distance of a connection':
-        ans = input("How many combinations of the sorted netlist do you want to try?: Default is 100. ")
-        sort = sort_multiple_netlist_distance(netlist, nodes_list, int(ans))
-        break
-    elif ans == 'b' or ans == 'busy nodes':
-        ans = input("How many combinations of the sorted netlist do you want to try?: Default is 100.")
-        sort = sort_multiple_netlist_busy_nodes(netlist, int(ans))
-        break
-    else:
-        print("Not a valid entry")
+sort = get_sorting_method(netlist, nodes_list)
 
 ## Set variables to keep score of succesfull grids
 all_wire_runs = []
 successful_grid = 0
 total_tries = 0
-cost_min = 1000000000
+cost_min = float('inf')
 
 
 # Generating solutions
@@ -82,103 +37,206 @@ cost_min = 1000000000
 print("Starting algorithm...")
 
 if functie == dfs_algorithm:
-    for netlists in sort:
-        # Reinitialize the grid for each permutation
-        grid.clear_wires()
-        wires = grid.return_wire_list()
+    if sort == 'q':
+        for episode in range(ans):  # Aantal iteraties
+            # Begin met een willekeurige volgorde
+            netlist_new = random.sample(netlist, len(netlist))
+            state = state_to_tuple(netlist)
 
-        success_for_this_permutation = True
+            for step in range(50):  # Maximaal aantal stappen per episode
+                # Kies een actie (twee items wisselen)
+                i, j = choose_action(state, netlist_new)
 
-        if len(netlists) == 0:
-            raise ValueError("No netlist given.")
+                # Pas de actie toe
+                netlist_new[i], netlist_new[j] = netlist_new[j], netlist_new[i]
+                next_state = state_to_tuple(netlist)
 
-        laid_wires = []
+                # Test de netlist-volgorde
+                grid.clear_wires()
+                success = True
 
-        # Lay wires for this order of the netlist
-        for i in range(len(netlists)):
-            node1_id, node2_id = netlists[i]
-            node1 = nodes_list[node1_id - 1]
-            node2 = nodes_list[node2_id - 1]
-
-            while True:
-                try:
-                    # Find a path
-                    wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
-                    if wire is not None:
-                        laid_wires.append(wire)
-                        break
-                    else:
-                        raise Exception(f"No valid path found for net {i+1}: {node1_id} -> {node2_id}")
-                except Exception as e:
-                    # Backtrack
-                    if laid_wires:
-                        last_wire = laid_wires.pop()
-                        grid.remove_wire(last_wire)
-                    else:
-                        success_for_this_permutation = False
+                for node1_id, node2_id in netlist_new:
+                    node1 = nodes_list[node1_id - 1]
+                    node2 = nodes_list[node2_id - 1]
+                    try:
+                        functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+                    except Exception:
+                        success = False
                         break
 
-            if not success_for_this_permutation:
-                break
+                # Bereken beloning
+                if success:
+                    reward = 1 / grid.cost()  # Lagere kosten -> hogere beloning
+                    if grid.cost() < cost_min:
+                        cost_min = grid.cost()
+                else:
+                    reward = -1  # Straf voor mislukte volgorde
 
-        # If we're succesfull
-        if success_for_this_permutation:
-            all_wire_runs.append(wires)
-            successful_grid += 1
+                # Update de Q-table
+                update_q_table(state, (i, j), reward, next_state)
 
-            if cost_min > grid.cost():
-                cost_min = grid.cost()
-                wires_cost_min = laid_wires
+                # Ga naar de volgende staat
+                state = next_state
 
-        total_tries += 1
-        print(f"Amount of solutions attempted: {total_tries}")
+                if success:
+                    successful_grid += 1
+                    break
 
-        # Optionally remove the nodes from the wire dict
-        grid.remove_nodes_pointdict()
+            total_tries += 1
+            print(f"Episode {episode + 1}: Best cost so far: {cost_min}")
+
+        print(f"Q-learning completed. Successful grids: {successful_grid}/{total_tries}")
+    else:
+        for netlists in sort:
+            # Reinitialize the grid for each permutation
+            grid.clear_wires()
+            wires = grid.return_wire_list()
+
+            success_for_this_permutation = True
+
+            if len(netlists) == 0:
+                raise ValueError("No netlist given.")
+
+            laid_wires = []
+
+            # Lay wires for this order of the netlist
+            for i in range(len(netlists)):
+                node1_id, node2_id = netlists[i]
+                node1 = nodes_list[node1_id - 1]
+                node2 = nodes_list[node2_id - 1]
+
+                while True:
+                    try:
+                        # Find a path
+                        wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+                        if wire is not None:
+                            laid_wires.append(wire)
+                            break
+                        else:
+                            raise Exception(f"No valid path found for net {i+1}: {node1_id} -> {node2_id}")
+                    except Exception as e:
+                        # Backtrack
+                        if laid_wires:
+                            last_wire = laid_wires.pop()
+                            grid.remove_wire(last_wire)
+                        else:
+                            success_for_this_permutation = False
+                            break
+
+                if not success_for_this_permutation:
+                    break
+
+            # If we're succesfull
+            if success_for_this_permutation:
+                all_wire_runs.append(wires)
+                successful_grid += 1
+
+                if cost_min > grid.cost():
+                    cost_min = grid.cost()
+                    wires_cost_min = laid_wires
+
+            total_tries += 1
+            print(f"Amount of solutions attempted: {total_tries}")
+
+            # Optionally remove the nodes from the wire dict
+            grid.remove_nodes_pointdict()
 else:
-    for netlists in sort:
-        # Reinitialize the grid for each permutation
-        grid.clear_wires()
-        wires = grid.return_wire_list()  # empty right now
+    if sort == 'q':
+        for episode in range(ans):  # Aantal iteraties
+            # Begin met een willekeurige volgorde
+            netlist_new = random.sample(netlist, len(netlist))
+            state = state_to_tuple(netlist_new)
 
-        success_for_this_permutation = True  # a flag we set to false if a route fails
+            for step in range(50):  # Maximaal aantal stappen per episode
+                # Kies een actie (twee items wisselen)
+                i, j = choose_action(state, netlist_new)
 
-        if len(netlists) == 0:
-            raise ValueError("No netlist given.")
+                # Pas de actie toe
+                netlist_new[i], netlist_new[j] = netlist_new[j], netlist_new[i]
+                next_state = state_to_tuple(netlist_new)
 
-        # Attempt to form wires for each pair in this permutation
-        for i in range(len(netlists)):
-            node1_id, node2_id = netlists[i]
-            node1 = nodes_list[node1_id - 1]
-            node2 = nodes_list[node2_id - 1]
+                # Test de netlist-volgorde
+                grid.clear_wires()
+                success = True
 
-            try:
-                # Attempt to find a route
-                wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
-            except Exception as e:
-                success_for_this_permutation = False
-                break  # skip the rest of pairs in this permutation
+                for node1_id, node2_id in netlist_new:
+                    node1 = nodes_list[node1_id - 1]
+                    node2 = nodes_list[node2_id - 1]
+                    try:
+                        functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+                    except Exception:
+                        success = False
+                        break
 
-            # If success, add this wire to the grid's wire list
-            grid.add_wire_list(wire)
+                # Bereken beloning
+                if success:
+                    reward = 1 / grid.cost()  # Lagere kosten -> hogere beloning
+                    if grid.cost() < cost_min:
+                        cost_min = grid.cost()
+                else:
+                    reward = -1  # Straf voor mislukte volgorde
 
-        # Now we've tried to route all pairs in this permutation (unless we broke early)
-        if success_for_this_permutation:
-            # This permutation succeeded for all net pairs
-            all_wire_runs.append(wires)
-            # If all pairs routed successfully, increment success count
-            successful_grid += 1
+                # Update de Q-table
+                update_q_table(state, (i, j), reward, next_state)
 
-            if cost_min > grid.cost():
-                cost_min = grid.cost()
-                wires_cost_min = laid_wires
+                # Ga naar de volgende staat
+                state = next_state
 
-        total_tries += 1
-        print(f"Amount of solutions attempted: {total_tries}")
+                if success:
+                    successful_grid += 1
+                    if cost_min > grid.cost():
+                        cost_min = grid.cost()
+                        wires_cost_min = laid_wires
+                    break
 
-        # Optionally remove the nodes from the wire dict
-        # (so they don’t appear as intersections, etc.)
-        grid.remove_nodes_pointdict()
+            total_tries += 1
+            print(f"Episode {episode + 1}: Best cost so far: {cost_min}")
+
+        print(f"Q-learning completed. Successful grids: {successful_grid}/{total_tries}")
+    else:
+        for netlists in sort:
+            # Reinitialize the grid for each permutation
+            grid.clear_wires()
+            wires = grid.return_wire_list()  # empty right now
+
+            success_for_this_permutation = True  # a flag we set to false if a route fails
+
+            if len(netlists) == 0:
+                raise ValueError("No netlist given.")
+
+            # Attempt to form wires for each pair in this permutation
+            for i in range(len(netlists)):
+                node1_id, node2_id = netlists[i]
+                node1 = nodes_list[node1_id - 1]
+                node2 = nodes_list[node2_id - 1]
+
+                try:
+                    # Attempt to find a route
+                    wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+                except Exception as e:
+                    success_for_this_permutation = False
+                    break  # skip the rest of pairs in this permutation
+
+                # If success, add this wire to the grid's wire list
+                grid.add_wire_list(wire)
+
+            # Now we've tried to route all pairs in this permutation (unless we broke early)
+            if success_for_this_permutation:
+                # This permutation succeeded for all net pairs
+                all_wire_runs.append(wires)
+                # If all pairs routed successfully, increment success count
+                successful_grid += 1
+
+                if cost_min > grid.cost():
+                    cost_min = grid.cost()
+                    wires_cost_min = laid_wires
+
+            total_tries += 1
+            print(f"Amount of solutions attempted: {total_tries}")
+
+            # Optionally remove the nodes from the wire dict
+            # (so they don’t appear as intersections, etc.)
+            grid.remove_nodes_pointdict()
 
 # After trying all permutations
 success_percentage = (successful_grid / total_tries) * 100
