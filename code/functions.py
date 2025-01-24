@@ -260,7 +260,7 @@ def get_algorithms():
             break
         else:
             print("Not a valid entry")
-    return functie
+    return functie, algorithm
 
 def get_sorting_method(netlist, nodes_list):
     while True:
