@@ -3,6 +3,7 @@ from code.classes.grid_class import *
 from code.imports import *
 from code.functions import *
 from code.algorithms import *
+from code.visualisation import *
 
 # Setup
 
@@ -10,7 +11,7 @@ from code.algorithms import *
 chip, netlist = get_netlist()
 
 ## Get algorithm
-functie = get_algorithms()
+functie, algorithm = get_algorithms()
 
 ## Create paths
 base_path = os.path.join('.', 'gates_netlists')
@@ -22,7 +23,8 @@ nodes_list = import_nodes(nodes_csv_path)
 netlist = import_netlist(netlist_csv_path)
 
 ## Initialize grid
-grid, grid_width, grid_length = initialise_grid(nodes_list, nodes_csv_path)
+grid, grid_width, grid_length = initialise_grid(nodes_list, nodes_csv_path, algorithm, netlist_csv_path)
+print(grid.grid_values)
 
 ## Get sorting method
 sort, iter = get_sorting_method(netlist, nodes_list)

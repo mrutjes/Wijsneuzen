@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from collections import Counter
 
 from code.classes.nodes_class import Node
@@ -7,7 +6,7 @@ from code.imports import import_netlist, import_nodes
 from code.classes.segment_class import Segment
 
 class Grid_3D:
-    def __init__(self, n, m, nodes_csv_path):
+    def __init__(self, n, m, nodes_csv_path, netlist_csv_path):
         """
         Generates a grid of n x m x 8. 
         """
@@ -18,6 +17,7 @@ class Grid_3D:
         self._lines_count = 0
         self._wires_segments = set()
         self._nodes = import_nodes(nodes_csv_path)
+        self._netlist = import_netlist(netlist_csv_path)
         self.nodes_csv_path = nodes_csv_path
         self._reserved_points = set()
         self.failed_wires = 0
@@ -95,7 +95,7 @@ class Grid_3D:
                 neighbor_count += 1
         return neighbor_count
 
-    def apply_costs_around_nodes(self, netlist, distance_multiplier=2, biggest_1step_cost=75, biggest_2step_cost=50, biggest_3step_cost=25, big_1step_cost=50, big_2step_cost=25, big_3step_cost=10, medium_1step_cost=40, medium_2step_cost=25, small_1step_cost=20):
+    def apply_costs_around_nodes(self, distance_multiplier=2, biggest_1step_cost=75, biggest_2step_cost=50, biggest_3step_cost=25, big_1step_cost=50, big_2step_cost=25, big_3step_cost=10, medium_1step_cost=40, medium_2step_cost=25, small_1step_cost=20):
         """
         1) Apply extra cost around nodes that appear frequently in the netlist.
         2) Then, ALSO make outer cells cheaper and center cells more expensive.
@@ -107,7 +107,7 @@ class Grid_3D:
         """
 
         # Count how many times each node appears in the netlist
-        node_counts = Counter([node for pair in netlist for node in pair])
+        node_counts = Counter([node for pair in self._netlist for node in pair])
 
         # For each node, set certain rings of cells around it to a higher cost
         for node in self._nodes:
@@ -538,34 +538,15 @@ class Grid_3D:
             return 1
         
         
-def initialise_grid(nodes_list, nodes_csv_path):
+def initialise_grid(nodes_list, nodes_csv_path, algorithm: str, netlist_csv_path):
     grid_width = max(node._max_value for node in nodes_list) + 1
     grid_length = max(node._max_value for node in nodes_list) + 1
-    grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
+    grid = Grid_3D(grid_width, grid_length, nodes_csv_path=nodes_csv_path, netlist_csv_path=netlist_csv_path)
     for node in nodes_list:
         grid.place_node(node)
+
+    ## For a* based algorithms, apply costs to certain points
+    if algorithm.lower() == 'lee' or algorithm.lower() == 'l' or algorithm.lower() == 'a' or algorithm.lower() == 'a*':
+        grid.apply_costs_around_nodes()
+
     return grid, grid_width, grid_length
-   
-def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
-    """
-    A function used to plot the wires of the grid in 3D.
-    """
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    for wire in wires:
-        xs = [p.give_x() for p in wire.give_wirepoints()]
-        ys = [p.give_y() for p in wire.give_wirepoints()]
-        zs = [p.give_z() for p in wire.give_wirepoints()]
-        
-        # Teken de lijnen langs de wirepoints
-        ax.plot(xs, ys, zs, marker='o')
-
-    ax.set_xlim(0, grid_width)
-    ax.set_ylim(0, grid_height)
-    ax.set_zlim(0, 7)
-
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    plt.show()
