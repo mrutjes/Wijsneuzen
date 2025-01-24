@@ -3,7 +3,7 @@ from code.classes.grid_class import *
 from code.imports import *
 from code.functions import *
 from code.algorithms import *
-from code.visualisation import *
+from code.visualisation.visualisation import *
 
 # Setup
 
