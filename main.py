@@ -151,6 +151,8 @@ if iter > 1:
             netlist_new[i], netlist_new[j] = netlist_new[j], netlist_new[i]
             next_state = state_to_tuple(netlist_new)
 
+            laid_wires = []
+
             grid.clear_wires()
             success = True
 
@@ -158,7 +160,8 @@ if iter > 1:
                 node1 = nodes_list[node1_id - 1]
                 node2 = nodes_list[node2_id - 1]
                 try:
-                    functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+                    wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+                    laid_wires.append(wire)
                 except Exception:
                     success = False
                     break
@@ -168,7 +171,7 @@ if iter > 1:
                 successful_grid += 1
                 if grid.cost() < cost_min:
                     cost_min = grid.cost()
-                    wires_cost_min = grid._wires
+                    wires_cost_min = laid_wires
             else:
                 reward = -1
 

@@ -207,20 +207,19 @@ class Grid_3D:
         # -----------------------------------------------------
         # 2) MAKE OUTER CELLS CHEAPER AND CENTER CELLS PRICIER
         # -----------------------------------------------------
-
+        """
         for x in range(self.n):
             for y in range(self.m):
                 for z in range(self.height):
                     # Calculate the Euclidean distance to the center of the bottom layer
                     center_x = self.n // 2
                     center_y = self.m // 2
-                    center_z = 0  # Bottom layer
 
-                    dist_to_center_bottom = ((x - center_x) ** 2 + (y - center_y) ** 2 + (z - center_z) ** 2) ** 0.5
-
-                    cost_bump = (dist_to_center_bottom ** 2) * distance_multiplier
-
+                    dist_to_center_bottom = abs(x - center_x) + abs(y - center_y)
+                    height_penalty = self.height - z # Penalize lower layers
+                    cost_bump = (height_penalty ** 4) / (dist_to_center_bottom + 1) ** 2
                     self.grid_values[(x, y, z)] += cost_bump
+        """
 
 
 
@@ -547,6 +546,6 @@ def initialise_grid(nodes_list, nodes_csv_path, algorithm: str, netlist_csv_path
 
     ## For a* based algorithms, apply costs to certain points
     if algorithm.lower() == 'lee' or algorithm.lower() == 'l' or algorithm.lower() == 'a' or algorithm.lower() == 'a*':
-        grid.apply_costs_around_nodes(distance_multiplier=0, biggest_1step_cost=100, biggest_2step_cost=50, biggest_3step_cost=30, big_1step_cost=90, big_2step_cost=40, big_3step_cost=10, medium_1step_cost=70, medium_2step_cost=30, small_1step_cost=40)
+        grid.apply_costs_around_nodes(biggest_1step_cost=0, biggest_2step_cost=0, biggest_3step_cost=0, big_1step_cost=0, big_2step_cost=0, big_3step_cost=0, medium_1step_cost=0, medium_2step_cost=0, small_1step_cost=0)
 
     return grid, grid_width, grid_length
