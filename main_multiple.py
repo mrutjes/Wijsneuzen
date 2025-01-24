@@ -75,6 +75,7 @@ if functie == dfs_algorithm and sort == 'q':
             break
 
         print(f"Amount of solutions attempted: {tries + 1}: Best cost so far: {cost_min}")
+
 elif functie == dfs_algorithm and sort != 'q':
     for netlists in sort:
         # Reinitialize the grid for each permutation
@@ -235,4 +236,3 @@ print(f'{successful_grid} out of {total_tries} permutations were successful')
 if successful_grid >= 1:
     print(f'The grid with minimal cost costs: {cost_min}')
     plot_wires_3d(wires_cost_min, grid_width, grid_length)
-    print(working_list)
