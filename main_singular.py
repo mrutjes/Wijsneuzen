@@ -2,6 +2,7 @@ import os
 from code.classes.grid_class import Grid_3D, plot_wires_3d
 from code.imports import *
 from code.algorithms import *
+from code.functions import *
 
 # Setup
 
