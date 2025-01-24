@@ -1,9 +1,9 @@
 import os
-from code.classes.grid_class import Grid_3D, plot_wires_3d
+from code.classes.grid_class import *
 from code.imports import *
 from code.algorithms import *
 from code.functions import *
-
+from code.visualisation.visualisation import *
 # Setup
 
 ## Get netlist
@@ -52,9 +52,9 @@ netlist = import_netlist(netlist_csv_path)
 ## Initialize grid
 grid_width = max(node._max_value for node in nodes_list) + 2
 grid_length = max(node._max_value for node in nodes_list) + 2
-grid = Grid_3D(grid_width, grid_length, nodes_csv_path)
-for node in nodes_list:
-    grid.place_node(node)
+grid = Grid_3D(grid_width, grid_length, nodes_csv_path, netlist_csv_path)
+grid, grid_width, grid_length = initialise_grid(nodes_list, nodes_csv_path, algorithm, netlist_csv_path)
+
 
 ## Get sorting method
 while True:
@@ -69,12 +69,6 @@ while True:
         break
     else:
         print("Not a valid entry")
-
-## For a* based algorithms, apply costs to certain points
-if functie != dfs_algorithm or functie != manhattan_wire:
-    netlist_2 = [(nodes_list[x1 - 1], nodes_list[x2 - 1]) for x1, x2 in netlist]
-    grid.apply_costs_around_nodes(netlist=netlist_2)
-
 
 # Laying wires
 
@@ -149,7 +143,7 @@ else:
         print(f"The total cost for this grid is: {grid.cost()}")
 
         # Plot the wires
-        #plot_wires_3d(wires, grid_width, grid_length)
+        plot_wires_3d(wires, grid_width, grid_length)
 
         # Remove the nodes from the wires dict
         grid.remove_nodes_pointdict()

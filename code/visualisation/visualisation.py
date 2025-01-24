@@ -1,5 +1,5 @@
 from code.classes.wire_class import WirePoint, Wire
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
     """

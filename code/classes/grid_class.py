@@ -218,7 +218,7 @@ class Grid_3D:
 
                     dist_to_center_bottom = ((x - center_x) ** 2 + (y - center_y) ** 2 + (z - center_z) ** 2) ** 0.5
 
-                    cost_bump = dist_to_center_bottom * distance_multiplier
+                    cost_bump = (dist_to_center_bottom ** 2) * distance_multiplier
 
                     self.grid_values[(x, y, z)] += cost_bump
 
@@ -547,6 +547,6 @@ def initialise_grid(nodes_list, nodes_csv_path, algorithm: str, netlist_csv_path
 
     ## For a* based algorithms, apply costs to certain points
     if algorithm.lower() == 'lee' or algorithm.lower() == 'l' or algorithm.lower() == 'a' or algorithm.lower() == 'a*':
-        grid.apply_costs_around_nodes()
+        grid.apply_costs_around_nodes(distance_multiplier=0, biggest_1step_cost=100, biggest_2step_cost=50, biggest_3step_cost=30, big_1step_cost=90, big_2step_cost=40, big_3step_cost=10, medium_1step_cost=70, medium_2step_cost=30, small_1step_cost=40)
 
     return grid, grid_width, grid_length
