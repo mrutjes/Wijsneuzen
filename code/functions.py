@@ -266,21 +266,21 @@ def get_sorting_method(netlist, nodes_list):
     while True:
         ans = input("How do you want to sort the netlist? Choose between by: Random (R), Q-Learning (Q), Busy nodes (B) or Distance of a connection (D): ").lower()
         if ans == 'r' or ans == 'random':
-            ans = input("How many combinations of the netlist do you want to try?: Default is 100. ")
-            sort = random_permutations(netlist, int(ans))
+            iter = input("How many combinations of the netlist do you want to try?: Default is 100. ")
+            sort = random_permutations(netlist, int(iter))
             break
         elif ans == 'd' or ans == 'distance of a connection':
-            ans = input("How many combinations of the sorted netlist do you want to try?: Default is 100. ")
-            sort = sort_multiple_netlist_distance(netlist, nodes_list, int(ans))
+            iter = input("How many combinations of the sorted netlist do you want to try?: Default is 100. ")
+            sort = sort_multiple_netlist_distance(netlist, nodes_list, int(iter))
             break
         elif ans == 'b' or ans == 'busy nodes':
-            ans = input("How many combinations of the sorted netlist do you want to try?: Default is 100. ")
-            sort = sort_multiple_netlist_busy_nodes(netlist, int(ans))
+            iter = input("How many combinations of the sorted netlist do you want to try?: Default is 100. ")
+            sort = sort_multiple_netlist_busy_nodes(netlist, int(iter))
             break
         elif ans == 'q' or ans == 'q-learning' or ans == 'q learning':
-            ans = int(input("How many combinations of the sorted netlist do you want to try?: Default is 100. "))
+            iter = int(input("How many combinations of the sorted netlist do you want to try?: Default is 100. "))
             sort = 'q'
             break
         else:
             print("Not a valid entry")
-    return sort
+    return sort, iter

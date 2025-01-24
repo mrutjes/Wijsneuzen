@@ -1,5 +1,5 @@
 import os
-from code.classes.grid_class import Grid_3D, plot_wires_3d
+from code.classes.grid_class import *
 from code.imports import *
 from code.functions import *
 from code.algorithms import *
@@ -25,14 +25,13 @@ netlist = import_netlist(netlist_csv_path)
 grid, grid_width, grid_length = initialise_grid(nodes_list, nodes_csv_path)
 
 ## Get sorting method
-sort = get_sorting_method(netlist, nodes_list)
+sort, iter = get_sorting_method(netlist, nodes_list)
 
 ## Set variables to keep score of succesfull grids
 all_wire_runs = []
 successful_grid = 0
 total_tries = 0
 cost_min = float('inf')
-
 
 # Generating solutions
 
