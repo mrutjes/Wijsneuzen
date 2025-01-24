@@ -207,27 +207,18 @@ class Grid_3D:
         # -----------------------------------------------------
         # 2) MAKE OUTER CELLS CHEAPER AND CENTER CELLS PRICIER
         # -----------------------------------------------------
-        #
-        # We'll do a simple formula: the cost at each cell (x,y,z)
-        # will be increased by an amount proportional to "distance from the edge."
-        #
-        # distance_to_edge = min(x, (self.n - 1 - x), y, (self.m - 1 - y), z, (self.height - 1 - z))
-        #
-        # The bigger that distance, the more "center" the cell is => the bigger cost we add.
 
         for x in range(self.n):
             for y in range(self.m):
                 for z in range(self.height):
-                    dist_to_edge = min(
-                        x,               # distance from left edge
-                        self.n - 1 - x,  # distance from right edge
-                        y,               # distance from top edge
-                        self.m - 1 - y,  # distance from bottom edge
-                        z,               # distance from top layer in 3D
-                        self.height - 1 - z  # distance from bottom layer in 3D
-                    )
+                    # Calculate the Euclidean distance to the center of the bottom layer
+                    center_x = self.n // 2
+                    center_y = self.m // 2
+                    center_z = 0  # Bottom layer
 
-                    cost_bump = dist_to_edge * distance_multiplier
+                    dist_to_center_bottom = ((x - center_x) ** 2 + (y - center_y) ** 2 + (z - center_z) ** 2) ** 0.5
+
+                    cost_bump = dist_to_center_bottom * distance_multiplier
 
                     self.grid_values[(x, y, z)] += cost_bump
 
