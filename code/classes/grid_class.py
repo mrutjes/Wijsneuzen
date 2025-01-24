@@ -95,15 +95,14 @@ class Grid_3D:
                 neighbor_count += 1
         return neighbor_count
 
-    def apply_costs_around_nodes(self, netlist):
+
+    def apply_costs_around_nodes(self, netlist, distance_multiplier, cost_config):
         """
         1) Apply extra cost around nodes that appear frequently in the netlist.
-        2) Then, ALSO make outer cells cheaper and center cells more expensive.
+        2) Then make outer cells cheaper and center cells more expensive.
 
-        The end result:
-        - Heavily used nodes still get big cost in/around them (as before).
-        - Among the "non-node" space, cells near the grid edges are cheaper,
-        and cells near the center are more expensive.
+        Same final result as the original version, but with all numeric costs
+        moved into cost_config.
         """
 
         # Count how many times each node appears in the netlist
@@ -112,104 +111,40 @@ class Grid_3D:
         # For each node, set certain rings of cells around it to a higher cost
         for node in self._nodes:
             x, y, z = node.give_x(), node.give_y(), 0
-            
-            # If node used >=5 times, apply big cost
-            if node_counts[node] >= 5 or (node_counts[node] >= 4 and self.count_neighbors(x,y,z) <= 4) or (node_counts[node] >= 3 and self.count_neighbors(x,y,z) <= 3):
-                for dx, dy, dz, cost in [
-                    (0, 0, 1, 150),  # Above
-                    (0, -1, 0, 150), (0, 1, 0, 150),  # Vertical neighbors
-                    (-1, 0, 0, 150), (1, 0, 0, 150),  # Horizontal neighbors
+            usage = node_counts[node]
+            nbrs = self.count_neighbors(x, y, z)
 
-                    (0, 0, 2, 50),  # Two steps above
-                    (0, -2, 0, 50), (0, 2, 0, 50),  # Two steps vertical
-                    (-2, 0, 0, 50), (2, 0, 0, 50),  # Two steps horizontal
-                    (-1, -1, 0, 50), (-1, 1, 0, 50), (1, 1, 0, 50), (1, -1, 0, 50), # Non direct neighbors bottom layer
-                    (1, 0, 1, 50), (-1, 0, 1, 50), (0, -1, 1, 50), (0, 1, 1, 50), # One horizontal one vertical
-
-                    # Now all points with a distance of 3 steps
-                    # Pure axis-aligned points
-                    (3, 0, 0, 5), (-3, 0, 0, 5), (0, 3, 0, 5), (0, -3, 0, 5), (0, 0, 3, 5),
-
-                    # Two-axis combinations
-                    (2, 1, 0, 5), (2, -1, 0, 5), (2, 0, 1, 5),
-                    (-2, 1, 0, 5), (-2, -1, 0, 5), (-2, 0, 1, 5),
-                    (1, 2, 0, 5), (1, -2, 0, 5), (0, 2, 1, 5),
-                    (-1, 2, 0, 5), (-1, -2, 0, 5), (0, -2, 1, 5),
-                    (1, 0, 2, 5), (-1, 0, 2, 5), (0, 1, 2, 5), (0, -1, 2, 5),
-
-                    # Three-axis combinations
-                    (1, 1, 1, 5), (1, -1, 1, 5), (-1, 1, 1, 5), (-1, -1, 1, 5)
-                    ]:
+            # -- The first "if" from the original code:
+            if cost_config["biggest_ring"]["condition"](usage, nbrs):
+                for (dx, dy, dz), cost in cost_config["biggest_ring"]["offsets"]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
 
-            # If node used >=4 times, apply big cost
-            if node_counts[node] >= 4 or (node_counts[node] >= 3 and self.count_neighbors(x,y,z) <= 4) or (node_counts[node] >= 2 and self.count_neighbors(x,y,z) <= 3):
-                for dx, dy, dz, cost in [
-                    (0, 0, 1, 50),  # Above
-                    (0, -1, 0, 50), (0, 1, 0, 50),  # Vertical neighbors
-                    (-1, 0, 0, 50), (1, 0, 0, 50),  # Horizontal neighbors
-
-                    (0, 0, 2, 25),  # Two steps above
-                    (0, -2, 0, 25), (0, 2, 0, 25),  # Two steps vertical
-                    (-2, 0, 0, 25), (2, 0, 0, 25),  # Two steps horizontal
-                    (-1, -1, 0, 25), (-1, 1, 0, 25), (1, 1, 0, 25), (1, -1, 0, 25), # Non direct neighbors bottom layer
-                    (1, 0, 1, 25), (-1, 0, 1, 25), (0, -1, 1, 25), (0, 1, 1, 25), # One horizontal one vertical
-
-                    # Now all points with a distance of 3 steps
-                    # Pure axis-aligned points
-                    (3, 0, 0, 5), (-3, 0, 0, 5), (0, 3, 0, 5), (0, -3, 0, 5), (0, 0, 3, 5),
-
-                    # Two-axis combinations
-                    (2, 1, 0, 5), (2, -1, 0, 5), (2, 0, 1, 5),
-                    (-2, 1, 0, 5), (-2, -1, 0, 5), (-2, 0, 1, 5),
-                    (1, 2, 0, 5), (1, -2, 0, 5), (0, 2, 1, 5),
-                    (-1, 2, 0, 5), (-1, -2, 0, 5), (0, -2, 1, 5),
-                    (1, 0, 2, 5), (-1, 0, 2, 5), (0, 1, 2, 5), (0, -1, 2, 5),
-
-                    # Three-axis combinations
-                    (1, 1, 1, 5), (1, -1, 1, 5), (-1, 1, 1, 5), (-1, -1, 1, 5)
-                    ]:
+            # -- The second "if" from the original code (NOT elif):
+            if cost_config["heavy_ring"]["condition"](usage, nbrs):
+                for (dx, dy, dz), cost in cost_config["heavy_ring"]["offsets"]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
 
-            # If node used >=3 times, apply smaller ring
-            elif node_counts[node] >= 3 or (node_counts[node] >= 2 and self.count_neighbors(x,y,z) <= 3):
-                for dx, dy, dz, cost in [
-                    (0, 0, 1, 40),  # Above
-                    (0, -1, 0, 40), (0, 1, 0, 40),  # Vertical neighbors
-                    (-1, 0, 0, 40), (1, 0, 0, 40),  # Horizontal neighbors
-
-                    (0, 0, 2, 20),  # Two steps above
-                    (0, -2, 0, 20), (0, 2, 0, 20),  # Two steps vertical
-                    (-2, 0, 0, 20), (2, 0, 0, 20),  # Two steps horizontal
-                    (-1, -1, 0, 20), (-1, 1, 0, 20), (1, 1, 0, 20), (1, -1, 0, 20), # Non direct neighbors bottom layer
-                    (1, 0, 1, 20), (-1, 0, 1, 20), (0, -1, 1, 25), (0, 1, 1, 25) # One horizontal one vertical
-                ]:
+            # -- The third block uses `elif`, so only applies if heavy_ring didn't:
+            elif cost_config["medium_ring"]["condition"](usage, nbrs):
+                for (dx, dy, dz), cost in cost_config["medium_ring"]["offsets"]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
 
-        # If node used >=2 times, apply a small ring
-            elif node_counts[node] >= 2:
-                for dx, dy, dz, cost in [
-                    (0, 0, 1, 30),  # Above
-                    (0, -1, 0, 30), (0, 1, 0, 30),  # Vertical neighbors
-                    (-1, 0, 0, 30), (1, 0, 0, 30)  # Horizontal neighbors
-                ]:
+            # -- The fourth block is also `elif`, so only applies if medium_ring didn't:
+            elif cost_config["small_ring"]["condition"](usage, nbrs):
+                for (dx, dy, dz), cost in cost_config["small_ring"]["offsets"]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
-
 
         # -----------------------------------------------------
         # 2) MAKE OUTER CELLS CHEAPER AND CENTER CELLS PRICIER
         # -----------------------------------------------------
-        #
-        # We'll do a simple formula: the cost at each cell (x,y,z)
-        # will be increased by an amount proportional to "distance from the edge."
         #
         # distance_to_edge = min(x, (self.n - 1 - x), y, (self.m - 1 - y), z, (self.height - 1 - z))
         #
@@ -227,7 +162,7 @@ class Grid_3D:
                         self.height - 1 - z  # distance from bottom layer in 3D
                     )
 
-                    cost_bump = dist_to_edge * 2
+                    cost_bump = dist_to_edge * distance_multiplier
 
                     self.grid_values[(x, y, z)] += cost_bump
 
