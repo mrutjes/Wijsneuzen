@@ -3,6 +3,8 @@ import itertools
 import math
 import random
 
+# Sorteer functies
+
 def random_permutations(netlist, num_samples):
     """
     Generate a random sample of ⁠ num_samples ⁠ permutations from the netlist.
@@ -181,6 +183,8 @@ def sort_multiple_netlist_distance(netlist, nodeslist, num_variations = 100):
 
     return variations
 
+# Sorteer functies: Q Learning
+
 alpha = 0.1
 gamma = 0.9
 epsilon = 0.2
@@ -199,33 +203,27 @@ def choose_action(state, netlist):
     if random.uniform(0, 1) < epsilon:
         i, j = random.sample(range(len(netlist)), 2)
     else:
-        if state not in q_table:
-            q_table[state] = {}
-        if not q_table[state]:
+        possible_actions = [(s, a) for (s, a) in q_table if s == state]
+        if not possible_actions:
             i, j = random.sample(range(len(netlist)), 2)
         else:
-            i, j = max(q_table[state], key=q_table[state].get)
+            _, best_action = max(possible_actions, key=lambda x: q_table[x])
+            i, j = best_action
 
     return i, j
-
 
 def update_q_table(state, action, reward, next_state):
     """
     Update de Q-table volgens de Q-learning formule.
     """
-    if state not in q_table:
-        q_table[state] = {}
+    key = (state, action)
+    next_state_keys = [(next_state, a) for a in range(len(next_state))]
+    
+    next_max = max((q_table[k] for k in next_state_keys if k in q_table), default=0)
 
-    if action not in q_table[state]:
-        q_table[state][action] = 0
+    q_table[key] = q_table.get(key, 0) + alpha * (reward + gamma * next_max - q_table.get(key, 0))
 
-    if next_state not in q_table:
-        q_table[next_state] = {}
-
-    old_value = q_table[state][action]
-    next_max = max(q_table[next_state].values(), default=0)
-    q_table[state][action] = old_value + alpha * (reward + gamma * next_max - old_value)
-
+# Setup functies
 
 def get_netlist():
     while True:
@@ -262,31 +260,47 @@ def get_algorithms():
             print("Not a valid entry")
     return functie, algorithm
 
-def get_sorting_method(netlist, nodes_list):
-    while True:
-        ans = input("How do you want to sort the netlist? Choose between by: Random (R), Q-Learning (Q), Busy nodes (B) or Distance of a connection (D): ").lower()
-        if ans == 'r' or ans == 'random':
-            iter = input("How many combinations of the netlist do you want to try?: Default is 100. ")
-            sort = random_permutations(netlist, int(iter))
-            break
-        elif ans == 'd' or ans == 'distance of a connection':
-            iter = input("How many combinations of the sorted netlist do you want to try?: Default is 100. ")
-            sort = sort_multiple_netlist_distance(netlist, nodes_list, int(iter))
-            break
-        elif ans == 'b' or ans == 'busy nodes':
-            iter = input("How many combinations of the sorted netlist do you want to try?: Default is 100. ")
-            sort = sort_multiple_netlist_busy_nodes(netlist, int(iter))
-            break
-        elif ans == 'q' or ans == 'q-learning' or ans == 'q learning':
-            iter = int(input("How many combinations of the sorted netlist do you want to try?: Default is 100. "))
-            sort = 'q'
-            break
-        else:
-            print("Not a valid entry")
-    return sort, iter
+def get_sorting_method(netlist, nodes_list, iter):
+    if iter == 1:
+        while True:
+            ans = input("How do you want to sort the netlist? Choose between by: Random (R), Busy nodes (B) or Distance of a connection (D): ").lower()
+            if ans == 'r' or ans == 'random':
+                sort = random_permutations(netlist, int(iter))
+                break
+            elif ans == 'd' or ans == 'distance of a connection':
+                sort = sort_netlist_distance(netlist, nodes_list)
+                break
+            elif ans == 'b' or ans == 'busy nodes':
+                sort = sort_netlist_busy_nodes(netlist)
+                break
+            else:
+                print("Not a valid entry")
+    else:
+        while True:
+            ans = input("How do you want to sort the netlist? Choose between by: Random (R), Q-Learning (Q), Busy nodes (B) or Distance of a connection (D): ").lower()
+            if ans == 'r' or ans == 'random':
+                sort = random_permutations(netlist, int(iter))
+                break
+            elif ans == 'd' or ans == 'distance of a connection':
+                sort = sort_multiple_netlist_distance(netlist, nodes_list, int(iter))
+                break
+            elif ans == 'b' or ans == 'busy nodes':
+                sort = sort_multiple_netlist_busy_nodes(netlist, int(iter))
+                break
+            elif ans == 'q' or ans == 'q-learning' or ans == 'q learning':
+                sort = 'q'
+                break
+            else:
+                print("Not a valid entry")
+    return sort
 
-def route_wire(functie, grid, nodes_csv_path, netlist_csv_path):
-    try:
-        functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
-    except Exception:
-        success = False
+def get_singular_multiple():
+    while True:
+        try:
+            runs = int(input("How many times do you want to run the algorithm? "))
+            if runs <= 0:
+                print("Please enter a positive number.")
+            elif runs >= 1:
+                return runs
+        except ValueError:
+            print("Not a valid entry. Please enter a number.")
