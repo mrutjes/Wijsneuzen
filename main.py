@@ -129,7 +129,7 @@ if iter > 1:
                     break
 
             if success:
-                all_wire_runs.append(wires)
+                all_wire_runs.append(grid._wires)
                 successful_grid += 1
 
                 if cost_min > grid.cost():
@@ -205,13 +205,13 @@ if iter > 1:
             # Now we've tried to route all pairs in this permutation (unless we broke early)
             if success:
                 # This permutation succeeded for all net pairs
-                all_wire_runs.append(wires)
+                all_wire_runs.append(grid._wires)
                 # If all pairs routed successfully, increment success count
                 successful_grid += 1
 
                 if cost_min > grid.cost():
                     cost_min = grid.cost()
-                    wires_cost_min = laid_wires
+                    wires_cost_min = grid._wires
                     working_list = netlists
 
             tries += 1
