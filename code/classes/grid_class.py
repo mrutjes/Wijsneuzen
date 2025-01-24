@@ -32,7 +32,7 @@ class Grid_3D:
             (x, y, z): 1 for x in range(self.n) for y in range(self.m) for z in range(self.height)
         }
 
-    def set_point_value(self, wire: Wire, value: int):
+    def set_point_value(self, wire: Wire, intersection_penalty: int):
         """
         Sets a value for a specific point in the grid.
 
@@ -45,7 +45,7 @@ class Grid_3D:
         wirepoints = wire.give_wirepoints()
         for wirepoint in wirepoints:
             location = wirepoint.give_place()
-            self.grid_values[location] += value
+            self.grid_values[location] += intersection_penalty
 
     def return_point_dict(self):
         """
@@ -95,7 +95,7 @@ class Grid_3D:
                 neighbor_count += 1
         return neighbor_count
 
-    def apply_costs_around_nodes(self, netlist, distance_multiplier):
+    def apply_costs_around_nodes(self, netlist, distance_multiplier=2, biggest_1step_cost=75, biggest_2step_cost=50, biggest_3step_cost=25, big_1step_cost=50, big_2step_cost=25, big_3step_cost=10, medium_1step_cost=40, medium_2step_cost=25, small_1step_cost=20):
         """
         1) Apply extra cost around nodes that appear frequently in the netlist.
         2) Then, ALSO make outer cells cheaper and center cells more expensive.
@@ -113,32 +113,32 @@ class Grid_3D:
         for node in self._nodes:
             x, y, z = node.give_x(), node.give_y(), 0
             
-            # If node used >=5 times, apply big cost
+            # If node used >=5 times, apply very big cost
             if node_counts[node] >= 5 or (node_counts[node] >= 4 and self.count_neighbors(x,y,z) <= 4) or (node_counts[node] >= 3 and self.count_neighbors(x,y,z) <= 3):
                 for dx, dy, dz, cost in [
-                    (0, 0, 1, 150),  # Above
-                    (0, -1, 0, 150), (0, 1, 0, 150),  # Vertical neighbors
-                    (-1, 0, 0, 150), (1, 0, 0, 150),  # Horizontal neighbors
+                    (0, 0, 1, biggest_1step_cost),  # Above
+                    (0, -1, 0, biggest_1step_cost), (0, 1, 0, biggest_1step_cost),  # Vertical neighbors
+                    (-1, 0, 0, biggest_1step_cost), (1, 0, 0, biggest_1step_cost),  # Horizontal neighbors
 
-                    (0, 0, 2, 50),  # Two steps above
-                    (0, -2, 0, 50), (0, 2, 0, 50),  # Two steps vertical
-                    (-2, 0, 0, 50), (2, 0, 0, 50),  # Two steps horizontal
-                    (-1, -1, 0, 50), (-1, 1, 0, 50), (1, 1, 0, 50), (1, -1, 0, 50), # Non direct neighbors bottom layer
-                    (1, 0, 1, 50), (-1, 0, 1, 50), (0, -1, 1, 50), (0, 1, 1, 50), # One horizontal one vertical
+                    (0, 0, 2, biggest_2step_cost),  # Two steps above
+                    (0, -2, 0, biggest_2step_cost), (0, 2, 0, biggest_2step_cost),  # Two steps vertical
+                    (-2, 0, 0, biggest_2step_cost), (2, 0, 0, biggest_2step_cost),  # Two steps horizontal
+                    (-1, -1, 0, biggest_2step_cost), (-1, 1, 0, biggest_2step_cost), (1, 1, 0, biggest_2step_cost), (1, -1, 0, biggest_2step_cost), # Non direct neighbors bottom layer
+                    (1, 0, 1, biggest_2step_cost), (-1, 0, 1, biggest_2step_cost), (0, -1, 1, biggest_2step_cost), (0, 1, 1, biggest_2step_cost), # One horizontal one vertical
 
                     # Now all points with a distance of 3 steps
                     # Pure axis-aligned points
-                    (3, 0, 0, 5), (-3, 0, 0, 5), (0, 3, 0, 5), (0, -3, 0, 5), (0, 0, 3, 5),
+                    (3, 0, 0, biggest_3step_cost), (-3, 0, 0, biggest_3step_cost), (0, 3, 0, biggest_3step_cost), (0, -3, 0, biggest_3step_cost), (0, 0, 3, biggest_3step_cost),
 
                     # Two-axis combinations
-                    (2, 1, 0, 5), (2, -1, 0, 5), (2, 0, 1, 5),
-                    (-2, 1, 0, 5), (-2, -1, 0, 5), (-2, 0, 1, 5),
-                    (1, 2, 0, 5), (1, -2, 0, 5), (0, 2, 1, 5),
-                    (-1, 2, 0, 5), (-1, -2, 0, 5), (0, -2, 1, 5),
-                    (1, 0, 2, 5), (-1, 0, 2, 5), (0, 1, 2, 5), (0, -1, 2, 5),
+                    (2, 1, 0, biggest_3step_cost), (2, -1, 0, biggest_3step_cost), (2, 0, 1, biggest_3step_cost),
+                    (-2, 1, 0, biggest_3step_cost), (-2, -1, 0, biggest_3step_cost), (-2, 0, 1, biggest_3step_cost),
+                    (1, 2, 0, biggest_3step_cost), (1, -2, 0, biggest_3step_cost), (0, 2, 1, biggest_3step_cost),
+                    (-1, 2, 0, biggest_3step_cost), (-1, -2, 0, biggest_3step_cost), (0, -2, 1, biggest_3step_cost),
+                    (1, 0, 2, biggest_3step_cost), (-1, 0, 2, biggest_3step_cost), (0, 1, 2, biggest_3step_cost), (0, -1, 2, biggest_3step_cost),
 
                     # Three-axis combinations
-                    (1, 1, 1, 5), (1, -1, 1, 5), (-1, 1, 1, 5), (-1, -1, 1, 5)
+                    (1, 1, 1, biggest_3step_cost), (1, -1, 1, biggest_3step_cost), (-1, 1, 1, biggest_3step_cost), (-1, -1, 1, biggest_3step_cost)
                     ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
@@ -147,46 +147,46 @@ class Grid_3D:
             # If node used >=4 times, apply big cost
             if node_counts[node] >= 4 or (node_counts[node] >= 3 and self.count_neighbors(x,y,z) <= 4) or (node_counts[node] >= 2 and self.count_neighbors(x,y,z) <= 3):
                 for dx, dy, dz, cost in [
-                    (0, 0, 1, 50),  # Above
-                    (0, -1, 0, 50), (0, 1, 0, 50),  # Vertical neighbors
-                    (-1, 0, 0, 50), (1, 0, 0, 50),  # Horizontal neighbors
+                    (0, 0, 1, big_1step_cost),  # Above
+                    (0, -1, 0, big_1step_cost), (0, 1, 0, big_1step_cost),  # Vertical neighbors
+                    (-1, 0, 0, big_1step_cost), (1, 0, 0, big_1step_cost),  # Horizontal neighbors
 
-                    (0, 0, 2, 25),  # Two steps above
-                    (0, -2, 0, 25), (0, 2, 0, 25),  # Two steps vertical
-                    (-2, 0, 0, 25), (2, 0, 0, 25),  # Two steps horizontal
-                    (-1, -1, 0, 25), (-1, 1, 0, 25), (1, 1, 0, 25), (1, -1, 0, 25), # Non direct neighbors bottom layer
-                    (1, 0, 1, 25), (-1, 0, 1, 25), (0, -1, 1, 25), (0, 1, 1, 25), # One horizontal one vertical
+                    (0, 0, 2, big_2step_cost),  # Two steps above
+                    (0, -2, 0, big_2step_cost), (0, 2, 0, big_2step_cost),  # Two steps vertical
+                    (-2, 0, 0, big_2step_cost), (2, 0, 0, big_2step_cost),  # Two steps horizontal
+                    (-1, -1, 0, big_2step_cost), (-1, 1, 0, big_2step_cost), (1, 1, 0, big_2step_cost), (1, -1, 0, big_2step_cost), # Non direct neighbors bottom layer
+                    (1, 0, 1, big_2step_cost), (-1, 0, 1, big_2step_cost), (0, -1, 1, big_2step_cost), (0, 1, 1, big_2step_cost), # One horizontal one vertical
 
                     # Now all points with a distance of 3 steps
                     # Pure axis-aligned points
-                    (3, 0, 0, 5), (-3, 0, 0, 5), (0, 3, 0, 5), (0, -3, 0, 5), (0, 0, 3, 5),
+                    (3, 0, 0, big_3step_cost), (-3, 0, 0, big_3step_cost), (0, 3, 0, big_3step_cost), (0, -3, 0, big_3step_cost), (0, 0, 3, big_3step_cost),
 
                     # Two-axis combinations
-                    (2, 1, 0, 5), (2, -1, 0, 5), (2, 0, 1, 5),
-                    (-2, 1, 0, 5), (-2, -1, 0, 5), (-2, 0, 1, 5),
-                    (1, 2, 0, 5), (1, -2, 0, 5), (0, 2, 1, 5),
-                    (-1, 2, 0, 5), (-1, -2, 0, 5), (0, -2, 1, 5),
-                    (1, 0, 2, 5), (-1, 0, 2, 5), (0, 1, 2, 5), (0, -1, 2, 5),
+                    (2, 1, 0, big_3step_cost), (2, -1, 0, big_3step_cost), (2, 0, 1, big_3step_cost),
+                    (-2, 1, 0, big_3step_cost), (-2, -1, 0, big_3step_cost), (-2, 0, 1, big_3step_cost),
+                    (1, 2, 0, big_3step_cost), (1, -2, 0, big_3step_cost), (0, 2, 1, big_3step_cost),
+                    (-1, 2, 0, big_3step_cost), (-1, -2, 0, big_3step_cost), (0, -2, 1, big_3step_cost),
+                    (1, 0, 2, big_3step_cost), (-1, 0, 2, big_3step_cost), (0, 1, 2, big_3step_cost), (0, -1, 2, big_3step_cost),
 
                     # Three-axis combinations
-                    (1, 1, 1, 5), (1, -1, 1, 5), (-1, 1, 1, 5), (-1, -1, 1, 5)
+                    (1, 1, 1, big_3step_cost), (1, -1, 1, big_3step_cost), (-1, 1, 1, big_3step_cost), (-1, -1, 1, big_3step_cost)
                     ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
                         self.grid_values[(nx, ny, nz)] = cost
 
-            # If node used >=3 times, apply smaller ring
+            # If node used >=3 times, apply medium ring
             elif node_counts[node] >= 3 or (node_counts[node] >= 2 and self.count_neighbors(x,y,z) <= 3):
                 for dx, dy, dz, cost in [
-                    (0, 0, 1, 40),  # Above
-                    (0, -1, 0, 40), (0, 1, 0, 40),  # Vertical neighbors
-                    (-1, 0, 0, 40), (1, 0, 0, 40),  # Horizontal neighbors
+                    (0, 0, 1, medium_1step_cost),  # Above
+                    (0, -1, 0, medium_1step_cost), (0, 1, 0, medium_1step_cost),  # Vertical neighbors
+                    (-1, 0, 0, medium_1step_cost), (1, 0, 0, medium_1step_cost),  # Horizontal neighbors
 
-                    (0, 0, 2, 20),  # Two steps above
-                    (0, -2, 0, 20), (0, 2, 0, 20),  # Two steps vertical
-                    (-2, 0, 0, 20), (2, 0, 0, 20),  # Two steps horizontal
-                    (-1, -1, 0, 20), (-1, 1, 0, 20), (1, 1, 0, 20), (1, -1, 0, 20), # Non direct neighbors bottom layer
-                    (1, 0, 1, 20), (-1, 0, 1, 20), (0, -1, 1, 25), (0, 1, 1, 25) # One horizontal one vertical
+                    (0, 0, 2, medium_2step_cost),  # Two steps above
+                    (0, -2, 0, medium_2step_cost), (0, 2, 0, medium_2step_cost),  # Two steps vertical
+                    (-2, 0, 0, medium_2step_cost), (2, 0, 0, medium_2step_cost),  # Two steps horizontal
+                    (-1, -1, 0, medium_2step_cost), (-1, 1, 0, medium_2step_cost), (1, 1, 0, medium_2step_cost), (1, -1, 0, medium_2step_cost), # Non direct neighbors bottom layer
+                    (1, 0, 1, medium_2step_cost), (-1, 0, 1, medium_2step_cost), (0, -1, 1, medium_2step_cost), (0, 1, 1, medium_2step_cost) # One horizontal one vertical
                 ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
@@ -195,9 +195,9 @@ class Grid_3D:
         # If node used >=2 times, apply a small ring
             elif node_counts[node] >= 2:
                 for dx, dy, dz, cost in [
-                    (0, 0, 1, 30),  # Above
-                    (0, -1, 0, 30), (0, 1, 0, 30),  # Vertical neighbors
-                    (-1, 0, 0, 30), (1, 0, 0, 30)  # Horizontal neighbors
+                    (0, 0, 1, small_1step_cost),  # Above
+                    (0, -1, 0, small_1step_cost), (0, 1, 0, small_1step_cost),  # Vertical neighbors
+                    (-1, 0, 0, small_1step_cost), (1, 0, 0, small_1step_cost)  # Horizontal neighbors
                 ]:
                     nx, ny, nz = x + dx, y + dy, z + dz
                     if 0 <= nx < self.n and 0 <= ny < self.m and 0 <= nz < self.height:
@@ -207,27 +207,18 @@ class Grid_3D:
         # -----------------------------------------------------
         # 2) MAKE OUTER CELLS CHEAPER AND CENTER CELLS PRICIER
         # -----------------------------------------------------
-        #
-        # We'll do a simple formula: the cost at each cell (x,y,z)
-        # will be increased by an amount proportional to "distance from the edge."
-        #
-        # distance_to_edge = min(x, (self.n - 1 - x), y, (self.m - 1 - y), z, (self.height - 1 - z))
-        #
-        # The bigger that distance, the more "center" the cell is => the bigger cost we add.
 
         for x in range(self.n):
             for y in range(self.m):
                 for z in range(self.height):
-                    dist_to_edge = min(
-                        x,               # distance from left edge
-                        self.n - 1 - x,  # distance from right edge
-                        y,               # distance from top edge
-                        self.m - 1 - y,  # distance from bottom edge
-                        z,               # distance from top layer in 3D
-                        self.height - 1 - z  # distance from bottom layer in 3D
-                    )
+                    # Calculate the Euclidean distance to the center of the bottom layer
+                    center_x = self.n // 2
+                    center_y = self.m // 2
+                    center_z = 0  # Bottom layer
 
-                    cost_bump = dist_to_edge * distance_multiplier
+                    dist_to_center_bottom = ((x - center_x) ** 2 + (y - center_y) ** 2 + (z - center_z) ** 2) ** 0.5
+
+                    cost_bump = dist_to_center_bottom * distance_multiplier
 
                     self.grid_values[(x, y, z)] += cost_bump
 
