@@ -1,4 +1,5 @@
-from code.classes.grid_class import *
+import os
+from code.classes.grid_class import Grid_3D, plot_wires_3d
 from code.imports import *
 from code.functions import *
 from code.algorithms import *
@@ -12,8 +13,9 @@ chip, netlist = get_netlist()
 functie = get_algorithms()
 
 ## Create paths
-nodes_csv_path = './gates&netlists/chip_' + chip + '/print_' + chip + '.csv'
-netlist_csv_path = './gates&netlists/chip_' + chip + '/netlist_' + netlist + '.csv'
+base_path = os.path.join('.', 'gates_netlists')
+nodes_csv_path = os.path.join(base_path, f'chip_{chip}', f'print_{chip}.csv')
+netlist_csv_path = os.path.join(base_path, f'chip_{chip}', f'netlist_{netlist}.csv')
 
 ## Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)

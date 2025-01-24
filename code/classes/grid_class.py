@@ -95,7 +95,7 @@ class Grid_3D:
                 neighbor_count += 1
         return neighbor_count
 
-    def apply_costs_around_nodes(self, netlist):
+    def apply_costs_around_nodes(self, netlist, distance_multiplier):
         """
         1) Apply extra cost around nodes that appear frequently in the netlist.
         2) Then, ALSO make outer cells cheaper and center cells more expensive.
@@ -227,7 +227,7 @@ class Grid_3D:
                         self.height - 1 - z  # distance from bottom layer in 3D
                     )
 
-                    cost_bump = dist_to_edge * 2
+                    cost_bump = dist_to_edge * distance_multiplier
 
                     self.grid_values[(x, y, z)] += cost_bump
 

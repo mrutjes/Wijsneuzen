@@ -1,3 +1,4 @@
+import os
 from code.classes.grid_class import Grid_3D, plot_wires_3d
 from code.imports import *
 from code.algorithms import *
@@ -7,13 +8,13 @@ from code.algorithms import *
 ## Get netlist
 while True:
     netlist = input("What netlist do you want to use? Answer must lie between 1-9: ").lower()
-    if netlist == '1' or netlist == '2' or netlist == '3':
+    if netlist in {'1', '2', '3'}:
         chip = '0'
         break
-    elif netlist == '4' or netlist == '5' or netlist == '6':
+    elif netlist in {'4', '5', '6'}:
         chip = '1'
         break
-    elif netlist == '7' or netlist == '8' or netlist == '9':
+    elif netlist in {'7', '8', '9'}:
         chip = '2'
         break
     else:
@@ -22,24 +23,26 @@ while True:
 ## Get algorithm
 while True:
     algorithm = input("What algorithm do you want to use? Choose between Manhattan (M), Depth First (D), Lee (L) or A* (A): ").lower()
-    if algorithm == 'm' or algorithm == 'manhattan':
+    if algorithm in {'m', 'manhattan'}:
         functie = manhattan_wire
         break
-    elif algorithm == 'd' or algorithm == 'depth first':
+    elif algorithm in {'d', 'depth first'}:
         functie = dfs_algorithm
         break
-    elif algorithm == 'l' or algorithm == 'lee':
+    elif algorithm in {'l', 'lee'}:
         functie = lee_algorithm
         break
-    elif algorithm == 'a' or algorithm == 'a*':
+    elif algorithm in {'a', 'a*'}:
         functie = a_star_algorithm
         break
     else:
         print("Not a valid entry")
 
 ## Create paths
-nodes_csv_path = './gates&netlists/chip_' + chip + '/print_' + chip + '.csv'
-netlist_csv_path = './gates&netlists/chip_' + chip + '/netlist_' + netlist + '.csv'
+base_path = os.path.join('.', 'gates_netlists')
+nodes_csv_path = os.path.join(base_path, f'chip_{chip}', f'print_{chip}.csv')
+netlist_csv_path = os.path.join(base_path, f'chip_{chip}', f'netlist_{netlist}.csv')
+
 
 ## Import nodes and netlist
 nodes_list = import_nodes(nodes_csv_path)
@@ -69,7 +72,113 @@ while True:
 ## For a* based algorithms, apply costs to certain points
 if functie != dfs_algorithm or functie != manhattan_wire:
     netlist_2 = [(nodes_list[x1 - 1], nodes_list[x2 - 1]) for x1, x2 in netlist]
-    grid.apply_costs_around_nodes(netlist_2)
+    cost_config = {
+    "biggest_ring": {
+        "condition": lambda usage, nbrs: (
+            usage >= 5
+            or (usage >= 4 and nbrs <= 4)
+            or (usage >= 3 and nbrs <= 3)
+        ),
+        "offsets": [
+            # 1-step ring with cost=150
+            ((0, 0, 1), 150),
+            ((0, -1, 0), 150), ((0, 1, 0), 150),
+            ((-1, 0, 0), 150), ((1, 0, 0), 150),
+
+            # 2-steps ring with cost=50
+            ((0, 0, 2), 50),
+            ((0, -2, 0), 50), ((0, 2, 0), 50),
+            ((-2, 0, 0), 50), ((2, 0, 0), 50),
+            ((-1, -1, 0), 50), ((-1, 1, 0), 50),
+            ((1, 1, 0), 50), ((1, -1, 0), 50),
+            ((1, 0, 1), 50), ((-1, 0, 1), 50),
+            ((0, -1, 1), 50), ((0, 1, 1), 50),
+
+            # 3-steps ring with cost=5
+            ((3, 0, 0), 5), ((-3, 0, 0), 5),
+            ((0, 3, 0), 5), ((0, -3, 0), 5),
+            ((0, 0, 3), 5),
+            ((2, 1, 0), 5), ((2, -1, 0), 5), ((2, 0, 1), 5),
+            ((-2, 1, 0), 5), ((-2, -1, 0), 5), ((-2, 0, 1), 5),
+            ((1, 2, 0), 5), ((1, -2, 0), 5), ((0, 2, 1), 5),
+            ((-1, 2, 0), 5), ((-1, -2, 0), 5), ((0, -2, 1), 5),
+            ((1, 0, 2), 5), ((-1, 0, 2), 5), ((0, 1, 2), 5), ((0, -1, 2), 5),
+            ((1, 1, 1), 5), ((1, -1, 1), 5),
+            ((-1, 1, 1), 5), ((-1, -1, 1), 5),
+        ]
+    },
+
+    "heavy_ring": {
+        "condition": lambda usage, nbrs: (
+            usage >= 4
+            or (usage >= 3 and nbrs <= 4)
+            or (usage >= 2 and nbrs <= 3)
+        ),
+        "offsets": [
+            # 1-step ring with cost=50
+            ((0, 0, 1), 50),
+            ((0, -1, 0), 50), ((0, 1, 0), 50),
+            ((-1, 0, 0), 50), ((1, 0, 0), 50),
+
+            # 2-steps ring with cost=25
+            ((0, 0, 2), 25),
+            ((0, -2, 0), 25), ((0, 2, 0), 25),
+            ((-2, 0, 0), 25), ((2, 0, 0), 25),
+            ((-1, -1, 0), 25), ((-1, 1, 0), 25),
+            ((1, 1, 0), 25), ((1, -1, 0), 25),
+            ((1, 0, 1), 25), ((-1, 0, 1), 25),
+            ((0, -1, 1), 25), ((0, 1, 1), 25),
+
+            # 3-steps ring with cost=5
+            ((3, 0, 0), 5), ((-3, 0, 0), 5),
+            ((0, 3, 0), 5), ((0, -3, 0), 5),
+            ((0, 0, 3), 5),
+            ((2, 1, 0), 5), ((2, -1, 0), 5), ((2, 0, 1), 5),
+            ((-2, 1, 0), 5), ((-2, -1, 0), 5), ((-2, 0, 1), 5),
+            ((1, 2, 0), 5), ((1, -2, 0), 5), ((0, 2, 1), 5),
+            ((-1, 2, 0), 5), ((-1, -2, 0), 5), ((0, -2, 1), 5),
+            ((1, 0, 2), 5), ((-1, 0, 2), 5), ((0, 1, 2), 5), ((0, -1, 2), 5),
+            ((1, 1, 1), 5), ((1, -1, 1), 5),
+            ((-1, 1, 1), 5), ((-1, -1, 1), 5),
+        ]
+    },
+
+    "medium_ring": {
+        "condition": lambda usage, nbrs: (
+            usage >= 3
+            or (usage >= 2 and nbrs <= 3)
+        ),
+        "offsets": [
+            # 1-step ring with cost=40
+            ((0, 0, 1), 40),
+            ((0, -1, 0), 40), ((0, 1, 0), 40),
+            ((-1, 0, 0), 40), ((1, 0, 0), 40),
+
+            # 2-steps ring with cost=20
+            ((0, 0, 2), 20),
+            ((0, -2, 0), 20), ((0, 2, 0), 20),
+            ((-2, 0, 0), 20), ((2, 0, 0), 20),
+            ((-1, -1, 0), 20), ((-1, 1, 0), 20),
+            ((1, 1, 0), 20), ((1, -1, 0), 20),
+            ((1, 0, 1), 20), ((-1, 0, 1), 20),
+
+            # Notice two special offsets have cost=25
+            ((0, -1, 1), 25), ((0, 1, 1), 25),
+        ]
+    },
+
+    "small_ring": {
+        "condition": lambda usage, nbrs: (usage >= 2),
+        "offsets": [
+            # 1-step ring with cost=30
+            ((0, 0, 1), 30),
+            ((0, -1, 0), 30), ((0, 1, 0), 30),
+            ((-1, 0, 0), 30), ((1, 0, 0), 30),
+        ]
+    }
+}
+
+    grid.apply_costs_around_nodes(netlist=netlist_2, distance_multiplier=2, cost_config=cost_config)
 
 
 # Laying wires
