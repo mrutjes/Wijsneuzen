@@ -284,3 +284,9 @@ def get_sorting_method(netlist, nodes_list):
         else:
             print("Not a valid entry")
     return sort, iter
+
+def route_wire(functie, grid, nodes_csv_path, netlist_csv_path):
+    try:
+        functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
+    except Exception:
+        success = False
