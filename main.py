@@ -168,7 +168,7 @@ if iter > 1:
                 successful_grid += 1
                 if grid.cost() < cost_min:
                     cost_min = grid.cost()
-                    wires_cost_min = laid_wires
+                    wires_cost_min = grid._wires
             else:
                 reward = -1
 
