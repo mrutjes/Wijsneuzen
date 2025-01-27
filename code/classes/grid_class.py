@@ -29,7 +29,7 @@ class Grid_3D:
             for z in range(self.height)
         }
         self.grid_values = {
-            (x, y, z): 1 for x in range(self.n) for y in range(self.m) for z in range(self.height)
+            (x, y, z): 0 for x in range(self.n) for y in range(self.m) for z in range(self.height)
         }
 
     def set_point_value(self, wire: Wire, intersection_penalty: int):
@@ -95,7 +95,7 @@ class Grid_3D:
                 neighbor_count += 1
         return neighbor_count
 
-    def apply_costs_around_nodes(self, distance_multiplier=2, biggest_1step_cost=75, biggest_2step_cost=50, biggest_3step_cost=25, big_1step_cost=50, big_2step_cost=25, big_3step_cost=10, medium_1step_cost=40, medium_2step_cost=25, small_1step_cost=20):
+    def apply_costs_around_nodes(self, biggest_1step_cost=50, biggest_2step_cost=20, biggest_3step_cost=10, big_1step_cost=35, big_2step_cost=15, big_3step_cost=5, medium_1step_cost=25, medium_2step_cost=5, small_1step_cost=5):
         """
         1) Apply extra cost around nodes that appear frequently in the netlist.
         2) Then, ALSO make outer cells cheaper and center cells more expensive.
@@ -207,19 +207,36 @@ class Grid_3D:
         # -----------------------------------------------------
         # 2) MAKE OUTER CELLS CHEAPER AND CENTER CELLS PRICIER
         # -----------------------------------------------------
-        """
+        
         for x in range(self.n):
             for y in range(self.m):
                 for z in range(self.height):
-                    # Calculate the Euclidean distance to the center of the bottom layer
-                    center_x = self.n // 2
-                    center_y = self.m // 2
+                    dist_to_edge = min(
+                        x,               # distance from left edge
+                        self.n - 1 - x,  # distance from right edge
+                        y,               # distance from top edge
+                        self.m - 1 - y,  # distance from bottom edge
+                    )
 
-                    dist_to_center_bottom = abs(x - center_x) + abs(y - center_y)
-                    height_penalty = self.height - z # Penalize lower layers
-                    cost_bump = (height_penalty ** 4) / (dist_to_center_bottom + 1) ** 2
+                    cost_bump = dist_to_edge * 0.1
+                    
+                    if z == 0:
+                        cost_bump += 5
+                    elif z == 1:
+                        cost_bump += 4
+                    elif z == 2:
+                        cost_bump += 3
+                    elif z == 3:
+                        cost_bump += 2
+                    elif z == 4:
+                        cost_bump += 1
+                    elif z == 5:
+                        cost_bump += 0
+                    elif z == 6:
+                        cost_bump += 0
+
                     self.grid_values[(x, y, z)] += cost_bump
-        """
+        
 
 
 
@@ -240,7 +257,7 @@ class Grid_3D:
             for z in range(self.height)
         }
         self.grid_values = {
-            (x, y, z): 1 for x in range(self.n) for y in range(self.m) for z in range(self.height)
+            (x, y, z): 0 for x in range(self.n) for y in range(self.m) for z in range(self.height)
         }
 
     def remove_wire(self, wire: Wire) -> None:
@@ -525,17 +542,6 @@ class Grid_3D:
         intersections = self.total_intersections()
         return intersections * 300 + self._lines_count
     
-
-    def cost_point(self, point: WirePoint) -> int:
-        """
-        Calculates the cost of a given point.
-        """
-        if self._point_dict[point.give_place()] > 1:
-            return self._point_dict[point.give_place()] * 300 + 1
-        
-        else:
-            return 1
-        
         
 def initialise_grid(nodes_list, nodes_csv_path, algorithm: str, netlist_csv_path):
     grid_width = max(node._max_value for node in nodes_list) + 1

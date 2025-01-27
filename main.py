@@ -154,6 +154,8 @@ if iter > 1:
             laid_wires = []
 
             grid.clear_wires()
+            grid.apply_costs_around_nodes()
+
             success = True
 
             for node1_id, node2_id in netlist_new:
@@ -183,6 +185,7 @@ if iter > 1:
     else:
         for netlists in sort:
             grid.clear_wires()
+            grid.apply_costs_around_nodes()
 
             success = True  # a flag we set to false if a route fails
 
@@ -303,7 +306,7 @@ else:
             print(f"The total cost for this grid is: {grid.cost()}")
 
             # Plot the wires
-            #plot_wires_3d(wires, grid_width, grid_length)
+            plot_wires_3d(wires, grid_width, grid_length)
 
             # Remove the nodes from the wires dict
             grid.remove_nodes_pointdict()

@@ -63,7 +63,7 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
             grid.add_wire_segment(final_segment)
             
             # Return wire and add to dict to update cost calculations
-            grid.set_point_value(wire, 0)
+            grid.set_point_value(wire, 300)
             grid.add_wire_dict(wire)
             return wire
 
@@ -85,7 +85,7 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
                 continue
 
             # Compute g_cost (distance so far) + h_cost (heuristic)
-            g_cost = costs[current] + grid.get_point_value(neighbor) + grid.cost_point(neighbor)
+            g_cost = costs[current] + grid.get_point_value(neighbor)
             h_cost = grid.distance_nodes(neighbor, WirePoint(x_end, y_end, z_end))
             f_cost = g_cost + h_cost
 
@@ -180,7 +180,7 @@ def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, 
                 continue
 
             # Compute g_cost (distance so far)
-            g_cost = costs[current] + grid.get_point_value(neighbor) + grid.cost_point(neighbor)
+            g_cost = costs[current] + grid.get_point_value(neighbor)
             f_cost = g_cost
 
             # If this new route to neighbor is cheaper, update
