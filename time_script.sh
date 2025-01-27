@@ -22,7 +22,7 @@ for netlist in "${netlists[@]}"; do
             
             # Start het Python-script en sla de output op
             echo "Running: Netlit $netlist | Algorithm $algorithm | Sorting $sorting_method"
-            python3 main_time.py << EOF > temp_output.txt
+            python3 main.py << EOF > temp_output.txt
 $iterations
 $netlist
 $algorithm
