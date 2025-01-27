@@ -5,7 +5,7 @@ output_file="results_table.txt"
 echo "Generating results, this may take some time..."
 
 # Header van de tabel
-echo -e "Sorting method\tNetlist\tLowest cost\tTime (s)\t%" > $output_file
+echo -e "Algorithm\tSorting method\tNetlist\tLowest cost\tTime (s)\t%" > $output_file
 
 # Parameterwaarden
 netlists=(1 2 3 4 5 6 7 8 9)
@@ -35,7 +35,7 @@ EOF
             success_rate=$(grep "% of the grids were successful" temp_output.txt | awk '{print $1}')
 
             # Voeg resultaten toe aan de tabel
-            echo -e "$sorting_method\t$netlist\t$best_cost\t$total_time\t$success_rate" >> $output_file
+            echo -e "$algorithm\t$sorting_method\t$netlist\t$best_cost\t$total_time\t$success_rate" >> $output_file
 
         done
     done
