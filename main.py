@@ -1,4 +1,6 @@
 import os
+import time
+import random
 from code.classes.grid_class import *
 from code.imports import *
 from code.functions import *
@@ -31,29 +33,36 @@ grid, grid_width, grid_length = initialise_grid(nodes_list, nodes_csv_path, algo
 ## Get sorting method
 sort = get_sorting_method(netlist, nodes_list, iter)
 
-## Set variables to keep score of succesfull grids
+## Set variables to keep score of successful grids
 all_wire_runs = []
 successful_grid = 0
 tries = 0
 cost_min = float('inf')
 
-# Generating solutions
+# Timing setup
+total_start_time = time.time()
 
 print("Starting algorithm...")
 
+# -----------------------------------------------------------
+# Multiple runs
+# -----------------------------------------------------------
 if iter > 1:
+    # -------------------------------------------------------
+    # functie == dfs_algorithm and sort == 'q'
+    # -------------------------------------------------------
     if functie == dfs_algorithm and sort == 'q':
         netlist_new = random.sample(netlist, len(netlist))
         state = state_to_tuple(netlist)
         for h in range(iter):
-            i, j = choose_action(state, netlist_new)
+            iteration_start_time = time.time()
 
+            i, j = choose_action(state, netlist_new)
             netlist_new[i], netlist_new[j] = netlist_new[j], netlist_new[i]
             next_state = state_to_tuple(netlist)
 
             grid.clear_wires()
             success = True
-
             laid_wires = []
 
             for node1_id, node2_id in netlist_new:
@@ -67,15 +76,15 @@ if iter > 1:
                             laid_wires.append(wire)
                             break
                         else:
-                            raise Exception(f"No valid path found for net {i+1}: {node1_id} -> {node2_id}")
-                    except Exception as e:
+                            raise Exception(f"No valid path found for net: {node1_id} -> {node2_id}")
+                    except Exception:
                         # Backtrack
                         if laid_wires:
                             last_wire = laid_wires.pop()
                             grid.remove_wire(last_wire)
                         else:
                             success = False
-                            break        
+                            break
 
             if success:
                 reward = 1 / grid.cost()
@@ -85,16 +94,24 @@ if iter > 1:
                     wires_cost_min = laid_wires
             else:
                 reward = -1
-            
+
             update_q_table(state, (i, j), reward, next_state)
             state = next_state
             tries = h + 1
-            print(f"Amount of solutions attempted: {tries}: Best cost so far: {cost_min}")
 
+            iteration_end_time = time.time()
+            iteration_time = iteration_end_time - iteration_start_time
+            print(f"Iteration {h+1} took {iteration_time:.2f} seconds")
+            print(f"Amount of solutions attempted: {tries} | Best cost so far: {cost_min}")
+
+    # -------------------------------------------------------
+    # functie == dfs_algorithm and sort != 'q'
+    # -------------------------------------------------------
     elif functie == dfs_algorithm and sort != 'q':
-        for netlists in sort:
-            grid.clear_wires()
+        for h, netlists in enumerate(sort):
+            iteration_start_time = time.time()
 
+            grid.clear_wires()
             success = True
 
             if len(netlists) == 0:
@@ -109,14 +126,13 @@ if iter > 1:
 
                 while True:
                     try:
-                        # Find a path
                         wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
                         if wire is not None:
                             laid_wires.append(wire)
                             break
                         else:
                             raise Exception(f"No valid path found for net {i+1}: {node1_id} -> {node2_id}")
-                    except Exception as e:
+                    except Exception:
                         # Backtrack
                         if laid_wires:
                             last_wire = laid_wires.pop()
@@ -131,28 +147,33 @@ if iter > 1:
             if success:
                 all_wire_runs.append(grid._wires)
                 successful_grid += 1
-
                 if cost_min > grid.cost():
                     cost_min = grid.cost()
                     wires_cost_min = laid_wires
 
             tries += 1
-            print(f"Amount of solutions attempted: {tries}: Best cost so far: {cost_min}")
+            iteration_end_time = time.time()
+            iteration_time = iteration_end_time - iteration_start_time
+            print(f"Iteration {h+1} took {iteration_time:.2f} seconds")
+            print(f"Amount of solutions attempted: {tries} | Best cost so far: {cost_min}")
 
             grid.remove_nodes_pointdict()
 
+    # -------------------------------------------------------
+    # sort == 'q' and functie != dfs_algorithm
+    # -------------------------------------------------------
     elif sort == 'q' and functie != dfs_algorithm:
         for h in range(iter):
+            iteration_start_time = time.time()
+
             netlist_new = random.sample(netlist, len(netlist))
             state = state_to_tuple(netlist_new)
 
             i, j = choose_action(state, netlist_new)
-
             netlist_new[i], netlist_new[j] = netlist_new[j], netlist_new[i]
             next_state = state_to_tuple(netlist_new)
 
             laid_wires = []
-
             grid.clear_wires()
             grid.apply_costs_around_nodes()
 
@@ -181,135 +202,136 @@ if iter > 1:
             state = next_state
             tries = h + 1
 
-            print(f"Amount of solutions attempted: {tries}: Best cost so far: {cost_min}")
+            iteration_end_time = time.time()
+            iteration_time = iteration_end_time - iteration_start_time
+            print(f"Iteration {h+1} took {iteration_time:.2f} seconds")
+            print(f"Amount of solutions attempted: {tries} | Best cost so far: {cost_min}")
+
+    # -------------------------------------------------------
+    # else scenario for multiple runs
+    # -------------------------------------------------------
     else:
-        for netlists in sort:
+        for h, netlists in enumerate(sort):
+            iteration_start_time = time.time()
+
             grid.clear_wires()
             grid.apply_costs_around_nodes()
 
-            success = True  # a flag we set to false if a route fails
+            success = True
 
             if len(netlists) == 0:
                 raise ValueError("No netlist given.")
 
-            # Attempt to form wires for each pair in this permutation
             for i in range(len(netlists)):
                 node1_id, node2_id = netlists[i]
                 node1 = nodes_list[node1_id - 1]
                 node2 = nodes_list[node2_id - 1]
 
                 try:
-                    # Attempt to find a route
                     wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
-                except Exception as e:
+                    grid.add_wire_list(wire)
+                except Exception:
                     success = False
-                    break  # skip the rest of pairs in this permutation
+                    break
 
-                # If success, add this wire to the grid's wire list
-                grid.add_wire_list(wire)
-
-            # Now we've tried to route all pairs in this permutation (unless we broke early)
             if success:
-                # This permutation succeeded for all net pairs
                 all_wire_runs.append(grid._wires)
-                # If all pairs routed successfully, increment success count
                 successful_grid += 1
-
                 if cost_min > grid.cost():
                     cost_min = grid.cost()
                     wires_cost_min = grid._wires
                     working_list = netlists
 
             tries += 1
-            print(f"Amount of solutions attempted: {tries}: Cost for this grid: {grid.cost()}")
+            iteration_end_time = time.time()
+            iteration_time = iteration_end_time - iteration_start_time
+            print(f"Iteration {h+1} took {iteration_time:.2f} seconds")
+            print(f"Amount of solutions attempted: {tries} | Best cost so far: {cost_min}")
 
-            # Optionally remove the nodes from the wire dict
-            # (so they don’t appear as intersections, etc.)
             grid.remove_nodes_pointdict()
 
-    # After trying all permutations
-    success_percentage = successful_grid / tries * 100
-    print(f'{success_percentage}% of the grids were successful')
+    # After all iterations
+    total_end_time = time.time()
+    total_time = total_end_time - total_start_time
+    print(f"Total time for {iter} iterations: {total_time:.2f} seconds")
 
-    # Best solution according to price
+    if tries > 0:
+        success_percentage = (successful_grid / tries) * 100
+        print(f"{success_percentage}% of the grids were successful")
+
     if successful_grid >= 1:
-        print(f'The grid with minimal cost costs: {cost_min}')
-        plot_wires_3d(wires_cost_min, grid_width, grid_length)
+        print(f"The grid with minimal cost costs: {cost_min}")
+    else:
+        print("No successful grid found.")
 
+# -----------------------------------------------------------
+# Single run
+# -----------------------------------------------------------
 else:
+    single_run_start_time = time.time()
+
+    # -----------------------------------------------
+    # Single run with DFS
+    # -----------------------------------------------
     if functie == dfs_algorithm:
-        # Track wires and success
         wires = []
-        laid_wires = []  # Track successfully laid wires for potential backtracking
-        success_for_this_run = True  # Flag to track the success of the entire run
+        laid_wires = []
+        success_for_this_run = True
 
         if len(netlist) > 0:
-            # Loop through the netlist in order (single way)
             for i, (node1_id, node2_id) in enumerate(netlist):
                 node1 = nodes_list[node1_id - 1]
                 node2 = nodes_list[node2_id - 1]
 
                 while True:
                     try:
-                        # Attempt to find a route for the current net
                         wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
                         if wire is not None:
-                            wires.append(wire)  # Store the successfully routed wire
-                            laid_wires.append(wire)  # Add to the list of laid wires
-                            break  # Exit the while-loop if the wire is successfully routed
+                            wires.append(wire)
+                            laid_wires.append(wire)
+                            break
                         else:
                             raise Exception(f"No valid path found for net {i+1}: {node1_id} -> {node2_id}")
                     except Exception as e:
                         print(e)
-                        # Backtrack by removing the last wire
                         if laid_wires:
-                            last_wire = laid_wires.pop()  # Remove the last successfully laid wire
-                            grid.remove_wire(last_wire)  # Remove it from the grid
+                            last_wire = laid_wires.pop()
+                            grid.remove_wire(last_wire)
                         else:
-                            # If no wires to backtrack, mark the run as failed
                             success_for_this_run = False
                             print("Backtracking failed, no more wires to remove.")
                             break
 
                 if not success_for_this_run:
-                    break  # Stop trying if the entire run is marked as failed
+                    break
 
             if success_for_this_run:
-                # Calculate and print the cost
                 print(f"The total cost for this grid is: {grid.cost()}")
-
-                # Plot the wires
-                plot_wires_3d(wires, grid_width, grid_length)
-
-                # Remove the nodes from the wires dictionary
                 grid.remove_nodes_pointdict()
             else:
                 print("Routing failed for the current netlist.")
         else:
             raise ValueError("No netlist given.")
+
+    # -----------------------------------------------
+    # Single run with other algorithms
+    # -----------------------------------------------
     else:
         if len(netlist) >= 1:
-            # Form the wires between the nodes based on the given netlist
             wires = grid.return_wire_list()
-            for i in range(0, len(netlist)):
-                node1 = netlist[i][0]
-                node2 = netlist[i][1]
-
-                node1 = nodes_list[node1 - 1]
-                node2 = nodes_list[node2 - 1]
+            for i in range(len(netlist)):
+                node1_id, node2_id = netlist[i]
+                node1 = nodes_list[node1_id - 1]
+                node2 = nodes_list[node2_id - 1]
 
                 wire = functie(node1, node2, grid, nodes_csv_path, netlist_csv_path)
-
                 grid.add_wire_list(wire)
 
-            # Calculate the cost of the grid
             print(f"The total cost for this grid is: {grid.cost()}")
-
-            # Plot the wires
-            plot_wires_3d(wires, grid_width, grid_length)
-
-            # Remove the nodes from the wires dict
             grid.remove_nodes_pointdict()
-            
         else:
             raise ValueError("No netlist given.")
+
+    single_run_end_time = time.time()
+    single_run_time = single_run_end_time - single_run_start_time
+    print(f"Single run took {single_run_time:.2f} seconds")
