@@ -221,7 +221,7 @@ if iter > 1:
                     working_list = netlists
 
             tries += 1
-            print(f"Amount of solutions attempted: {tries}: Best cost so far: {cost_min}")
+            print(f"Amount of solutions attempted: {tries}: Cost for this grid: {grid.cost()}")
 
             # Optionally remove the nodes from the wire dict
             # (so they don’t appear as intersections, etc.)
