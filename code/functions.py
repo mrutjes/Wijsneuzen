@@ -2,6 +2,7 @@ from code.algorithms import *
 import itertools
 import math
 import random
+random.seed(43)
 
 # Sorteer functies
 
