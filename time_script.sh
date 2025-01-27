@@ -18,7 +18,7 @@ for netlist in "${netlists[@]}"; do
         for sorting_method in "${sorting_methods[@]}"; do
 
             # Prompt gebruiker voor aantal iteraties
-            iterations=100
+            iterations=250
             
             # Start het Python-script en sla de output op
             echo "Running: Netlit $netlist | Algorithm $algorithm | Sorting $sorting_method"
