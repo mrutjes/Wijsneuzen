@@ -55,9 +55,7 @@ Our project includes solutions for:
 We document the results of each approach, including:
 - Percentage of nets succesfully conneted when testing different orders of netlists
 - Total cost and breakdown (wire length and intersections).
-- Computational efficiency.
-   - The amount of steps an algorithm has to take.
-   - The time it takes for an algorithm to find one succesful solution.
+- The time it has taken the algorithm to complete 250 iterations of a netlist.
 
 ---
 
@@ -65,7 +63,7 @@ We document the results of each approach, including:
 
 ### Running the code
 
-0. **Install the requirements**
+0. **Install the requirements in a unix environment**
    ```bash
    pip install -r requirements.txt
 
@@ -79,13 +77,8 @@ We document the results of each approach, including:
    ```bash
    python main.py
 
-4. **To use a different algorithm, simply uncomment the desired algorithm, and comment the other ones in main.py**
-   ```python
-   # Choose the algorithm you want to use:
-   # functie = a_star_algorithm
-   # functie = manhattan_wire
-   # functie = dfs_algorithm
-   functie = lee_algorithm
+4. **To use a different algorithm, simply uncomment the desired algorithm, and comment the other ones in main.py**  
+   You will be prompted for how many iterations the script has to run, which algorithm to use and how the netlist needs to be sorted.
 
 ---
 
@@ -99,17 +92,24 @@ We document the results of each approach, including:
 ---
 ### Structure of the Directory
 
-- **gates&netlists**  
+- **gates_netlists**  
   This folder contains all the chip configurations along with their corresponding netlists. You will find multiple `.csv` files that define the gates’ positions (chip conformations) and the connections (netlists).
 
 - **code**  
   The main codebase resides here:
   - **classes**  
     Contains all Python classes used throughout the project (e.g., data models, utility classes).
-  - **classes tests**  
-    Includes PyTest files for unit testing the classes and functions in the project.
   - **algorithms**  
     Holds the core algorithmic functions and heuristics for solving the wiring problem.
-
+   - **visualisation**  
+   Contains the function to plot the wires in the grid.
+   - **functions**  
+   Contains helper functions in order to succesfully run the main.py
+   -**imports**  
+   Contains functions to succesfully import the netlist and the coordinatess of the nodes.
    - **imports**  
    Located in the `code` directory, this file bundles essential functions for tasks such as loading netlists, parsing CSV data, and setting up project resources.
+   - **time_script**  
+   This is a bash script to run 250 iterations of each combination of algorithm, netlist and sorting method used for the experiment. Run with the command below.
+   ```bash
+   ./time_script.sh
