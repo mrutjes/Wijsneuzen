@@ -332,12 +332,10 @@ class Grid_3D:
         """
         Adds a wire to the wirepoint dictionary and updates the segment set.
         """
-        from code.classes.wire_class import WirePoint
 
         wirepoints = wire.give_wirepoints()
         for i in range(len(wirepoints) - 1):
             start_point = wirepoints[i]
-            end_point = wirepoints[i + 1]
             x, y, z = start_point.give_place()
             self._point_dict[(x, y, z)] += 1
 
@@ -446,7 +444,6 @@ class Grid_3D:
         """
         Checks if the last point in the current wire wirepoints list does not overwrite any rules.
         """
-        from code.classes.wire_class import WirePoint, Wire
 
         # Ensure the wire has at least two points
         if len(current_wire.give_wirepoints()) < 2:

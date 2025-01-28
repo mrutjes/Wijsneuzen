@@ -1,6 +1,5 @@
 import os
 import time
-import random
 
 from code.classes.grid_class import initialise_grid
 from code.imports import import_netlist, import_nodes
@@ -9,11 +8,7 @@ from code.functions import (
     get_netlist,
     get_algorithms,
     get_sorting_method,
-    state_to_tuple,
-    choose_action,
-    update_q_table
 )
-from code.visualisation.visualisation import plot_wires_3d
 from code.engine import run_multiple_runs, run_single_run
 
 def main():
