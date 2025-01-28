@@ -352,12 +352,13 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
         if not grid.check_valid_addition(wire):
             wire.pop_wire_point()
             z += 1
-            transition_point = WirePoint(x2 + step_x, y2, z)
-            wire.add_wire_point(transition_point)
-            transition_point = WirePoint(x2 + step_x, y2 + step_y, z)
-            wire.add_wire_point(transition_point)
-            transition_point = WirePoint(x2, y2 + step_y, z)
-            wire.add_wire_point(transition_point)
+            if (x2 + step_x >= 0 and x2 + step_x < grid.n) and (y2 + step_y >= 0 and y2 + step_y < grid.m):
+                transition_point = WirePoint(x2 + step_x, y2, z)
+                wire.add_wire_point(transition_point)
+                transition_point = WirePoint(x2 + step_x, y2 + step_y, z)
+                wire.add_wire_point(transition_point)
+                transition_point = WirePoint(x2, y2 + step_y, z)
+                wire.add_wire_point(transition_point)
             while z > 0:
                 z -= 1
                 transition_point = WirePoint(x2, y2 + step_y, z)
