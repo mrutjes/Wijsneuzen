@@ -1,4 +1,4 @@
-from code.classes.wire_class import WirePoint, Wire
+from code.classes.wire_class import Wire
 import matplotlib.pyplot as plt
 
 def plot_wires_3d(wires: list[Wire], grid_width: int, grid_height: int):
