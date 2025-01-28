@@ -12,7 +12,7 @@ class Grid_3D:
         """
         self.n = n
         self.m = m
-        self.height = 8
+        self.height = 8 # 1st base layer and 7 dimensions up (set by the rules of the case)
         self._wires = []
         self._lines_count = 0
         self._wires_segments = set()
@@ -98,6 +98,7 @@ class Grid_3D:
         """
         1) Apply extra cost around nodes that appear frequently in the netlist.
         2) Then, ALSO make outer cells cheaper and center cells more expensive.
+        The values of the variables are based on the findings of the experiment phase of the project.
         """
 
         # Count how many times each node appears in the netlist
