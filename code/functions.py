@@ -1,4 +1,4 @@
-from code.algorithms import *
+from code.algorithms import a_star_algorithm, dfs_algorithm, lee_algorithm, manhattan_wire
 import itertools
 import math
 import random
