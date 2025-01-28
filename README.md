@@ -34,13 +34,13 @@ An algorithm is evaluated based on how many netlists it can successfully connect
 2. **Netlist Handling**: Implement a data structure to manage connections (nets) between gates.
 3. **Algorithms**: Develop and test various algorithms and heuristics to minimize costs, such as:
    - Manhattan distance based
-   - Breath First Search (Lee's algorithm)
+   - Breadth First Search (Lee's algorithm)
    - Depth First Search
    - A* algorithm
 4. **Layered Design**: Use multiple grid layers (up to 8) to resolve collisions and optimize layouts.
 5. **Cost System**: Use a cost system to make sure that certain areas on the grid are more and less expensive to avoid collisions.
 5. **Optimize Parameters**: Optimize the parameters of the cost of the grid to ensure that obtimal routing is achieved.
-6. **Random Netlists (optional)**: Test performance on randomly generated netlists to evaluate robustness and scalability.
+6. **Random Netlists**: Test performance on randomly generated netlists to evaluate robustness and scalability.
 
 ### Output
 The solution is visualized in a 3D grid. 
@@ -50,7 +50,6 @@ The solution is visualized in a 3D grid.
 ## Results
 Our project includes solutions for:
 - **Predefined netlists**: Provided by the course.
-- **Randomly generated netlists**: Created to test algorithm performance and limitations.
 
 We document the results of each approach, including:
 - Percentage of nets succesfully conneted when testing different orders of netlists
