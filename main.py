@@ -1,11 +1,12 @@
 import os
 import time
 import random
-from code.classes.grid_class import *
-from code.imports import *
-from code.functions import *
-from code.algorithms import *
-from code.visualisation.visualisation import *
+
+from code.classes.grid_class import initialise_grid
+from code.imports import import_netlist, import_nodes
+from code.functions import get_singular_multiple, get_netlist, get_algorithms, get_sorting_method, state_to_tuple, choose_action, update_q_table
+from code.algorithms import dfs_algorithm, manhattan_wire, a_star_algorithm, lee_algorithm
+from code.visualisation.visualisation import plot_wires_3d
 
 # Setup
 
@@ -258,9 +259,11 @@ if iter > 1:
     if tries > 0:
         success_percentage = (successful_grid / tries) * 100
         print(f"{success_percentage}% of the grids were successful")
+        
 
     if successful_grid >= 1:
         print(f"The grid with minimal cost costs: {cost_min}")
+        plot_wires_3d(wires_cost_min, grid_width, grid_length)
     else:
         print("No successful grid found.")
 
@@ -307,6 +310,8 @@ else:
 
             if success_for_this_run:
                 print(f"The total cost for this grid is: {grid.cost()}")
+                plot_wires_3d(wires, grid_width, grid_length)
+
                 grid.remove_nodes_pointdict()
             else:
                 print("Routing failed for the current netlist.")
@@ -328,6 +333,7 @@ else:
                 grid.add_wire_list(wire)
 
             print(f"The total cost for this grid is: {grid.cost()}")
+            plot_wires_3d(wires, grid_width, grid_length)
             grid.remove_nodes_pointdict()
         else:
             raise ValueError("No netlist given.")
