@@ -185,7 +185,3 @@ class Wire:
         Pops the last item in the wirepoints list (except the end node).
         """
         self._wirepoints.pop(-2)
-
-
-
-
