@@ -501,8 +501,8 @@ class Grid_3D:
     
         
 def initialise_grid(nodes_list, nodes_csv_path, algorithm: str, netlist_csv_path):
-    grid_width = max(node._max_value for node in nodes_list) + 1
-    grid_length = max(node._max_value for node in nodes_list) + 1
+    grid_width = max(node.give_x() for node in nodes_list) + 1
+    grid_length = max(node.give_y() for node in nodes_list) + 1
     grid = Grid_3D(grid_width, grid_length, nodes_csv_path=nodes_csv_path, netlist_csv_path=netlist_csv_path)
     for node in nodes_list:
         grid.place_node(node)
