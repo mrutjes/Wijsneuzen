@@ -5,10 +5,10 @@ import itertools
 import math
 import random
 
-# random.seed(43) # Gebruikt voor experimenten draaien
+# random.seed(43) # Used for running the experiments
 
 # ----------------------------------------
-# Sorteer functies
+# Sorteer functions
 # ----------------------------------------
 
 def random_permutations(netlist: list[tuple], num_samples: int) -> list[tuple]:
