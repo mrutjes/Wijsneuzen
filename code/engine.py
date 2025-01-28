@@ -1,13 +1,8 @@
 import time
-from code.visualisation.visualisation import plot_wires_3d
-import os
-import time
 import random
 
-from code.classes.grid_class import initialise_grid
-from code.imports import import_netlist, import_nodes
-from code.functions import get_singular_multiple, get_netlist, get_algorithms, get_sorting_method, state_to_tuple, choose_action, update_q_table
-from code.algorithms import dfs_algorithm, manhattan_wire, a_star_algorithm, lee_algorithm
+from code.functions import state_to_tuple, choose_action, update_q_table
+from code.algorithms import dfs_algorithm, manhattan_wire
 from code.visualisation.visualisation import plot_wires_3d
 
 
@@ -366,7 +361,7 @@ def run_single_run(
 
             if success_for_this_run:
                 print(f"The total cost for this grid is: {grid.cost()}")
-                plot_wires_3d(wires, grid_width, grid_length)
+                #plot_wires_3d(wires, grid_width, grid_length)
                 grid.remove_nodes_pointdict()
             else:
                 print("Routing failed for the current netlist.")
@@ -391,7 +386,7 @@ def run_single_run(
             if grid.failed_wires == 0:
                 cost_grid = grid.cost()
                 print(f"The total cost for this grid is: {cost_grid}")
-                plot_wires_3d(wires, grid_width, grid_length)
+                #plot_wires_3d(wires, grid_width, grid_length)
 
             else: 
                 print("Routing failed for the current netlist.")
@@ -415,7 +410,7 @@ def run_single_run(
                 grid.add_wire_list(wire)
 
             print(f"The total cost for this grid is: {grid.cost()}")
-            plot_wires_3d(wires, grid_width, grid_length)
+            #plot_wires_3d(wires, grid_width, grid_length)
             grid.remove_nodes_pointdict()
         else:
             raise ValueError("No netlist given.")

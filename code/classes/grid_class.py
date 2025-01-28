@@ -27,7 +27,6 @@ class Grid_3D:
             for y in range(self.m)
             for z in range(self.height)
         }
-        print(self._point_dict)
         self.grid_values = {
             (x, y, z): 0 for x in range(self.n) for y in range(self.m) for z in range(self.height)
         }

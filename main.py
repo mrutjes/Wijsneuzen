@@ -79,7 +79,7 @@ def main():
 
         if successful_grid >= 1:
             print(f"The grid with minimal cost costs: {cost_min}")
-            plot_wires_3d(wires_cost_min, grid_width, grid_length)
+            #plot_wires_3d(wires_cost_min, grid_width, grid_length)
         else:
             print("No successful grid found.")
 

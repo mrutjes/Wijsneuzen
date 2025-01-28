@@ -5,7 +5,7 @@ import itertools
 import math
 import random
 
-# random.seed(43) # Used for running the experiments
+random.seed(43) # Used for running the experiments
 
 # ----------------------------------------
 # Sorteer functions
