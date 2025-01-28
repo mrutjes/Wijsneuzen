@@ -1,15 +1,19 @@
 from code.algorithms import a_star_algorithm, dfs_algorithm, lee_algorithm, manhattan_wire
+from code.classes.nodes_class import Node
+
 import itertools
 import math
 import random
 
 # random.seed(43) # Gebruikt voor experimenten draaien
 
+# ----------------------------------------
 # Sorteer functies
+# ----------------------------------------
 
-def random_permutations(netlist, num_samples):
+def random_permutations(netlist: list[tuple], num_samples: int) -> list[tuple]:
     """
-    Generate a random sample of ⁠ num_samples ⁠ permutations from the netlist.
+    Generate a random sample of num_samples permutations from the netlist.
     """
     total_permutations = math.factorial(len(netlist))
     
@@ -23,16 +27,14 @@ def random_permutations(netlist, num_samples):
 
     return list(selected_permutations)
 
-def sort_netlist_busy_nodes(netlist):
+
+def sort_netlist_busy_nodes(netlist: list[tuple]) -> list[tuple]:
     """
     Sorts a netlist based on how many times each node occurs in the netlist.
     
     Parameters:
     netlist (list of tuples): A list where each tuple represents a connection 
                               (e.g., [(node1, node2), (node2, node3), ...]).
-    
-    Returns:
-    list of tuples: A sorted netlist where the nodes with the highest occurrences appear first.
     """
     node_counts = {}
     for connection in netlist:
@@ -46,7 +48,8 @@ def sort_netlist_busy_nodes(netlist):
 
     return sorted_netlist
 
-def sort_netlist_distance(netlist, nodeslist):
+
+def sort_netlist_distance(netlist: list[tuple], nodeslist: list[Node]) -> list[tuple]:
     """
     Sorts a netlist based on the distance between two nodes for each connection.
     """
@@ -68,76 +71,52 @@ def sort_netlist_distance(netlist, nodeslist):
 
     return sorted_netlist
 
-def sort_multiple_netlist_busy_nodes(netlist, num_variations = 100):
-    """
-    Genereer verschillende gesorteerde versies van de netlist, gebaseerd op de frequentie van nodes.
-    Als meerdere verbindingen dezelfde frequentie hebben, worden ze willekeurig herschikt.
 
-    Parameters:
-    netlist (list of tuples): Een lijst van verbindingen, waarbij elke tuple twee nodes verbindt.
-    num_variations (int): Aantal gesorteerde versies van de netlist die gegenereerd moeten worden.
-
-    Returns:
-    list of lists of tuples: Een lijst van gesorteerde netlists.
+def sort_multiple_netlist_busy_nodes(netlist: list[tuple], num_variations = 100) -> list[tuple]:
     """
-    # Tel hoe vaak elke node voorkomt in de netlist
+    Generate multiple sorted versions of the netlist based on the frequency of nodes. 
+    If multiple connections share the same frequency, they are randomly rearranged.
+    """
+
     node_counts = {}
     for connection in netlist:
         for node in connection:
             node_counts[node] = node_counts.get(node, 0) + 1
 
-    # Sorteer de netlist op basis van de frequentie van de nodes
     sorted_netlist = sorted(netlist, key=lambda x: (node_counts[x[0]] + node_counts[x[1]]), reverse=True)
 
-    # Lijst om de verschillende variaties van de netlist op te slaan
     variations = []
 
-    # Genereer het gewenste aantal variaties
     for _ in range(num_variations):
-        # Kopieer de gesorteerde netlist om een nieuwe variatie te maken
         shuffled_netlist = sorted_netlist[:]
         
-        # Zoek de indices van verbindingen met dezelfde frequentie
         i = 0
         while i < len(shuffled_netlist):
             current_freq = node_counts[shuffled_netlist[i][0]] + node_counts[shuffled_netlist[i][1]]
-            # Zoek alle verbindingen met dezelfde frequentie
             same_freq_indices = [i]
             j = i + 1
             while j < len(shuffled_netlist) and (node_counts[shuffled_netlist[j][0]] + node_counts[shuffled_netlist[j][1]]) == current_freq:
                 same_freq_indices.append(j)
                 j += 1
 
-            # Shuffle de verbindingen met dezelfde frequentie
             same_freq_connections = [shuffled_netlist[k] for k in same_freq_indices]
             random.shuffle(same_freq_connections)
             
-            # Zet de shuffled verbindingen terug in de lijst
             for idx, new_idx in zip(same_freq_indices, range(len(same_freq_connections))):
                 shuffled_netlist[idx] = same_freq_connections[new_idx]
             
-            # Ga verder met de volgende groep
             i = j
         
         variations.append(shuffled_netlist)
 
     return variations
 
-def sort_multiple_netlist_distance(netlist, nodeslist, num_variations = 100):
-    """
-    Genereer verschillende gesorteerde versies van de netlist, gebaseerd op de Manhattan-afstand
-    tussen nodes voor elke verbinding. Als meerdere verbindingen dezelfde afstand hebben, worden
-    ze willekeurig herschikt.
 
-    Parameters:
-    netlist (list of tuples): Een lijst van verbindingen, waarbij elke tuple twee nodes verbindt.
-    nodeslist (list of Node): Een lijst van Node-objecten, waar elke node een x- en y-coördinaat heeft.
-    num_variations (int): Het aantal gesorteerde versies van de netlist die gegenereerd moeten worden.
-
-    Returns:
-    list of lists of tuples: Een lijst van gesorteerde netlists.
+def sort_multiple_netlist_distance(netlist: list[tuple], nodeslist: list[Node], num_variations = 100) -> list[tuple]:
     """
-    # Bereken de Manhattan-afstand voor elke verbinding
+    Generate multiple sorted versions of the netlist based on the Manhattan distance between nodes for each connection. 
+    If multiple connections share the same distance, they are randomly rearranged.
+    """
     distances = {}
     for connection in netlist:
         x_1 = nodeslist[connection[0] - 1].give_x()
@@ -148,59 +127,54 @@ def sort_multiple_netlist_distance(netlist, nodeslist, num_variations = 100):
         dist = abs(x_1 - x_2) + abs(y_1 - y_2)
         distances[connection] = dist
 
-    # Sorteer de netlist op basis van de afstand
     sorted_netlist = sorted(netlist, key=lambda x: distances[x], reverse=False)
 
-    # Lijst om de verschillende variaties van de netlist op te slaan
     variations = []
 
-    # Genereer het gewenste aantal variaties
     for _ in range(num_variations):
-        # Kopieer de gesorteerde netlist om een nieuwe variatie te maken
         shuffled_netlist = sorted_netlist[:]
         
-        # Zoek de indices van verbindingen met dezelfde afstand
         i = 0
         while i < len(shuffled_netlist):
             current_dist = distances[shuffled_netlist[i]]
-            # Zoek alle verbindingen met dezelfde afstand
             same_dist_indices = [i]
             j = i + 1
             while j < len(shuffled_netlist) and distances[shuffled_netlist[j]] == current_dist:
                 same_dist_indices.append(j)
                 j += 1
 
-            # Shuffle de verbindingen met dezelfde afstand
             same_dist_connections = [shuffled_netlist[k] for k in same_dist_indices]
             random.shuffle(same_dist_connections)
             
-            # Zet de shuffled verbindingen terug in de lijst
             for idx, new_idx in zip(same_dist_indices, range(len(same_dist_connections))):
                 shuffled_netlist[idx] = same_dist_connections[new_idx]
             
-            # Ga verder met de volgende groep
             i = j
         
         variations.append(shuffled_netlist)
 
     return variations
 
-# Sorteer functies: Q Learning
+# ----------------------------------------
+# Q Learning
+# ----------------------------------------
 
 alpha = 0.1
 gamma = 0.9
 epsilon = 0.2
 q_table = {}
 
+
 def state_to_tuple(state):
     """
-    Zet de netlist om naar een hashbare tuple voor de Q-table.
+    Convert the netlist into a hashable tuple for the Q-table.
     """
     return tuple(state)
 
-def choose_action(state, netlist):
+
+def choose_action(state, netlist: list[tuple]) -> int:
     """
-    Kies een actie (wissel twee items in de netlist) op basis van epsilon-greedy policy.
+    Choose an action (swap two items in the netlist) based on the epsilon-greedy policy.
     """
     if random.uniform(0, 1) < epsilon:
         i, j = random.sample(range(len(netlist)), 2)
@@ -216,7 +190,7 @@ def choose_action(state, netlist):
 
 def update_q_table(state, action, reward, next_state):
     """
-    Update de Q-table volgens de Q-learning formule.
+    Update the Q-table according to the Q-learning formula.
     """
     key = (state, action)
     next_state_keys = [(next_state, a) for a in range(len(next_state))]
@@ -225,7 +199,9 @@ def update_q_table(state, action, reward, next_state):
 
     q_table[key] = q_table.get(key, 0) + alpha * (reward + gamma * next_max - q_table.get(key, 0))
 
-# Setup functies
+# ----------------------------------------
+# Setup functions
+# ----------------------------------------
 
 def get_netlist():
     while True:
@@ -241,7 +217,9 @@ def get_netlist():
             break
         else:
             print("Not a valid entry")
+    
     return chip, netlist
+
 
 def get_algorithms():
     while True:
@@ -260,7 +238,9 @@ def get_algorithms():
             break
         else:
             print("Not a valid entry")
+    
     return functie, algorithm
+
 
 def get_sorting_method(netlist, nodes_list, iter):
     if iter == 1:
@@ -294,7 +274,9 @@ def get_sorting_method(netlist, nodes_list, iter):
                 break
             else:
                 print("Not a valid entry")
+    
     return sort
+
 
 def get_singular_multiple():
     while True:
