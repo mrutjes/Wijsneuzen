@@ -2,7 +2,8 @@ from code.algorithms import a_star_algorithm, dfs_algorithm, lee_algorithm, manh
 import itertools
 import math
 import random
-random.seed(43)
+
+# random.seed(43) # Gebruikt voor experimenten draaien
 
 # Sorteer functies
 
