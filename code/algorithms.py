@@ -110,7 +110,7 @@ def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, 
     x_start, y_start, z_start = node1.give_x(), node1.give_y(), node1.give_z()
     x_end,   y_end,   z_end   = node2.give_x(), node2.give_y(), node2.give_z()
 
-    # Priority queue for A* (min-heap of (f_cost, WirePoint))
+    # Priority queue
     q = []
     start_point = WirePoint(x_start, y_start, z_start)
     heapq.heappush(q, (0, start_point))
@@ -119,7 +119,7 @@ def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, 
     costs = {start_point: 0}
     parents = {}
 
-    # Standard A* closed set of already-processed nodes
+    # Already processed nodes
     closed_set = set()
 
     while q:
