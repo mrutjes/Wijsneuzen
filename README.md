@@ -76,7 +76,7 @@ We document the results of each approach, including:
    ```bash
    python main.py
 
-4. **To use a different algorithm, simply uncomment the desired algorithm, and comment the other ones in main.py**  
+4. **Use of different algorithms**  
    You will be prompted for how many iterations the script has to run, which algorithm to use and how the netlist needs to be sorted.
 
 ---
