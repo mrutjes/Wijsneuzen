@@ -5,7 +5,7 @@ from code.classes.segment_class import Segment
 import heapq
 
 
-def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str):
+def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str) -> Wire|None:
     """
     Same as BFS/Lee's algorithm, except that we use an A* approach:
     we combine the actual distance traveled (g_cost) with a heuristic (h_cost).
@@ -99,7 +99,7 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
     raise Exception("No valid path found between the nodes.")
 
 
-def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str):
+def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str) -> Wire|None:
     """
     Breath first search with applied cost function. Works the same as the a* algorithm, except
     that it does not use a heuristic.
@@ -193,7 +193,7 @@ def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, 
     raise Exception("No valid path found between the nodes.")
 
 
-def dfs_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str):
+def dfs_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str) -> Wire|None:
     """
     Depth-First Search (DFS) algorithm with backtracking for routing wires.
     """
@@ -259,7 +259,7 @@ def dfs_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, 
     return None
 
 
-def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str):
+def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str) -> Wire|None:
     """
     Creates a wire based on the Manhattan distance between node1 and node2.
     Ensures strictly Manhattan movement, with only one coordinate changing at a time.
@@ -349,7 +349,6 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
         descend_point = WirePoint(x2, y2, z)
         wire.add_wire_point(descend_point)
 
-        # HEEL OMSLACHTIG GEDAAN ZODAT IK HET STAP VOOR STAP KON OPZETTEN MAAR MOET LATER GEWOON EVEN NETJES MET LOOPS
         if not grid.check_valid_addition(wire):
             wire.pop_wire_point()
             z += 1
@@ -381,4 +380,6 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
     # Add the completed wire to the grid
     grid.add_entire_wire_segments(wire)
     grid.add_wire_dict(wire)
+
+    
     return wire
