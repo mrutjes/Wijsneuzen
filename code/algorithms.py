@@ -96,7 +96,7 @@ def a_star_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: st
                 heapq.heappush(q, (f_cost, neighbor))
 
     # If the priority queue empties out and we never found a path:
-    raise Exception("No valid path found between the nodes.")
+    return None
 
 
 def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str) -> Wire|None:
@@ -190,7 +190,7 @@ def lee_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, 
                 heapq.heappush(q, (f_cost, neighbor))
 
     # If the priority queue empties out and we never found a path:
-    raise Exception("No valid path found between the nodes.")
+    return None
 
 
 def dfs_algorithm(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str, netlist_csv_path: str) -> Wire|None:
@@ -381,5 +381,5 @@ def manhattan_wire(node1: Node, node2: Node, grid: Grid_3D, nodes_csv_path: str,
     grid.add_entire_wire_segments(wire)
     grid.add_wire_dict(wire)
 
-    
+
     return wire

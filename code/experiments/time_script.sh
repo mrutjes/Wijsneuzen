@@ -16,7 +16,7 @@ for netlist in "${netlists[@]}"; do
             iterations=250
             
             echo "Running: Netlit $netlist | Algorithm $algorithm | Sorting $sorting_method"
-            python3 main.py << EOF > temp_output.txt
+            python3 main2.py << EOF > temp_output.txt
 $iterations
 $netlist
 $algorithm
