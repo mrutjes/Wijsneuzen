@@ -19,7 +19,6 @@ class Grid_3D:
         self._nodes = import_nodes(nodes_csv_path)
         self._netlist = import_netlist(netlist_csv_path)
         self.nodes_csv_path = nodes_csv_path
-        self._reserved_points = set()
         self.failed_wires = 0
         self.total_wires = 0
         self._point_dict = {
@@ -99,11 +98,6 @@ class Grid_3D:
         """
         1) Apply extra cost around nodes that appear frequently in the netlist.
         2) Then, ALSO make outer cells cheaper and center cells more expensive.
-
-        The end result:
-        - Heavily used nodes still get big cost in/around them (as before).
-        - Among the "non-node" space, cells near the grid edges are cheaper,
-        and cells near the center are more expensive.
         """
 
         # Count how many times each node appears in the netlist
@@ -242,12 +236,11 @@ class Grid_3D:
 
     def clear_wires(self):
         """
-        Deletes all wires from wire. 
+        Re-initializes the grid's data structures to clear all wires.
         """
         self._wires = []
         self._lines_count = 0
         self._wires_segments = set()
-        self._reserved_points = set()
         self.failed_wires = 0
         self.total_wires = 0
         self._point_dict = {
@@ -263,9 +256,6 @@ class Grid_3D:
     def remove_wire(self, wire: Wire) -> None:
         """
         Removes a wire from the grid and updates the grid's data structures.
-
-        Args:
-            wire (Wire): The wire to remove.
         """
         # Get the wirepoints from the wire
         wirepoints = wire.give_wirepoints()
@@ -389,7 +379,6 @@ class Grid_3D:
             abs(node1.give_z() - node2.give_z()))
 
 
-
     def check_wire_overlap(self, current_wire) -> bool:
         """
         Checks if the wire does not run over another wire in any direction.
@@ -403,32 +392,6 @@ class Grid_3D:
         if current_segment in self._wires_segments:
             return False
             
-        return True
-    
-    def add_reservation(self, point: WirePoint) -> None:
-        """
-        Adds the given point to reserved points, as well as the neighboring points
-        (x-1, x+1, y-1, y+1, and z+1).
-        """
-
-        # Extract coordinates
-        x, y, z = point.give_x(), point.give_y(), point.give_z()
-
-        # Add the neighboring points
-        self._reserved_points.add(WirePoint(x - 1, y, z))
-        self._reserved_points.add(WirePoint(x + 1, y, z))
-        self._reserved_points.add(WirePoint(x, y - 1, z))
-        self._reserved_points.add(WirePoint(x, y + 1, z))
-        self._reserved_points.add(WirePoint(x, y, z + 1))
-    
-
-    def check_reservation(self, point: WirePoint) -> bool:
-        """
-        Checks if a wire does not go over a reserved point
-        """
-        if (WirePoint(point.give_x(), point.give_y(), point.give_z())) in self._reserved_points:
-            return False
-        
         return True
     
 
@@ -469,6 +432,7 @@ class Grid_3D:
             
         return True
 
+
     def check_in_grid(self, point: WirePoint) -> bool:
         """
         Checks if a given point exists in the grid
@@ -502,14 +466,6 @@ class Grid_3D:
         #Checks if the wirepoint does not go through node.
         if not current_wire.check_not_through_node():
             return False
-        
-        #Checks if the wire does not return on itself
-        #if not current_wire.check_not_return():
-        #    print("Would return on itself")
-        #    return False
-        
-        #if not self.check_reservation(wire_point):
-        #    return False
 
         return True
 
