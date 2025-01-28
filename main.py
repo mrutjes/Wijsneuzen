@@ -3,6 +3,7 @@ import time
 
 from code.classes.grid_class import initialise_grid
 from code.imports import import_netlist, import_nodes
+from code.visualisation.visualisation import plot_wires_3d
 from code.functions import (
     get_singular_multiple,
     get_netlist,
@@ -74,7 +75,7 @@ def main():
 
         if successful_grid >= 1:
             print(f"The grid with minimal cost costs: {cost_min}")
-            #plot_wires_3d(wires_cost_min, grid_width, grid_length)
+            plot_wires_3d(wires_cost_min, grid_width, grid_length)
         else:
             print("No successful grid found.")
 
