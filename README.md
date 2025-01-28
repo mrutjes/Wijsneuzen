@@ -105,11 +105,9 @@ We document the results of each approach, including:
    Contains the function to plot the wires in the grid.
    - **functions**  
    Contains helper functions in order to succesfully run the main.py
-   -**imports**  
-   Contains functions to succesfully import the netlist and the coordinatess of the nodes.
    - **imports**  
-   Located in the `code` directory, this file bundles essential functions for tasks such as loading netlists, parsing CSV data, and setting up project resources.
-   - **time_script**  
-   This is a bash script to run 250 iterations of each combination of algorithm, netlist and sorting method used for the experiment. Run with the command below.
+   This file bundles essential functions for tasks such as loading netlists, parsing CSV data, and setting up project resources.
+   - **experiments**  
+   This is a bash script to run 250 iterations of each combination of algorithm, netlist and sorting method used for the experiment. Run with the command below from the main directory. You will find the results in this directory.
    ```bash
-   ./time_script.sh
+   bash code/experiments/time_script.sh
