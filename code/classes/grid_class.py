@@ -338,12 +338,9 @@ class Grid_3D:
         for i in range(len(wirepoints) - 1):
             start_point = wirepoints[i]
             end_point = wirepoints[i + 1]
+            x, y, z = start_point.give_place()
+            self._point_dict[(x, y, z)] += 1
 
-            x, y, z = start_point.give_x(), start_point.give_y(), start_point.give_z()
-            if 0 <= x < self.n and 0 <= y < self.m and 0 <= z < self.height:
-                self._point_dict[(x, y, z)] += 1
-            else:
-                raise IndexError("Coordinates outside the grid.")
         
         self._lines_count += len(wirepoints) - 1
 
@@ -501,8 +498,9 @@ class Grid_3D:
     
         
 def initialise_grid(nodes_list, nodes_csv_path, algorithm: str, netlist_csv_path):
-    grid_width = max(node.give_x() for node in nodes_list) + 1
-    grid_length = max(node.give_y() for node in nodes_list) + 1
+    grid_width = max(node.give_x() for node in nodes_list) + 2 # +2 for the 0-indexing and the extra space
+    grid_length = max(node.give_y() for node in nodes_list) + 2 # +2 for the 0-indexing and the extra space
+    print(grid_width, grid_length)
     grid = Grid_3D(grid_width, grid_length, nodes_csv_path=nodes_csv_path, netlist_csv_path=netlist_csv_path)
     for node in nodes_list:
         grid.place_node(node)
