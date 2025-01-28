@@ -106,6 +106,8 @@ We document the results of each approach, including:
    Contains helper functions in order to succesfully run the main.py
    - **imports**  
    This file bundles essential functions for tasks such as loading netlists, parsing CSV data, and setting up project resources.
+   - **engine**  
+   This is the backbone of the code, this contains all of the logic for running the different algorithms using various functions and sorting methods. 
    - **experiments**  
    This is a bash script to run 250 iterations of each combination of algorithm, netlist and sorting method used for the experiment. Run with the command below from the main directory. You will find the results in this directory.
    ```bash
