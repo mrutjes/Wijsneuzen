@@ -180,38 +180,6 @@ class Wire:
         return True
     
 
-    def check_not_return(self) -> bool:
-        """
-        Enhanced debugging with explicit logging of segment comparisons.
-        """
-        if len(self._wirepoints) < 4:
-            print("Fewer than 4 points: Cannot return on itself.")
-            return True
-        
-        
-
-        # Get the most recently added segment with ordered points
-        last_point = self._wirepoints[-2]
-        point_to_add = self._wirepoints[-1]
-        current_segment = tuple(sorted([last_point, point_to_add], key=lambda wp: (wp.give_x(), wp.give_y(), wp.give_z())))
-
-        print(f"Current Segment (Ordered): {[(wp.give_x(), wp.give_y(), wp.give_z()) for wp in current_segment]}")
-
-        # Check against all previous segments with ordered points
-        for i in range(len(self._wirepoints) - 3):
-            seg_start = self._wirepoints[i]
-            seg_end = self._wirepoints[i + 1]
-            previous_segment = tuple(sorted([seg_start, seg_end], key=lambda wp: (wp.give_x(), wp.give_y(), wp.give_z())))
-
-            print(f"Comparing with Segment (Ordered): {[(wp.give_x(), wp.give_y(), wp.give_z()) for wp in previous_segment]}")
-
-            if current_segment == previous_segment:
-                print(f"Return detected: {current_segment} matches {previous_segment}")
-                return False
-
-        print("No return detected.")
-        return True
-
     def pop_wire_point(self) -> None:
         """
         Pops the last item in the wirepoints list (except the end node).
