@@ -109,6 +109,6 @@ We document the results of each approach, including:
    - **engine**  
    This is the backbone of the code, this contains all of the logic for running the different algorithms using various functions and sorting methods. 
    - **experiments**  
-   This is a bash script to run 250 iterations of each combination of algorithm, netlist and sorting method used for the experiment. Run with the command below from the main directory. You will find the results in this directory. In order ot reproduce the results from the experiment, uncomment the random.seed line in the code/functions.py file.
+   This is a bash script to run 100 iterations of each combination of algorithm, netlist and sorting method used for the experiment. Run with the command below from the main directory. You will find the results in this directory. In order ot reproduce the results from the experiment, uncomment the random.seed line in the code/functions.py file.
    ```bash
    bash code/experiments/time_script.sh
