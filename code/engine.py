@@ -361,7 +361,7 @@ def run_single_run(
 
             if success_for_this_run:
                 print(f"The total cost for this grid is: {grid.cost()}")
-                #plot_wires_3d(wires, grid_width, grid_length)
+                plot_wires_3d(wires, grid_width, grid_length)
                 grid.remove_nodes_pointdict()
             else:
                 print("Routing failed for the current netlist.")
@@ -386,7 +386,7 @@ def run_single_run(
             if grid.failed_wires == 0:
                 cost_grid = grid.cost()
                 print(f"The total cost for this grid is: {cost_grid}")
-                #plot_wires_3d(wires, grid_width, grid_length)
+                plot_wires_3d(wires, grid_width, grid_length)
 
             else: 
                 print("Routing failed for the current netlist.")
@@ -410,7 +410,7 @@ def run_single_run(
                 grid.add_wire_list(wire)
 
             print(f"The total cost for this grid is: {grid.cost()}")
-            #plot_wires_3d(wires, grid_width, grid_length)
+            plot_wires_3d(wires, grid_width, grid_length)
             grid.remove_nodes_pointdict()
         else:
             raise ValueError("No netlist given.")
